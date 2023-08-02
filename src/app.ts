@@ -16,7 +16,7 @@ let favouriteSvg: string, repeatSvg: string, replySvg: string, elipsisSvg: strin
 async function main() {
 	document.location;
 
-	fetchAssets();
+	await fetchAssets();
 
 	const data: Status[] = await getDataForUrl();
 
