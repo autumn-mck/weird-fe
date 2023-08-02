@@ -1,0 +1,19 @@
+{
+	"name": "a-frontend",
+	"version": "1.0.0",
+	"description": "",
+	"license": "GPL-3.0",
+	"scripts": {
+		"dev": "npx tsc -w & http-server",
+		"build": "npx tsc",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "autumn",
+	"dependencies": {
+		"typescript": "^5.1.6"
+	},
+	"devDependencies": {
+		"http-server": "^14.1.1"
+	}
+}
