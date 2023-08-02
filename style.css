@@ -12,6 +12,8 @@
 	--interacted: #7dc4e4;
 	--repeated: #a6da95;
 	--favourited: #eed49f;
+
+	--post-pfp-size: 48px;
 }
 
 * {
@@ -99,6 +101,28 @@ p {
 	--post-hover-overlay: #24273a99;
 }
 
+.post-content {
+	overflow-wrap: break-word;
+	word-break: normal;
+	hyphens: auto;
+}
+
+.reblogged-post {
+	padding: 0;
+}
+
+.reblogged-time {
+	text-align: right;
+	display: inline-block;
+	width: auto;
+	margin-left: auto;
+}
+
+.quoted-post {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}
+
 .post-body {
 	width: 100%;
 }
@@ -106,6 +130,8 @@ p {
 .boosted-by {
 	color: var(--repeated);
 	display: flex;
+	padding-bottom: 0.5rem;
+	padding-left: calc(var(--post-pfp-size) + 0.5rem - 24px);
 }
 
 .boosted-by-ico {
@@ -125,7 +151,7 @@ p {
 }
 
 .post-replied-to > .post-content {
-	margin-left: calc(48px + 1rem);
+	margin-left: calc(var(--post-pfp-size) + 1rem);
 }
 
 .post-info-top {
@@ -139,7 +165,7 @@ p {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 48px;
+	width: var(--post-pfp-size);
 }
 
 .avatar-line {
@@ -151,8 +177,8 @@ p {
 }
 
 .post-avatar {
-	height: 48px;
-	width: 48px;
+	height: var(--post-pfp-size);
+	width: var(--post-pfp-size);
 	border-radius: 8px;
 	z-index: 1;
 }
@@ -202,7 +228,7 @@ p {
 }
 
 .post-visibility {
-	color: var(--subtext);
+	fill: var(--subtext);
 }
 
 .emoji {
@@ -211,6 +237,7 @@ p {
 
 .post-media {
 	display: flex;
+	justify-content: center;
 	max-width: 100%;
 	overflow: scroll;
 }
@@ -253,8 +280,12 @@ p {
 	justify-content: space-between;
 	margin-top: 0.5rem;
 	margin-bottom: 0.8rem;
-	margin-left: calc(48px + 1rem);
-	margin-right: calc(48px + 1rem);
+	margin-left: calc(var(--post-pfp-size) + 1rem);
+	margin-right: calc(var(--post-pfp-size) + 1rem);
+}
+
+.post-replied-to .interaction-bar {
+	margin-left: 1rem;
 }
 
 .interaction-row-item {

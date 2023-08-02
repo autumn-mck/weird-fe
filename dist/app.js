@@ -3,7 +3,7 @@ const userSelectedInstanceUrl = "https://0w0.is";
 const userSelectedInstance = "0w0.is";
 const accountsPath = "users";
 const timelineDiv = document.getElementById("timeline");
-let favouriteSvg, repeatSvg, replySvg, elipsisSvg, reactSvg, quoteSvg;
+let favouriteSvg, repeatSvg, replySvg, elipsisSvg, reactSvg, quoteSvg, visilitySvgs;
 /**
  * Main function
  */
@@ -42,14 +42,22 @@ async function getDataForUrl() {
     return data;
 }
 async function fetchAssets() {
+    // TODO: Use other icon sets? eg https://tabler.io/docs/icons
     favouriteSvg = await fetchAsync("/assets/svgs/star.svg");
     repeatSvg = await fetchAsync("/assets/svgs/repeat.svg");
     replySvg = await fetchAsync("/assets/svgs/reply.svg");
     elipsisSvg = await fetchAsync("/assets/svgs/elipsis.svg");
     reactSvg = await fetchAsync("/assets/svgs/react.svg");
     quoteSvg = await fetchAsync("/assets/svgs/quote.svg");
+    visilitySvgs = {
+        public: await fetchAsync("/assets/svgs/public.svg"),
+        unlisted: await fetchAsync("/assets/svgs/unlisted.svg"),
+        private: await fetchAsync("/assets/svgs/followers.svg"),
+        local: await fetchAsync("/assets/svgs/local.svg"),
+        direct: await fetchAsync("/assets/svgs/direct.svg"),
+    };
 }
-function constructPost(post, isRepliedTo = false) {
+function constructPost(post, isRepliedTo = false, isQuoted = false) {
     console.log(post);
     const postDiv = document.createElement("div");
     postDiv.className = "post";
@@ -65,6 +73,10 @@ function constructPost(post, isRepliedTo = false) {
         const rebloggedBy = document.createElement("p");
         rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
         reblogDiv.appendChild(rebloggedBy);
+        const reblogTime = document.createElement("p");
+        reblogTime.textContent = relativeTime(new Date(post.created_at));
+        reblogTime.className = "reblogged-time";
+        reblogDiv.appendChild(reblogTime);
         postBody.appendChild(reblogDiv);
         const rebloggedPostDiv = constructPost(post.reblog);
         rebloggedPostDiv.className += " reblogged-post";
@@ -126,16 +138,39 @@ function constructPost(post, isRepliedTo = false) {
             postBody.className += " post-spoiler";
         }
         postBody.appendChild(postInnerBody);
-        // todo polls
-        // todo emoji reactions
+        let postPoll = constructPostPoll(post);
+        if (postPoll)
+            postBody.appendChild(postPoll);
+        if (post.quote) {
+            const quoteDiv = document.createElement("div");
+            quoteDiv.className = "post-quote";
+            const quoteIco = document.createElement("div");
+            quoteIco.className = "post-quote-ico";
+            quoteIco.innerHTML = quoteSvg;
+            quoteDiv.appendChild(quoteIco);
+            const quotePostDiv = constructPost(post.quote, false, true);
+            quotePostDiv.className += " quoted-post";
+            quoteDiv.appendChild(quotePostDiv);
+            postBody.appendChild(quoteDiv);
+        }
         const emojiReactionsRow = constructEmojiReactionsRow(post);
         if (emojiReactionsRow)
             postBody.appendChild(emojiReactionsRow);
-        const interactionRow = constructInteractionRow(post);
-        postBody.appendChild(interactionRow);
+        if (!isQuoted) {
+            const interactionRow = constructInteractionRow(post);
+            postBody.appendChild(interactionRow);
+        }
     }
     postDiv.appendChild(postBody);
     return postDiv;
+}
+function constructPostPoll(post) {
+    if (post.poll) {
+        const pollDiv = document.createElement("div");
+        // TODO: polls
+        return pollDiv;
+    }
+    return null;
 }
 function createAvatarDiv(post) {
     const avatarDiv = document.createElement("div");
@@ -213,7 +248,8 @@ function constructPosterInfo(post, isRepliedTo = false) {
     col2.appendChild(postTime);
     const postVisibility = document.createElement("p");
     postVisibility.className = "post-visibility";
-    postVisibility.innerText = post.visibility;
+    postVisibility.title = post.visibility;
+    postVisibility.innerHTML = visilitySvgs[post.visibility];
     col2.appendChild(postVisibility);
     posterTextInfo.appendChild(col2);
     return postInfoTop;
