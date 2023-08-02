@@ -264,13 +264,17 @@ p {
 
 .interaction-row-item-icon {
 	box-sizing: content-box;
-	height: 1.125rem;
-	width: 1rem;
-	margin-right: 0.5rem;
+	height: 24px;
+	width: 24px;
+	margin-right: 0.3rem;
 	padding: 0.25rem;
 	transition: fill 0.2s ease-in, transform 0.7s ease-in-out;
 	fill: var(--post-interaction);
 	cursor: pointer;
+}
+
+.interaction-row-item-icon-favourites {
+	transform-origin: 50% 54%;
 }
 
 .interaction-row-item-icon:hover {
