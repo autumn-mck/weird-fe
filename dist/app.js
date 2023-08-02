@@ -9,7 +9,7 @@ let favouriteSvg, repeatSvg, replySvg, elipsisSvg, reactSvg, quoteSvg;
  */
 async function main() {
     document.location;
-    fetchAssets();
+    await fetchAssets();
     const data = await getDataForUrl();
     timelineDiv.innerHTML = "";
     data.forEach(async (post) => {
@@ -55,68 +55,85 @@ function constructPost(post, isRepliedTo = false) {
     postDiv.className = "post";
     const postBody = document.createElement("div");
     postBody.className = "post-body";
-    if (isRepliedTo) {
-        const avatarDiv = createAvatarDiv(post);
-        const avatarLine = document.createElement("div");
-        avatarLine.className = "avatar-line";
-        avatarDiv.appendChild(avatarLine);
-        postDiv.appendChild(avatarDiv);
+    if (post.reblog) {
+        const reblogDiv = document.createElement("div");
+        reblogDiv.className = "boosted-by";
+        const reblogIco = document.createElement("div");
+        reblogIco.className = "boosted-by-ico";
+        reblogIco.innerHTML = repeatSvg;
+        reblogDiv.appendChild(reblogIco);
+        const rebloggedBy = document.createElement("p");
+        rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
+        reblogDiv.appendChild(rebloggedBy);
+        postBody.appendChild(reblogDiv);
+        const rebloggedPostDiv = constructPost(post.reblog);
+        rebloggedPostDiv.className += " reblogged-post";
+        postBody.appendChild(rebloggedPostDiv);
     }
-    const posterInfo = constructPosterInfo(post, isRepliedTo);
-    postBody.appendChild(posterInfo);
-    const postInnerBody = document.createElement("div");
-    postInnerBody.className = "post-inner-body";
-    const content = document.createElement("p");
-    content.innerHTML = formatInEmojis(post.content, post.emojis);
-    content.className = "post-content";
-    postInnerBody.appendChild(content);
-    const media = document.createElement("div");
-    media.className = "post-media";
-    if (post.media_attachments.length > 0) {
-        post.media_attachments.forEach((attachment) => {
-            let mediaItem;
-            if (attachment.type === "image") {
-                mediaItem = document.createElement("img");
-            }
-            else if (attachment.type === "video") {
-                mediaItem = document.createElement("video");
-                mediaItem.controls = true;
-            }
-            else if (attachment.type === "gifv") {
-                mediaItem = document.createElement("video");
-                mediaItem.controls = true;
-            }
-            else if (attachment.type === "audio") {
-                mediaItem = document.createElement("audio");
-                mediaItem.controls = true;
-            }
-            else {
-                mediaItem = document.createElement("a");
-            }
-            mediaItem.src = attachment.remote_url;
-            mediaItem.className = "post-media-item";
-            if (post.sensitive) {
-                mediaItem.className += " post-media-item-sensitive";
-            }
-            media.appendChild(mediaItem);
-        });
+    else {
+        if (isRepliedTo) {
+            const avatarDiv = createAvatarDiv(post);
+            const avatarLine = document.createElement("div");
+            avatarLine.className = "avatar-line";
+            avatarDiv.appendChild(avatarLine);
+            postDiv.appendChild(avatarDiv);
+        }
+        const posterInfo = constructPosterInfo(post, isRepliedTo);
+        postBody.appendChild(posterInfo);
+        const postInnerBody = document.createElement("div");
+        postInnerBody.className = "post-inner-body";
+        const content = document.createElement("p");
+        content.innerHTML = formatInEmojis(post.content, post.emojis);
+        content.className = "post-content";
+        postInnerBody.appendChild(content);
+        const media = document.createElement("div");
+        media.className = "post-media";
+        if (post.media_attachments.length > 0) {
+            post.media_attachments.forEach((attachment) => {
+                let mediaItem;
+                if (attachment.type === "image") {
+                    mediaItem = document.createElement("img");
+                }
+                else if (attachment.type === "video") {
+                    mediaItem = document.createElement("video");
+                    mediaItem.controls = true;
+                }
+                else if (attachment.type === "gifv") {
+                    mediaItem = document.createElement("video");
+                    mediaItem.controls = true;
+                }
+                else if (attachment.type === "audio") {
+                    mediaItem = document.createElement("audio");
+                    mediaItem.controls = true;
+                }
+                else {
+                    mediaItem = document.createElement("a");
+                }
+                mediaItem.src = attachment.remote_url;
+                mediaItem.className = "post-media-item";
+                if (post.sensitive) {
+                    mediaItem.className += " post-media-item-sensitive";
+                }
+                media.appendChild(mediaItem);
+            });
+        }
+        postInnerBody.appendChild(media);
+        if (post.spoiler_text) {
+            const spoilerText = document.createElement("p");
+            spoilerText.innerText = post.spoiler_text;
+            spoilerText.className = "post-spoiler-text";
+            postBody.appendChild(spoilerText);
+            postBody.className += " post-spoiler";
+        }
+        postBody.appendChild(postInnerBody);
+        // todo polls
+        // todo emoji reactions
+        const emojiReactionsRow = constructEmojiReactionsRow(post);
+        if (emojiReactionsRow)
+            postBody.appendChild(emojiReactionsRow);
+        const interactionRow = constructInteractionRow(post);
+        postBody.appendChild(interactionRow);
     }
-    postInnerBody.appendChild(media);
-    if (post.spoiler_text) {
-        const spoilerText = document.createElement("p");
-        spoilerText.innerText = post.spoiler_text;
-        spoilerText.className = "post-spoiler-text";
-        postBody.appendChild(spoilerText);
-        postBody.className += " post-spoiler";
-    }
-    postBody.appendChild(postInnerBody);
-    // todo polls
-    // todo emoji reactions
-    const emojiReactionsRow = constructEmojiReactionsRow(post);
-    if (emojiReactionsRow)
-        postBody.appendChild(emojiReactionsRow);
-    const interactionRow = constructInteractionRow(post);
-    postBody.appendChild(interactionRow);
     postDiv.appendChild(postBody);
     return postDiv;
 }
@@ -144,11 +161,8 @@ function constructPosterInfo(post, isRepliedTo = false) {
     const col1 = document.createElement("div");
     col1.className = "poster-info-column-1";
     const displayName = document.createElement("p");
-    displayName.innerText = post.account.display_name;
-    let displayNameHtml = escapeHTML(post.account.display_name);
     displayName.className = "post-display-name";
-    displayNameHtml = formatInEmojis(displayNameHtml, post.account.emojis);
-    displayName.innerHTML = displayNameHtml;
+    displayName.innerHTML = getAccountDisplayNameHTML(post.account);
     col1.appendChild(displayName);
     let [username, instance] = post.account.acct.split("@");
     const postAcct = document.createElement("a");
@@ -203,6 +217,10 @@ function constructPosterInfo(post, isRepliedTo = false) {
     col2.appendChild(postVisibility);
     posterTextInfo.appendChild(col2);
     return postInfoTop;
+}
+function getAccountDisplayNameHTML(account) {
+    let displayNameHtml = escapeHTML(account.display_name);
+    return formatInEmojis(displayNameHtml, account.emojis);
 }
 function constructEmojiReactionsRow(post) {
     if (!post.emoji_reactions)

@@ -103,6 +103,16 @@ p {
 	width: 100%;
 }
 
+.boosted-by {
+	color: var(--repeated);
+	display: flex;
+}
+
+.boosted-by-ico {
+	margin-right: 0.5rem;
+	fill: var(--repeated);
+}
+
 .post-spoiler .post-inner-body {
 	filter: blur(8px);
 	/*height: 2ch;*/

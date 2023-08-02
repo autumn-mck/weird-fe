@@ -73,77 +73,96 @@ function constructPost(post: Status, isRepliedTo = false) {
 	const postBody = document.createElement("div");
 	postBody.className = "post-body";
 
-	if (isRepliedTo) {
-		const avatarDiv = createAvatarDiv(post);
-		const avatarLine = document.createElement("div");
-		avatarLine.className = "avatar-line";
-		avatarDiv.appendChild(avatarLine);
-		postDiv.appendChild(avatarDiv);
+	if (post.reblog) {
+		const reblogDiv = document.createElement("div");
+		reblogDiv.className = "boosted-by";
+
+		const reblogIco = document.createElement("div");
+		reblogIco.className = "boosted-by-ico";
+		reblogIco.innerHTML = repeatSvg;
+		reblogDiv.appendChild(reblogIco);
+
+		const rebloggedBy = document.createElement("p");
+		rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
+		reblogDiv.appendChild(rebloggedBy);
+		postBody.appendChild(reblogDiv);
+
+		const rebloggedPostDiv = constructPost(post.reblog);
+		rebloggedPostDiv.className += " reblogged-post";
+		postBody.appendChild(rebloggedPostDiv);
+	} else {
+		if (isRepliedTo) {
+			const avatarDiv = createAvatarDiv(post);
+			const avatarLine = document.createElement("div");
+			avatarLine.className = "avatar-line";
+			avatarDiv.appendChild(avatarLine);
+			postDiv.appendChild(avatarDiv);
+		}
+
+		const posterInfo = constructPosterInfo(post, isRepliedTo);
+		postBody.appendChild(posterInfo);
+
+		const postInnerBody = document.createElement("div");
+		postInnerBody.className = "post-inner-body";
+
+		const content = document.createElement("p");
+		content.innerHTML = formatInEmojis(post.content, post.emojis);
+		content.className = "post-content";
+		postInnerBody.appendChild(content);
+
+		const media = document.createElement("div");
+		media.className = "post-media";
+		if (post.media_attachments.length > 0) {
+			post.media_attachments.forEach((attachment: any) => {
+				let mediaItem: any;
+				if (attachment.type === "image") {
+					mediaItem = document.createElement("img");
+				} else if (attachment.type === "video") {
+					mediaItem = document.createElement("video");
+					mediaItem.controls = true;
+				} else if (attachment.type === "gifv") {
+					mediaItem = document.createElement("video");
+					mediaItem.controls = true;
+				} else if (attachment.type === "audio") {
+					mediaItem = document.createElement("audio");
+					mediaItem.controls = true;
+				} else {
+					mediaItem = document.createElement("a");
+				}
+
+				mediaItem.src = attachment.remote_url;
+				mediaItem.className = "post-media-item";
+
+				if (post.sensitive) {
+					mediaItem.className += " post-media-item-sensitive";
+				}
+
+				media.appendChild(mediaItem);
+			});
+		}
+
+		postInnerBody.appendChild(media);
+
+		if (post.spoiler_text) {
+			const spoilerText = document.createElement("p");
+			spoilerText.innerText = post.spoiler_text;
+			spoilerText.className = "post-spoiler-text";
+			postBody.appendChild(spoilerText);
+
+			postBody.className += " post-spoiler";
+		}
+
+		postBody.appendChild(postInnerBody);
+
+		// todo polls
+
+		// todo emoji reactions
+		const emojiReactionsRow = constructEmojiReactionsRow(post);
+		if (emojiReactionsRow) postBody.appendChild(emojiReactionsRow);
+
+		const interactionRow = constructInteractionRow(post);
+		postBody.appendChild(interactionRow);
 	}
-
-	const posterInfo = constructPosterInfo(post, isRepliedTo);
-	postBody.appendChild(posterInfo);
-
-	const postInnerBody = document.createElement("div");
-	postInnerBody.className = "post-inner-body";
-
-	const content = document.createElement("p");
-	content.innerHTML = formatInEmojis(post.content, post.emojis);
-	content.className = "post-content";
-	postInnerBody.appendChild(content);
-
-	const media = document.createElement("div");
-	media.className = "post-media";
-	if (post.media_attachments.length > 0) {
-		post.media_attachments.forEach((attachment: any) => {
-			let mediaItem: any;
-			if (attachment.type === "image") {
-				mediaItem = document.createElement("img");
-			} else if (attachment.type === "video") {
-				mediaItem = document.createElement("video");
-				mediaItem.controls = true;
-			} else if (attachment.type === "gifv") {
-				mediaItem = document.createElement("video");
-				mediaItem.controls = true;
-			} else if (attachment.type === "audio") {
-				mediaItem = document.createElement("audio");
-				mediaItem.controls = true;
-			} else {
-				mediaItem = document.createElement("a");
-			}
-
-			mediaItem.src = attachment.remote_url;
-			mediaItem.className = "post-media-item";
-
-			if (post.sensitive) {
-				mediaItem.className += " post-media-item-sensitive";
-			}
-
-			media.appendChild(mediaItem);
-		});
-	}
-
-	postInnerBody.appendChild(media);
-
-	if (post.spoiler_text) {
-		const spoilerText = document.createElement("p");
-		spoilerText.innerText = post.spoiler_text;
-		spoilerText.className = "post-spoiler-text";
-		postBody.appendChild(spoilerText);
-
-		postBody.className += " post-spoiler";
-	}
-
-	postBody.appendChild(postInnerBody);
-
-	// todo polls
-
-	// todo emoji reactions
-	const emojiReactionsRow = constructEmojiReactionsRow(post);
-	if (emojiReactionsRow) postBody.appendChild(emojiReactionsRow);
-
-	const interactionRow = constructInteractionRow(post);
-	postBody.appendChild(interactionRow);
 	postDiv.appendChild(postBody);
 
 	return postDiv;
@@ -178,13 +197,8 @@ function constructPosterInfo(post: Status, isRepliedTo = false) {
 	col1.className = "poster-info-column-1";
 
 	const displayName = document.createElement("p");
-	displayName.innerText = post.account.display_name;
-	let displayNameHtml = escapeHTML(post.account.display_name);
 	displayName.className = "post-display-name";
-
-	displayNameHtml = formatInEmojis(displayNameHtml, post.account.emojis);
-
-	displayName.innerHTML = displayNameHtml;
+	displayName.innerHTML = getAccountDisplayNameHTML(post.account);
 
 	col1.appendChild(displayName);
 
@@ -253,6 +267,11 @@ function constructPosterInfo(post: Status, isRepliedTo = false) {
 	posterTextInfo.appendChild(col2);
 
 	return postInfoTop;
+}
+
+function getAccountDisplayNameHTML(account: any) {
+	let displayNameHtml = escapeHTML(account.display_name);
+	return formatInEmojis(displayNameHtml, account.emojis);
 }
 
 function constructEmojiReactionsRow(post: Status) {
