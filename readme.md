@@ -4,4 +4,4 @@ the code is an absolute mess
 
 not at all in a usable state, a lot still needs done
 
-icons from [Font Awesome](https://github.com/FortAwesome/Font-Awesome/), licenced under [CC BY 4.0](<(https://creativecommons.org/licenses/by/4.0/)>). arrow-turn-up was taken and rotated to create the reply icon
+icons from [material-symbols](https://github.com/marella/material-symbols/tree/main/material-symbols), Apache-2.0
