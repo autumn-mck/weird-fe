@@ -1,11 +1,3 @@
-var Visibility;
-(function (Visibility) {
-    Visibility["Public"] = "public";
-    Visibility["Unlisted"] = "unlisted";
-    Visibility["Local"] = "local";
-    Visibility["Private"] = "private";
-    Visibility["Direct"] = "direct";
-})(Visibility || (Visibility = {}));
 export class Status {
     id;
     uri;
@@ -42,6 +34,16 @@ export class Status {
     akkoma;
     quote;
     quote_id;
-    emoji_reactions;
+    emoji_reactions; // not a CustomEmoji, because of course not (eg uses name instead of shortcode)
+}
+export class StatusMention {
+    id;
+    username;
+    url;
+    acct;
+}
+export class StatusTag {
+    name;
+    url;
 }
 //# sourceMappingURL=status.js.map

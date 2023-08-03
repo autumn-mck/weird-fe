@@ -53,4 +53,16 @@ export function escapeHTML(string) {
     };
     return string.replace(/[&"'<>]/g, (c) => lookup[c]);
 }
-//# sourceMappingURL=genericFunctions.js.map
+export function formatInEmojis(string, emojis) {
+    for (const emoji of emojis) {
+        const emojiHtml = escapeHTML(emoji.shortcode);
+        const emojiImg = `<img src="${emoji.url}" height="20px" alt="${emojiHtml}" title="${emojiHtml}" class="emoji" />`;
+        string = string.replaceAll(`:${emojiHtml}:`, emojiImg);
+    }
+    return string;
+}
+export function getAccountDisplayNameHTML(account) {
+    let displayNameHtml = escapeHTML(account.display_name);
+    return formatInEmojis(displayNameHtml, account.emojis);
+}
+//# sourceMappingURL=utils.js.map

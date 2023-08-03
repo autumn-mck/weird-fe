@@ -1,25 +1,22 @@
-enum Visibility {
-	Public = "public",
-	Unlisted = "unlisted",
-	Local = "local", // TODO is this correct
-	Private = "private",
-	Direct = "direct",
-}
+import { Account } from "./account.js";
+import { CustomEmoji } from "./customEmoji.js";
+import { MediaAttatchment } from "./mediaAttatchment.js";
+import { Visibility } from "./visibility.js";
 
 export class Status {
 	id!: string;
 	uri!: string;
 	created_at!: string; // Date
-	account!: any;
+	account!: Account;
 	content!: string; // HTML
 	visibility!: Visibility;
 	sensitive!: boolean;
 	spoiler_text!: string; // TODO: just "" if not sensitive?
-	media_attachments!: any[];
+	media_attachments!: MediaAttatchment[];
 	// completely ignoring the optional application field, akkoma doesn't even seem to return it
-	mentions!: any[];
-	tags!: any[];
-	emojis!: any[];
+	mentions!: StatusMention[];
+	tags!: StatusTag[];
+	emojis!: CustomEmoji[];
 	reblogs_count!: number;
 	favourites_count!: number;
 	replies_count!: number;
@@ -43,7 +40,19 @@ export class Status {
 	pleroma?: any;
 	akkoma?: any;
 
-	quote?: any | null;
-	quote_id?: any | null;
-	emoji_reactions?: any[];
+	quote?: Status | null;
+	quote_id?: string | null;
+	emoji_reactions?: any[]; // not a CustomEmoji, because of course not (eg uses name instead of shortcode)
+}
+
+export class StatusMention {
+	id!: string;
+	username!: string;
+	url!: string;
+	acct!: string;
+}
+
+export class StatusTag {
+	name!: string;
+	url!: string;
 }

@@ -1,3 +1,5 @@
+import { Account } from "./models/account";
+
 export function relativeTime(date: Date) {
 	const formatter = new Intl.RelativeTimeFormat("en", {
 		numeric: "always",
@@ -56,4 +58,18 @@ export function escapeHTML(string: string) {
 		">": "&gt;",
 	};
 	return string.replace(/[&"'<>]/g, (c) => lookup[c]);
+}
+
+export function formatInEmojis(string: string, emojis: any) {
+	for (const emoji of emojis) {
+		const emojiHtml = escapeHTML(emoji.shortcode);
+		const emojiImg = `<img src="${emoji.url}" height="20px" alt="${emojiHtml}" title="${emojiHtml}" class="emoji" />`;
+		string = string.replaceAll(`:${emojiHtml}:`, emojiImg);
+	}
+	return string;
+}
+
+export function getAccountDisplayNameHTML(account: Account) {
+	let displayNameHtml = escapeHTML(account.display_name);
+	return formatInEmojis(displayNameHtml, account.emojis);
 }
