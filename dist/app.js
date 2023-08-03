@@ -1,6 +1,6 @@
 import { escapeHTML, fetchAsync, fetchJsonAsync, relativeTime } from "./genericFunctions.js";
-const userSelectedInstanceUrl = "https://0w0.is";
 const userSelectedInstance = "0w0.is";
+const userSelectedInstanceUrl = "https://" + userSelectedInstance;
 const accountsPath = "users";
 const timelineDiv = document.getElementById("timeline");
 let favouriteSvg, repeatSvg, replySvg, elipsisSvg, reactSvg, quoteSvg, visilitySvgs;

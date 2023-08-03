@@ -1,8 +1,8 @@
 import { Status } from "./models/status";
 import { escapeHTML, fetchAsync, fetchJsonAsync, relativeTime } from "./genericFunctions.js";
 
-const userSelectedInstanceUrl = "https://0w0.is";
 const userSelectedInstance = "0w0.is";
+const userSelectedInstanceUrl = "https://" + userSelectedInstance;
 
 const accountsPath = "users";
 
@@ -38,6 +38,7 @@ async function main() {
 			console.log(postReplyTo);
 			const postReplyToDiv = constructPost(postReplyTo, true);
 			postReplyToDiv.className += " post-replied-to";
+
 			postContainer.appendChild(postReplyToDiv);
 		}
 
