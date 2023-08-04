@@ -6,32 +6,37 @@ export function relativeTime(date: Date) {
 		style: "long",
 	});
 
+	const now = Date.now();
+
+	// todo handle future dates? because times can be out of sync or other instances can deliberately return future dates
+
 	// display as eg. "2 hours ago", or "5 minutes ago", depending on which scale works best
-	// if seconds is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60) {
+	// why do something overly complicated when this works well enough
+	// seconds
+	if (date.getTime() > now - 1000 * 60) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000), "second");
 	}
-	// if minutes is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60 * 60) {
+	// minutes
+	else if (date.getTime() > now - 1000 * 60 * 60) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60), "minute");
 	}
-	// if hours is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60 * 60 * 24) {
+	// hours
+	else if (date.getTime() > now - 1000 * 60 * 60 * 24) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60), "hour");
 	}
-	// if days is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60 * 60 * 24 * 7) {
+	// days
+	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 7) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24), "day");
 	}
-	// if weeks is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60 * 60 * 24 * 30) {
+	// weeks
+	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 30) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 7), "week");
 	}
-	// if months is the correct scale
-	if (date.getTime() > Date.now() - 1000 * 60 * 60 * 24 * 365) {
+	// months
+	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 365) {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 30), "month");
 	}
-	// if years is the correct scale
+	// else just assume years
 	else {
 		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 365), "year");
 	}
