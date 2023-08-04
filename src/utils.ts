@@ -61,6 +61,8 @@ export function escapeHTML(string: string) {
 }
 
 export function formatInEmojis(string: string, emojis: any) {
+	// i would have assumed i'd need to check to make sure emojis aren't inserted into preformatted elements or whatever,
+	// but akkoma-fe seems to just do it, and since that's easier i'll just do that too
 	for (const emoji of emojis) {
 		const emojiHtml = escapeHTML(emoji.shortcode);
 		const emojiImg = `<img src="${emoji.url}" height="20px" alt="${emojiHtml}" title="${emojiHtml}" class="emoji" />`;

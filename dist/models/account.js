@@ -1,37 +1,56 @@
 export class Account {
     id;
+    /** username without domain */
     username;
+    /** username with domain when remote, but does not include domain if local ("webfinger account URI") */
     acct;
-    url; // URL
+    /** URL to their remote or local account */
+    url;
+    /** can include custom emoji */
     display_name;
-    note; // HTML (their bio)
-    avatar; // URL
-    avatar_static; // URL
-    header; // URL
-    header_static; // URL
+    /** HTML
+     * (their account bio, can include custom emoji)
+     */
+    note;
+    /** URL of image */
+    avatar;
+    /** URL of image */
+    avatar_static;
+    /** URL of image */
+    header;
+    /** URL of image */
+    header_static;
     locked;
     fields;
     emojis;
     bot;
     group;
     discoverable;
+    /** as in has opted out of being indexed by search engines */
     noindex;
-    moved; // null if account suspended
+    moved;
     suspended;
     limited;
-    created_at; // Date
-    last_status_at; // Date, null if no statuses
+    /** date */
+    created_at;
+    /** date, or null if no (known) statuses */
+    last_status_at;
     statuses_count;
     followers_count;
     following_count;
-    fqn; // fully qualified name, e.g. "user@domain", even when local user
+    /** fully qualified name, e.g. "user@domain", even when local user
+     * (is this akkoma/pleroma specific? not mastodon)
+     */
+    fqn;
     pleroma;
     akkoma;
     source;
 }
 export class Field {
     name;
-    value; // HTML
-    verified_at; // Date
+    /** HTML */
+    value;
+    /** date */
+    verified_at;
 }
 //# sourceMappingURL=account.js.map
