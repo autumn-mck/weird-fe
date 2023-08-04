@@ -59,8 +59,19 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 		const media = document.createElement("div");
 		media.className = "post-media";
 		if (post.media_attachments.length > 0) {
-			post.media_attachments.forEach((attachment) => {
+			let mediaRows: HTMLDivElement[] = [];
+			const itemsInRow = 3;
+			for (let i = 0; i < post.media_attachments.length; i++) {
+				if (i % itemsInRow === 0) {
+					mediaRows.push(document.createElement("div"));
+					mediaRows[mediaRows.length - 1]!.className = "post-media-row";
+				}
+
+				const attachmentContainer = document.createElement("div");
+				attachmentContainer.className = "post-media-item-container";
+				const attachment = post.media_attachments[i]!;
 				let mediaItem: HTMLImageElement | HTMLVideoElement | HTMLAudioElement;
+
 				if (attachment.type === "image") {
 					mediaItem = document.createElement("img");
 				} else if (attachment.type === "video") {
@@ -77,14 +88,19 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 				}
 
 				mediaItem.src = attachment.url;
-				mediaItem.className = "post-media-item";
+				mediaItem.className = "post-media-item post-media-item-contain";
 
 				if (post.sensitive) {
 					mediaItem.className += " post-media-item-sensitive";
 				}
 
-				media.appendChild(mediaItem);
-			});
+				attachmentContainer.appendChild(mediaItem);
+				mediaRows[Math.floor(i / itemsInRow)]!.appendChild(attachmentContainer);
+			}
+
+			for (let i = 0; i < mediaRows.length; i++) {
+				media.appendChild(mediaRows[i]!);
+			}
 		}
 
 		postInnerBody.appendChild(media);
