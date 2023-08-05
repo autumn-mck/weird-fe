@@ -183,33 +183,22 @@
 	border-radius: 8px;
 	border: 1px solid var(--border);
 	max-width: 100%;
-	max-height: 16rem;
+	height: 18rem;
 	overflow: hidden;
 	display: flex;
 	justify-content: center;
-	flex-shrink: 1;
+	min-width: 20%;
 	width: auto;
+	background: var(--background);
 }
 
 .post-media-item {
-}
-
-.post-media-item-contain {
 	width: auto;
-	height: auto;
+	height: 100%;
 	max-width: 100%;
-	max-height: 100%;
 	margin: auto;
 	display: block;
 	object-fit: contain;
-}
-
-.post-media-item-cover {
-	height: 100%;
-	display: inline-block;
-	object-fit: cover;
-	width: auto;
-	margin: 0;
 }
 
 .post-media-item-sensitive {

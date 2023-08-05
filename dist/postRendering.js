@@ -76,7 +76,7 @@ export async function constructPost(post, isRepliedTo = false, isQuoted = false)
                     throw new Error("Unknown media type: " + attachment.type);
                 }
                 mediaItem.src = attachment.url;
-                mediaItem.className = "post-media-item post-media-item-contain";
+                mediaItem.className = "post-media-item";
                 if (post.sensitive) {
                     mediaItem.className += " post-media-item-sensitive";
                 }

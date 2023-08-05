@@ -88,7 +88,7 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 				}
 
 				mediaItem.src = attachment.url;
-				mediaItem.className = "post-media-item post-media-item-contain";
+				mediaItem.className = "post-media-item";
 
 				if (post.sensitive) {
 					mediaItem.className += " post-media-item-sensitive";
