@@ -75,6 +75,37 @@
 	user-select: none;
 }
 
+.post-reply-top {
+	padding-top: 0.5rem;
+}
+
+.post-replies-top {
+	box-sizing: content-box;
+	padding-left: 1rem;
+	background: var(--background-translucent);
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding-top: 0.75rem;
+}
+
+.avatar-line-container {
+	width: var(--post-pfp-size);
+}
+
+.avatar-line-top {
+	background-image: linear-gradient(transparent, var(--border));
+	width: 4px;
+	height: 3rem;
+	margin: auto;
+	margin-bottom: -2.5rem;
+}
+
+.post-replies-top-text {
+	margin-left: 1rem;
+}
+
 .post-replied-to {
 	padding-bottom: 0;
 }

@@ -31,6 +31,22 @@ async function renderPost(post) {
         console.log(postReplyTo);
         const postReplyToDiv = await constructPost(postReplyTo, true);
         postReplyToDiv.className += " post-replied-to";
+        if (postReplyTo.in_reply_to_id) {
+            postReplyToDiv.className += " post-reply-top";
+            const repliesTopDiv = document.createElement("div");
+            repliesTopDiv.className = "post-replies-top";
+            const avatarLineContainer = document.createElement("div");
+            avatarLineContainer.className = "avatar-line-container";
+            const avatarLine = document.createElement("div");
+            avatarLine.className = "avatar-line-top";
+            avatarLineContainer.appendChild(avatarLine);
+            repliesTopDiv.appendChild(avatarLineContainer);
+            const repliesTopText = document.createElement("span");
+            repliesTopText.className = "post-replies-top-text";
+            repliesTopText.innerText = "In reply to " + postReplyTo.in_reply_to_account_id;
+            repliesTopDiv.appendChild(repliesTopText);
+            postContainer.appendChild(repliesTopDiv);
+        }
         postContainer.appendChild(postReplyToDiv);
     }
     postContainer.appendChild(postDiv);
