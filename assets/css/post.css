@@ -6,13 +6,13 @@
 	width: 100%;
 	padding: 1rem 1rem 0 1rem;
 	display: flex;
-	background: var(--post-hover-overlay);
+	background: var(--background-translucent);
 	transition: background 0.2s ease-in-out;
 }
 
 .post:hover {
 	--post-interaction: var(--text);
-	--post-hover-overlay: #24273a99;
+	background: var(--background-post-hover);
 }
 
 .post-content {
@@ -189,7 +189,6 @@
 	justify-content: center;
 	min-width: 20%;
 	width: auto;
-	background: var(--background);
 }
 
 .post-media-item {

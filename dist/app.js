@@ -1,7 +1,7 @@
 import { fetchJsonAsync } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import * as consts from "./consts.js";
-const timelineDiv = document.getElementById("timeline");
+const timelineDiv = document.getElementById("timeline-content");
 /**
  * Main function
  */

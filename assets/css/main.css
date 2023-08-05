@@ -2,7 +2,8 @@
 
 :root {
 	--background: #24273a;
-	--background-translucent: #24273adf;
+	--background-translucent: #24273ac0;
+	--background-post-hover: #24273ae0;
 	--post-hover-overlay: #00000000;
 	--text: #cad3f5;
 	--border: #5b607890;
@@ -16,6 +17,9 @@
 	--favourited: #eed49f;
 
 	--post-pfp-size: 48px;
+	--left-col-width: 30ch;
+
+	--header-border-radius: 12px;
 }
 
 * {
@@ -34,14 +38,14 @@ body::before {
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 	background-image: url("/assets/imgs/default-background.webp");
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
 	z-index: -9;
-	filter: blur(8px) opacity(0.3) saturate(1.6);
+	filter: opacity(0.5) blur(4px) saturate(1.4);
 }
 
 a {
@@ -66,20 +70,65 @@ a {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding-bottom: 1rem;
 	background: var(--background);
 	position: sticky;
 	top: 0;
+	z-index: 2;
+	border-top-left-radius: var(--header-border-radius);
+	border-top-right-radius: var(--header-border-radius);
+	padding: 0.5rem;
+}
+
+/* bit of a hacky workaround to get the header to have no border radius when it's pinned at the top
+https://stackoverflow.com/questions/25308823/targeting-positionsticky-elements-that-are-currently-in-a-stuck-state */
+#timeline-header-bg {
+	height: var(--header-border-radius);
+	background: var(--background);
 	z-index: 1;
+	position: sticky;
+	margin-top: calc(-1 * var(--header-border-radius));
+	top: 0px;
 }
 
 #timeline {
 	display: flex;
 	flex-direction: column;
-	background: var(--background-translucent);
-	backdrop-filter: blur(12px) saturate(1.6);
+	backdrop-filter: blur(10px);
+	min-height: 100%;
 }
 
 p {
 	margin: 0;
+}
+
+#left-col-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: visible;
+	width: var(--left-col-width);
+}
+
+#left-col {
+	background: var(--background);
+	width: var(--left-col-width);
+	position: fixed;
+	border-radius: var(--header-border-radius);
+	padding: 0.5rem;
+}
+
+#right-col-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: visible;
+	width: var(--left-col-width);
+}
+
+#right-col {
+	background: var(--background);
+	width: var(--left-col-width);
+	position: fixed;
+	border-radius: var(--header-border-radius);
+	padding: 0.5rem;
 }
