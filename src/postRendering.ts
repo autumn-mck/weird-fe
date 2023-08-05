@@ -3,7 +3,7 @@ import { getIcon, getIconForVisibility } from "./assets.js";
 import { getAccountDisplayNameHTML, formatInEmojis, relativeTime } from "./utils.js";
 import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
-import { MediaAttatchment } from "./models/mediaAttatchment";
+import { generateProfilePreviewHTML } from "./profileRendering.js";
 
 export async function constructPost(post: Status, isRepliedTo = false, isQuoted = false) {
 	console.log(post);
@@ -38,7 +38,7 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 		postBody.appendChild(rebloggedPostDiv);
 	} else {
 		if (isRepliedTo) {
-			const avatarDiv = createAvatarDiv(post);
+			const avatarDiv = await createAvatarDiv(post);
 			const avatarLine = document.createElement("div");
 			avatarLine.className = "avatar-line";
 			avatarDiv.appendChild(avatarLine);
@@ -240,7 +240,7 @@ async function constructPosterInfo(post: Status, isRepliedTo = false) {
 	postInfoTop.className = "post-info-top";
 
 	if (!isRepliedTo) {
-		const avatarDiv = createAvatarDiv(post);
+		const avatarDiv = await createAvatarDiv(post);
 		postInfoTop.appendChild(avatarDiv);
 	}
 
@@ -277,7 +277,7 @@ async function constructPosterInfo(post: Status, isRepliedTo = false) {
 	acctInstance.className = "poster-instance";
 	postAcct.appendChild(acctInstance);
 
-	if (post.account.akkoma) {
+	if (post.account.akkoma && post.account.akkoma.instance) {
 		const posterInstanceFavicon = document.createElement("img");
 		posterInstanceFavicon.src = post.account.akkoma.instance.favicon;
 		posterInstanceFavicon.width = 16;
@@ -285,6 +285,7 @@ async function constructPosterInfo(post: Status, isRepliedTo = false) {
 		posterInstanceFavicon.className = "post-instance-favicon";
 		let title = post.account.akkoma.instance.name;
 		if (
+			post.account.akkoma.instance.nodeinfo &&
 			post.account.akkoma.instance.nodeinfo.software &&
 			post.account.akkoma.instance.nodeinfo.software.name &&
 			post.account.akkoma.instance.nodeinfo.software.version
@@ -336,7 +337,7 @@ function constructPostPoll(post: Status) {
 	return null;
 }
 
-function createAvatarDiv(post: Status) {
+async function createAvatarDiv(post: Status) {
 	const avatarDiv = document.createElement("div");
 	avatarDiv.className = "post-avatar-div";
 	const avatarImg = document.createElement("img");
@@ -345,5 +346,11 @@ function createAvatarDiv(post: Status) {
 	avatarImg.height = 48;
 	avatarImg.className = "post-avatar";
 	avatarDiv.appendChild(avatarImg);
+
+	const testDiv = document.createElement("div");
+	testDiv.className = "profile-preview-container";
+	testDiv.innerHTML = await generateProfilePreviewHTML(post.account);
+	avatarDiv.appendChild(testDiv);
+
 	return avatarDiv;
 }

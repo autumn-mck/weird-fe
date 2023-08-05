@@ -2,6 +2,7 @@ import { getIcon, getIconForVisibility } from "./assets.js";
 import { getAccountDisplayNameHTML, formatInEmojis, relativeTime } from "./utils.js";
 import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
+import { generateProfilePreviewHTML } from "./profileRendering.js";
 export async function constructPost(post, isRepliedTo = false, isQuoted = false) {
     console.log(post);
     const postDiv = document.createElement("div");
@@ -29,7 +30,7 @@ export async function constructPost(post, isRepliedTo = false, isQuoted = false)
     }
     else {
         if (isRepliedTo) {
-            const avatarDiv = createAvatarDiv(post);
+            const avatarDiv = await createAvatarDiv(post);
             const avatarLine = document.createElement("div");
             avatarLine.className = "avatar-line";
             avatarDiv.appendChild(avatarLine);
@@ -196,7 +197,7 @@ async function constructPosterInfo(post, isRepliedTo = false) {
     const postInfoTop = document.createElement("div");
     postInfoTop.className = "post-info-top";
     if (!isRepliedTo) {
-        const avatarDiv = createAvatarDiv(post);
+        const avatarDiv = await createAvatarDiv(post);
         postInfoTop.appendChild(avatarDiv);
     }
     const posterTextInfo = document.createElement("div");
@@ -224,14 +225,15 @@ async function constructPosterInfo(post, isRepliedTo = false) {
     acctInstance.innerText = "@" + instance;
     acctInstance.className = "poster-instance";
     postAcct.appendChild(acctInstance);
-    if (post.account.akkoma) {
+    if (post.account.akkoma && post.account.akkoma.instance) {
         const posterInstanceFavicon = document.createElement("img");
         posterInstanceFavicon.src = post.account.akkoma.instance.favicon;
         posterInstanceFavicon.width = 16;
         posterInstanceFavicon.height = 16;
         posterInstanceFavicon.className = "post-instance-favicon";
         let title = post.account.akkoma.instance.name;
-        if (post.account.akkoma.instance.nodeinfo.software &&
+        if (post.account.akkoma.instance.nodeinfo &&
+            post.account.akkoma.instance.nodeinfo.software &&
             post.account.akkoma.instance.nodeinfo.software.name &&
             post.account.akkoma.instance.nodeinfo.software.version) {
             title +=
@@ -271,7 +273,7 @@ function constructPostPoll(post) {
     }
     return null;
 }
-function createAvatarDiv(post) {
+async function createAvatarDiv(post) {
     const avatarDiv = document.createElement("div");
     avatarDiv.className = "post-avatar-div";
     const avatarImg = document.createElement("img");
@@ -280,6 +282,10 @@ function createAvatarDiv(post) {
     avatarImg.height = 48;
     avatarImg.className = "post-avatar";
     avatarDiv.appendChild(avatarImg);
+    const testDiv = document.createElement("div");
+    testDiv.className = "profile-preview-container";
+    testDiv.innerHTML = await generateProfilePreviewHTML(post.account);
+    avatarDiv.appendChild(testDiv);
     return avatarDiv;
 }
 //# sourceMappingURL=postRendering.js.map
