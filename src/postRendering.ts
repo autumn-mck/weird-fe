@@ -123,11 +123,6 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 			const quoteDiv = document.createElement("div");
 			quoteDiv.className = "post-quote";
 
-			const quoteIco = document.createElement("div");
-			quoteIco.className = "post-quote-ico";
-			quoteIco.innerHTML = await getIcon(Icon.Quote);
-			quoteDiv.appendChild(quoteIco);
-
 			const quotePostDiv = await constructPost(post.quote, false, true);
 			quotePostDiv.className += " quoted-post";
 			quoteDiv.appendChild(quotePostDiv);

@@ -32,9 +32,24 @@
 	margin-left: auto;
 }
 
+.post-quote {
+	margin-top: 0.5rem;
+}
+
+/* akkoma sends the inline quote text (RE: <Link to quoted post>) in a span with this class */
+.quote-inline {
+	display: none;
+}
+
+/* but on quoted posts that are also quoting something, probably a good idea to show that it is */
+.post-quote .quote-inline {
+	display: inline;
+}
+
 .quoted-post {
 	border: 1px solid var(--border);
 	border-radius: 8px;
+	background: none;
 }
 
 .post-body {
