@@ -11,27 +11,43 @@ const timelineDiv = document.getElementById("timeline-content")!;
 async function main() {
 	document.location;
 
+	let startTime = performance.now();
 	const data: Status[] = await getDataForUrl();
+	let endTime = performance.now();
 
-	timelineDiv.innerHTML = "";
+	console.log("fetched data in " + (endTime - startTime) + "ms");
 
-	data.forEach(async (post: Status) => {
-		const postContainer = document.createElement("div");
-		postContainer.className = "post-container";
-		const postDiv = await constructPost(post);
+	startTime = performance.now();
+	const loopResult = Promise.all(data.map(renderPost));
 
-		if (post.in_reply_to_id) {
-			const postReplyTo = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
-			console.log(postReplyTo);
-			const postReplyToDiv = await constructPost(postReplyTo, true);
-			postReplyToDiv.className += " post-replied-to";
+	loopResult.then((posts) => {
+		timelineDiv.innerHTML = "";
+		posts.forEach((post) => {
+			timelineDiv.appendChild(post);
+		});
 
-			postContainer.appendChild(postReplyToDiv);
-		}
-
-		postContainer.appendChild(postDiv);
-		timelineDiv.appendChild(postContainer);
+		endTime = performance.now();
+		console.log("rendered posts in " + (endTime - startTime) + "ms");
 	});
+}
+
+async function renderPost(post: Status): Promise<HTMLDivElement> {
+	const postContainer = document.createElement("div");
+	postContainer.className = "post-container";
+	const postDiv = await constructPost(post);
+
+	if (post.in_reply_to_id) {
+		const postReplyTo = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
+		console.log(postReplyTo);
+		const postReplyToDiv = await constructPost(postReplyTo, true);
+		postReplyToDiv.className += " post-replied-to";
+
+		postContainer.appendChild(postReplyToDiv);
+	}
+
+	postContainer.appendChild(postDiv);
+
+	return Promise.resolve(postContainer);
 }
 
 async function getDataForUrl() {
