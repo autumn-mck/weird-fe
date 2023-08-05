@@ -160,11 +160,13 @@
 	display: flex;
 	justify-content: center;
 	gap: 0.5rem;
-	width: 100%;
+	width: auto;
+	max-width: 100%;
 }
 
 .post-media-item-container {
 	border-radius: 8px;
+	border: 1px solid var(--border);
 	max-width: 100%;
 	max-height: 16rem;
 	overflow: hidden;
@@ -189,7 +191,10 @@
 
 .post-media-item-cover {
 	height: 100%;
-	display: block;
+	display: inline-block;
+	object-fit: cover;
+	width: auto;
+	margin: 0;
 }
 
 .post-media-item-sensitive {
