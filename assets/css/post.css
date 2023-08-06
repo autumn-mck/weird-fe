@@ -104,8 +104,15 @@
 	margin-bottom: -2.5rem;
 }
 
+.post-replies-top-icon {
+	position: relative;
+	padding-left: -1rem;
+	fill: var(--subtext);
+	transform: scaleX(-1) rotate(90deg);
+}
+
 .post-replies-top-text {
-	margin-left: 1rem;
+	margin-left: 0.25rem;
 }
 
 .post-replied-to {

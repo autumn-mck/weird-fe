@@ -1,7 +1,9 @@
 import { Status } from "./models/status";
 import { fetchJsonAsync } from "./utils.js";
 import { constructPost } from "./postRendering.js";
+import { getIcon } from "./assets.js";
 import * as consts from "./consts.js";
+import { Icon } from "./models/icons.js";
 
 const timelineDiv = document.getElementById("timeline-content")!;
 
@@ -54,10 +56,13 @@ async function renderPost(post: Status): Promise<HTMLDivElement> {
 			avatarLineContainer.appendChild(avatarLine);
 			repliesTopDiv.appendChild(avatarLineContainer);
 
-			const repliesTopText = document.createElement("span");
+			const replyIco = await getIcon(Icon.Reply);
+			replyIco.className = "post-replies-top-icon";
+			repliesTopDiv.appendChild(replyIco);
+
+			const repliesTopText = document.createElement("a");
 			repliesTopText.className = "post-replies-top-text";
-			console.log(postReplyTo.mentions);
-			console.log(postReplyTo.in_reply_to_id);
+			repliesTopText.href = "/" + consts.statusesPath + "/" + postReplyTo.id;
 			const replyTo = postReplyTo.mentions.find((mention) => mention.id === postReplyTo.in_reply_to_account_id);
 			repliesTopText.innerText = "Reply to " + replyTo!.acct;
 			repliesTopDiv.appendChild(repliesTopText);
