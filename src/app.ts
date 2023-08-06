@@ -37,7 +37,7 @@ async function renderPost(post: Status): Promise<HTMLDivElement> {
 	const postDiv = await constructPost(post);
 
 	if (post.in_reply_to_id) {
-		const postReplyTo = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
+		const postReplyTo: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
 		console.log(postReplyTo);
 		const postReplyToDiv = await constructPost(postReplyTo, true);
 		postReplyToDiv.className += " post-replied-to";
@@ -56,7 +56,10 @@ async function renderPost(post: Status): Promise<HTMLDivElement> {
 
 			const repliesTopText = document.createElement("span");
 			repliesTopText.className = "post-replies-top-text";
-			repliesTopText.innerText = "In reply to " + postReplyTo.in_reply_to_account_id;
+			console.log(postReplyTo.mentions);
+			console.log(postReplyTo.in_reply_to_id);
+			const replyTo = postReplyTo.mentions.find((mention) => mention.id === postReplyTo.in_reply_to_account_id);
+			repliesTopText.innerText = "Reply to " + replyTo!.acct;
 			repliesTopDiv.appendChild(repliesTopText);
 			postContainer.appendChild(repliesTopDiv);
 		}

@@ -3,18 +3,21 @@ import { IconSet } from "./models/iconSet.js";
 import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
 
-let icons: { [key: string]: string } = {};
+let icons: { [key: string]: HTMLDivElement } = {};
 
-export async function getIcon(icon: Icon): Promise<string> {
+export async function getIcon(icon: Icon): Promise<HTMLDivElement> {
 	const iconSet = IconSet.MaterialSymbols;
 	if (!icons[icon]) {
-		icons[icon] = await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg");
+		const svg = await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg");
+		const div = document.createElement("div");
+		div.innerHTML = svg;
+		icons[icon] = div;
 	}
 
-	return icons[icon]!;
+	return icons[icon]!.cloneNode(true) as HTMLDivElement;
 }
 
-export async function getIconForVisibility(visibility: Visibility): Promise<string> {
+export async function getIconForVisibility(visibility: Visibility): Promise<HTMLDivElement> {
 	switch (visibility) {
 		case Visibility.Public:
 			return await getIcon(Icon.VisibilityPublic);

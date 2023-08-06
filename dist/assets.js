@@ -6,9 +6,12 @@ let icons = {};
 export async function getIcon(icon) {
     const iconSet = IconSet.MaterialSymbols;
     if (!icons[icon]) {
-        icons[icon] = await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg");
+        const svg = await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg");
+        const div = document.createElement("div");
+        div.innerHTML = svg;
+        icons[icon] = div;
     }
-    return icons[icon];
+    return icons[icon].cloneNode(true);
 }
 export async function getIconForVisibility(visibility) {
     switch (visibility) {

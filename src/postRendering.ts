@@ -3,10 +3,9 @@ import { getIcon, getIconForVisibility } from "./assets.js";
 import { getAccountDisplayNameHTML, formatInEmojis, relativeTime } from "./utils.js";
 import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
-import { generateProfilePreviewHTML } from "./profileRendering.js";
+import { generateProfilePreview } from "./profileRendering.js";
 
 export async function constructPost(post: Status, isRepliedTo = false, isQuoted = false) {
-	console.log(post);
 	const postDiv = document.createElement("div");
 	postDiv.className = "post";
 
@@ -17,9 +16,8 @@ export async function constructPost(post: Status, isRepliedTo = false, isQuoted 
 		const reblogDiv = document.createElement("div");
 		reblogDiv.className = "boosted-by";
 
-		const reblogIco = document.createElement("div");
-		reblogIco.className = "boosted-by-ico";
-		reblogIco.innerHTML = await getIcon(Icon.Boost);
+		const reblogIco = await getIcon(Icon.Boost);
+		reblogIco.className += " boosted-by-ico";
 		reblogDiv.appendChild(reblogIco);
 
 		const rebloggedBy = document.createElement("p");
@@ -198,7 +196,7 @@ async function constructInteractionRow(post: Status) {
 		if (spinny) {
 			itemIconLabel.className += " spinny-interaction-row-item-icon";
 		}
-		itemIconLabel.innerHTML = await getIcon(icon);
+		itemIconLabel.appendChild(await getIcon(icon));
 		item.appendChild(itemIconLabel);
 
 		if (text) {
@@ -315,10 +313,9 @@ async function constructPosterInfo(post: Status, isRepliedTo = false) {
 	postTime.className = "post-time";
 	col2.appendChild(postTime);
 
-	const postVisibility = document.createElement("p");
-	postVisibility.className = "post-visibility";
+	const postVisibility = await getIconForVisibility(post.visibility);
+	postVisibility.className += "post-visibility";
 	postVisibility.title = post.visibility;
-	postVisibility.innerHTML = await getIconForVisibility(post.visibility);
 	col2.appendChild(postVisibility);
 
 	posterTextInfo.appendChild(col2);
@@ -349,7 +346,7 @@ async function createAvatarDiv(post: Status) {
 
 	const testDiv = document.createElement("div");
 	testDiv.className = "profile-preview-container";
-	testDiv.innerHTML = await generateProfilePreviewHTML(post.account);
+	testDiv.appendChild(await generateProfilePreview(post.account));
 	avatarDiv.appendChild(testDiv);
 
 	return avatarDiv;

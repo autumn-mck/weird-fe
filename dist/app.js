@@ -43,7 +43,10 @@ async function renderPost(post) {
             repliesTopDiv.appendChild(avatarLineContainer);
             const repliesTopText = document.createElement("span");
             repliesTopText.className = "post-replies-top-text";
-            repliesTopText.innerText = "In reply to " + postReplyTo.in_reply_to_account_id;
+            console.log(postReplyTo.mentions);
+            console.log(postReplyTo.in_reply_to_id);
+            const replyTo = postReplyTo.mentions.find((mention) => mention.id === postReplyTo.in_reply_to_account_id);
+            repliesTopText.innerText = "Reply to " + replyTo.acct;
             repliesTopDiv.appendChild(repliesTopText);
             postContainer.appendChild(repliesTopDiv);
         }

@@ -2,9 +2,8 @@ import { getIcon, getIconForVisibility } from "./assets.js";
 import { getAccountDisplayNameHTML, formatInEmojis, relativeTime } from "./utils.js";
 import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
-import { generateProfilePreviewHTML } from "./profileRendering.js";
+import { generateProfilePreview } from "./profileRendering.js";
 export async function constructPost(post, isRepliedTo = false, isQuoted = false) {
-    console.log(post);
     const postDiv = document.createElement("div");
     postDiv.className = "post";
     const postBody = document.createElement("div");
@@ -12,9 +11,8 @@ export async function constructPost(post, isRepliedTo = false, isQuoted = false)
     if (post.reblog) {
         const reblogDiv = document.createElement("div");
         reblogDiv.className = "boosted-by";
-        const reblogIco = document.createElement("div");
-        reblogIco.className = "boosted-by-ico";
-        reblogIco.innerHTML = await getIcon(Icon.Boost);
+        const reblogIco = await getIcon(Icon.Boost);
+        reblogIco.className += " boosted-by-ico";
         reblogDiv.appendChild(reblogIco);
         const rebloggedBy = document.createElement("p");
         rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
@@ -167,7 +165,7 @@ async function constructInteractionRow(post) {
         if (spinny) {
             itemIconLabel.className += " spinny-interaction-row-item-icon";
         }
-        itemIconLabel.innerHTML = await getIcon(icon);
+        itemIconLabel.appendChild(await getIcon(icon));
         item.appendChild(itemIconLabel);
         if (text) {
             const itemText = document.createElement("p");
@@ -257,10 +255,9 @@ async function constructPosterInfo(post, isRepliedTo = false) {
     postTime.innerText = relativeTime(postTimeDate);
     postTime.className = "post-time";
     col2.appendChild(postTime);
-    const postVisibility = document.createElement("p");
-    postVisibility.className = "post-visibility";
+    const postVisibility = await getIconForVisibility(post.visibility);
+    postVisibility.className += "post-visibility";
     postVisibility.title = post.visibility;
-    postVisibility.innerHTML = await getIconForVisibility(post.visibility);
     col2.appendChild(postVisibility);
     posterTextInfo.appendChild(col2);
     return postInfoTop;
@@ -284,7 +281,7 @@ async function createAvatarDiv(post) {
     avatarDiv.appendChild(avatarImg);
     const testDiv = document.createElement("div");
     testDiv.className = "profile-preview-container";
-    testDiv.innerHTML = await generateProfilePreviewHTML(post.account);
+    testDiv.appendChild(await generateProfilePreview(post.account));
     avatarDiv.appendChild(testDiv);
     return avatarDiv;
 }
