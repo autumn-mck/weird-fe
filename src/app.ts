@@ -76,7 +76,10 @@ async function constructReplyTopLine(post: Status) {
 
 	const repliesTopText = createElement("a", "post-replies-top-text") as HTMLAnchorElement;
 	repliesTopText.href = "/" + consts.statusesPath + "/" + post.id;
-	const replyTo = post.mentions.find((mention) => mention.id === post.in_reply_to_account_id);
+	let replyTo = post.mentions.find((mention) => mention.id === post.in_reply_to_account_id);
+	// if mention not found, assume they're replying to themselves
+	if (!replyTo) replyTo = post.account;
+
 	repliesTopText.innerText = "Reply to " + replyTo!.acct;
 
 	const repliesTopDiv = document.createElement("div");
