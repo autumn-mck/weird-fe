@@ -62,7 +62,7 @@ a {
 }
 
 #timeline-container {
-	width: 80ch;
+	width: min(80ch, 100%);
 	margin: 0 1rem;
 	overflow: visible;
 }
