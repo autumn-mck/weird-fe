@@ -1,5 +1,5 @@
 import { Status } from "./models/status";
-import { fetchJsonAsync } from "./utils.js";
+import { fetchJsonAsync, createElement } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import * as consts from "./consts.js";
@@ -16,6 +16,8 @@ async function main() {
 	let startTime = performance.now();
 	const data: Status[] = await getDataForUrl();
 	let endTime = performance.now();
+
+	timelineDiv.innerHTML = "constructing posts...";
 
 	console.log("fetched data in " + (endTime - startTime) + "ms");
 
@@ -36,45 +38,54 @@ async function main() {
 async function renderPost(post: Status): Promise<HTMLDivElement> {
 	const postContainer = document.createElement("div");
 	postContainer.className = "post-container";
-	const postDiv = await constructPost(post);
+	const postDivs = await renderPostUpwards(post, 1, false);
 
-	if (post.in_reply_to_id) {
-		const postReplyTo: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
-		console.log(postReplyTo);
-		const postReplyToDiv = await constructPost(postReplyTo, true);
-		postReplyToDiv.className += " post-replied-to";
-
-		if (postReplyTo.in_reply_to_id) {
-			postReplyToDiv.className += " post-reply-top";
-			const repliesTopDiv = document.createElement("div");
-			repliesTopDiv.className = "post-replies-top";
-
-			const avatarLineContainer = document.createElement("div");
-			avatarLineContainer.className = "avatar-line-container";
-			const avatarLine = document.createElement("div");
-			avatarLine.className = "avatar-line-top";
-			avatarLineContainer.appendChild(avatarLine);
-			repliesTopDiv.appendChild(avatarLineContainer);
-
-			const replyIco = await getIcon(Icon.Reply);
-			replyIco.className = "post-replies-top-icon";
-			repliesTopDiv.appendChild(replyIco);
-
-			const repliesTopText = document.createElement("a");
-			repliesTopText.className = "post-replies-top-text";
-			repliesTopText.href = "/" + consts.statusesPath + "/" + postReplyTo.id;
-			const replyTo = postReplyTo.mentions.find((mention) => mention.id === postReplyTo.in_reply_to_account_id);
-			repliesTopText.innerText = "Reply to " + replyTo!.acct;
-			repliesTopDiv.appendChild(repliesTopText);
-			postContainer.appendChild(repliesTopDiv);
-		}
-
-		postContainer.appendChild(postReplyToDiv);
-	}
-
-	postContainer.appendChild(postDiv);
+	postDivs.forEach((postDiv) => {
+		postContainer.appendChild(postDiv);
+	});
 
 	return Promise.resolve(postContainer);
+}
+
+async function renderPostUpwards(post: Status, heightAbove: number, inludeSpaceForAvatarLine = true): Promise<HTMLDivElement[]> {
+	const postDiv = (await constructPost(post, inludeSpaceForAvatarLine)) as HTMLDivElement;
+
+	if (post.in_reply_to_id) {
+		if (heightAbove > 0) {
+			const postAbove: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
+			const posts = await renderPostUpwards(postAbove, heightAbove - 1);
+			posts[posts.length - 1]!.className += " post-replied-to";
+			posts.push(postDiv);
+			return posts;
+		} else {
+			postDiv.className += " post-reply-top";
+			const repliesTopDiv = await constructReplyTopLine(post);
+			return [repliesTopDiv, postDiv];
+		}
+	}
+
+	return [postDiv];
+}
+
+async function constructReplyTopLine(post: Status) {
+	const avatarLineContainer = createElement("div", "avatar-line-container");
+	avatarLineContainer.appendChild(createElement("div", "avatar-line-top"));
+
+	const replyIco = await getIcon(Icon.Reply);
+	replyIco.className = "post-replies-top-icon";
+
+	const repliesTopText = createElement("a", "post-replies-top-text") as HTMLAnchorElement;
+	repliesTopText.href = "/" + consts.statusesPath + "/" + post.id;
+	const replyTo = post.mentions.find((mention) => mention.id === post.in_reply_to_account_id);
+	repliesTopText.innerText = "Reply to " + replyTo!.acct;
+
+	const repliesTopDiv = document.createElement("div");
+	repliesTopDiv.className = "post-replies-top";
+	repliesTopDiv.appendChild(avatarLineContainer);
+	repliesTopDiv.appendChild(replyIco);
+
+	repliesTopDiv.appendChild(repliesTopText);
+	return repliesTopDiv;
 }
 
 async function getDataForUrl() {

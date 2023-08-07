@@ -21,13 +21,13 @@
 	hyphens: auto;
 }
 
-.reblogged-post,
-.reblogged-post:hover {
+.boosted-post,
+.boosted-post:hover {
 	padding: 0;
 	background: none;
 }
 
-.reblogged-time {
+.boosted-time {
 	text-align: right;
 	display: inline-block;
 	width: auto;
@@ -58,7 +58,7 @@
 	width: 100%;
 }
 
-.boosted-by {
+.boosted-by-container {
 	color: var(--repeated);
 	display: flex;
 	padding-bottom: 0.5rem;
@@ -181,7 +181,7 @@
 	color: var(--subtext);
 }
 
-.post-acct {
+.acct {
 	display: flex;
 	align-items: center;
 }
@@ -202,6 +202,16 @@
 
 .emoji {
 	vertical-align: middle;
+	/* stares at https://bugzilla.mozilla.org/show_bug.cgi?id=1310170 */
+	height: 1.375rem;
+	transition: transform 0.1s ease-in-out;
+	max-width: 100%;
+	object-fit: contain;
+}
+
+.emoji:hover {
+	z-index: 1;
+	transform: scale(2);
 }
 
 .post-media {
@@ -280,7 +290,7 @@
 	align-items: center;
 }
 
-.interaction-row-item-icon {
+.interaction-icon {
 	box-sizing: content-box;
 	height: 24px;
 	width: 24px;
@@ -291,33 +301,33 @@
 	cursor: pointer;
 }
 
-.interaction-row-item-icon-favourites {
+.interaction-icon-favourites {
 	transform-origin: 50% 54%;
 }
 
-.interaction-row-item-icon:hover {
+.interaction-icon:hover {
 	fill: var(--accent);
 }
 
-.interaction-row-item-hidden-checkbox {
+.interaction-hidden-checkbox {
 	display: none;
 }
 
-.interaction-row-item-hidden-checkbox:checked + .interaction-row-item-icon-replies,
-.interaction-row-item-hidden-checkbox:checked + .interaction-row-item-icon-quote,
-.interaction-row-item-hidden-checkbox:checked + .interaction-row-item-icon-react {
+.interaction-hidden-checkbox:checked + .interaction-icon-replies,
+.interaction-hidden-checkbox:checked + .interaction-icon-quote,
+.interaction-hidden-checkbox:checked + .interaction-icon-react {
 	fill: var(--interacted);
 }
 
-.interaction-row-item-hidden-checkbox:checked + .interaction-row-item-icon-repeats {
+.interaction-hidden-checkbox:checked + .interaction-icon-repeats {
 	fill: var(--repeated);
 }
 
-.interaction-row-item-hidden-checkbox:checked + .interaction-row-item-icon-favourites {
+.interaction-hidden-checkbox:checked + .interaction-icon-favourites {
 	fill: var(--favourited);
 }
 
-.spinny-interaction-row-item-icon:hover,
-.interaction-row-item-hidden-checkbox:checked + .spinny-interaction-row-item-icon {
+.spinny-interaction-icon:hover,
+.interaction-hidden-checkbox:checked + .spinny-interaction-icon {
 	transform: rotate(360deg);
 }

@@ -1,96 +1,38 @@
 import { getIcon, getIconForVisibility } from "./assets.js";
-import { getAccountDisplayNameHTML, formatInEmojis, relativeTime } from "./utils.js";
-import * as consts from "./consts.js";
+import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, createElement } from "./utils.js";
 import { Icon } from "./models/icons.js";
-import { generateProfilePreview } from "./profileRendering.js";
-export async function constructPost(post, isRepliedTo = false, isQuoted = false) {
-    const postDiv = document.createElement("div");
-    postDiv.className = "post";
-    const postBody = document.createElement("div");
-    postBody.className = "post-body";
+import { generateProfilePreview, constructAcct } from "./profileRendering.js";
+export async function constructPost(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
+    const postDiv = createElement("div", "post");
+    const postBody = createElement("div", "post-body");
     if (post.reblog) {
-        const reblogDiv = document.createElement("div");
-        reblogDiv.className = "boosted-by";
-        const reblogIco = await getIcon(Icon.Boost);
-        reblogIco.className += " boosted-by-ico";
-        reblogDiv.appendChild(reblogIco);
-        const rebloggedBy = document.createElement("p");
-        rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
-        reblogDiv.appendChild(rebloggedBy);
-        const reblogTime = document.createElement("p");
-        reblogTime.textContent = relativeTime(new Date(post.created_at));
-        reblogTime.className = "reblogged-time";
-        reblogDiv.appendChild(reblogTime);
-        postBody.appendChild(reblogDiv);
-        const rebloggedPostDiv = await constructPost(post.reblog);
-        rebloggedPostDiv.className += " reblogged-post";
-        postBody.appendChild(rebloggedPostDiv);
+        const boostInfo = await constructBoostInfo(post);
+        if (boostInfo)
+            postBody.appendChild(boostInfo);
+        const boostedPost = await constructPost(post.reblog);
+        boostedPost.className += " boosted-post";
+        postBody.appendChild(boostedPost);
     }
     else {
-        if (isRepliedTo) {
+        if (inludeSpaceForAvatarLine) {
             const avatarDiv = await createAvatarDiv(post);
-            const avatarLine = document.createElement("div");
-            avatarLine.className = "avatar-line";
+            const avatarLine = createElement("div", "avatar-line");
             avatarDiv.appendChild(avatarLine);
             postDiv.appendChild(avatarDiv);
         }
-        const posterInfo = await constructPosterInfo(post, isRepliedTo);
+        const posterInfo = await constructPosterInfo(post, !inludeSpaceForAvatarLine);
         postBody.appendChild(posterInfo);
-        const postInnerBody = document.createElement("div");
-        postInnerBody.className = "post-inner-body";
-        const content = document.createElement("p");
+        const content = createElement("p", "post-content");
         content.innerHTML = formatInEmojis(post.content, post.emojis);
-        content.className = "post-content";
+        const media = contstructMedia(post.media_attachments, post.sensitive);
+        const postInnerBody = createElement("div", "post-inner-body");
         postInnerBody.appendChild(content);
-        const media = document.createElement("div");
-        media.className = "post-media";
-        if (post.media_attachments.length > 0) {
-            let mediaRows = [];
-            const itemsInRow = 3;
-            for (let i = 0; i < post.media_attachments.length; i++) {
-                if (i % itemsInRow === 0) {
-                    mediaRows.push(document.createElement("div"));
-                    mediaRows[mediaRows.length - 1].className = "post-media-row";
-                }
-                const attachmentContainer = document.createElement("div");
-                attachmentContainer.className = "post-media-item-container";
-                const attachment = post.media_attachments[i];
-                let mediaItem;
-                if (attachment.type === "image") {
-                    mediaItem = document.createElement("img");
-                }
-                else if (attachment.type === "video") {
-                    mediaItem = document.createElement("video");
-                    mediaItem.controls = true;
-                }
-                else if (attachment.type === "gifv") {
-                    mediaItem = document.createElement("video");
-                    mediaItem.controls = true;
-                }
-                else if (attachment.type === "audio") {
-                    mediaItem = document.createElement("audio");
-                    mediaItem.controls = true;
-                }
-                else {
-                    throw new Error("Unknown media type: " + attachment.type);
-                }
-                mediaItem.src = attachment.url;
-                mediaItem.className = "post-media-item";
-                if (post.sensitive) {
-                    mediaItem.className += " post-media-item-sensitive";
-                }
-                attachmentContainer.appendChild(mediaItem);
-                mediaRows[Math.floor(i / itemsInRow)].appendChild(attachmentContainer);
-            }
-            for (let i = 0; i < mediaRows.length; i++) {
-                media.appendChild(mediaRows[i]);
-            }
-        }
-        postInnerBody.appendChild(media);
+        if (media)
+            postInnerBody.appendChild(media);
+        // todo handle properly
         if (post.spoiler_text) {
-            const spoilerText = document.createElement("p");
+            const spoilerText = createElement("p", "post-spoiler-text");
             spoilerText.innerText = post.spoiler_text;
-            spoilerText.className = "post-spoiler-text";
             postBody.appendChild(spoilerText);
             postBody.className += " post-spoiler";
         }
@@ -99,17 +41,16 @@ export async function constructPost(post, isRepliedTo = false, isQuoted = false)
         if (postPoll)
             postBody.appendChild(postPoll);
         if (post.quote) {
-            const quoteDiv = document.createElement("div");
-            quoteDiv.className = "post-quote";
+            const quoteDiv = createElement("div", "post-quote");
             const quotePostDiv = await constructPost(post.quote, false, true);
             quotePostDiv.className += " quoted-post";
             quoteDiv.appendChild(quotePostDiv);
             postBody.appendChild(quoteDiv);
         }
-        const emojiReactionsRow = constructEmojiReactionsRow(post);
-        if (emojiReactionsRow)
-            postBody.appendChild(emojiReactionsRow);
         if (!isQuoted) {
+            const emojiReactionsRow = constructEmojiReactionsRow(post.emoji_reactions);
+            if (emojiReactionsRow)
+                postBody.appendChild(emojiReactionsRow);
             const interactionRow = await constructInteractionRow(post);
             postBody.appendChild(interactionRow);
         }
@@ -117,170 +58,164 @@ export async function constructPost(post, isRepliedTo = false, isQuoted = false)
     postDiv.appendChild(postBody);
     return postDiv;
 }
-function constructEmojiReactionsRow(post) {
-    if (!post.emoji_reactions)
+async function constructBoostInfo(post) {
+    if (!post.reblog)
         return null;
-    const emojiReactionsRow = document.createElement("div");
-    emojiReactionsRow.className = "emoji-reactions-row";
-    const emojiReactions = post.emoji_reactions;
-    emojiReactions.forEach((emojiReaction) => {
-        const emojiReactionDiv = document.createElement("div");
-        emojiReactionDiv.className = "emoji-reaction-div";
-        if (emojiReaction.url) {
-            const emojiReactionImg = document.createElement("img");
-            emojiReactionImg.src = emojiReaction.url;
-            emojiReactionImg.width = 24;
-            emojiReactionImg.height = 24;
-            emojiReactionImg.className = "emoji-reaction-img";
-            emojiReactionImg.title = emojiReaction.name;
-            emojiReactionDiv.appendChild(emojiReactionImg);
+    const boostIco = await getIcon(Icon.Boost);
+    boostIco.className += " boosted-by-ico";
+    const rebloggedBy = createElement("p", "boosted-by");
+    rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
+    const reblogTime = createElement("p", "boosted-time");
+    reblogTime.textContent = relativeTime(new Date(post.created_at));
+    const boostedByDiv = createElement("div", "boosted-by-container");
+    boostedByDiv.appendChild(boostIco);
+    boostedByDiv.appendChild(rebloggedBy);
+    boostedByDiv.appendChild(reblogTime);
+    return boostedByDiv;
+}
+function contstructMedia(attatchments, isSensitive) {
+    if (!attatchments || attatchments.length < 1)
+        return null;
+    let mediaRows = [];
+    const maxItemsInRow = 3;
+    for (let i = 0; i < attatchments.length; i++) {
+        if (i % maxItemsInRow === 0) {
+            mediaRows.push(createElement("div", "post-media-row"));
+        }
+        const attachmentContainer = createElement("div", "post-media-item-container");
+        const attachment = attatchments[i];
+        let mediaItem;
+        // todo handle better
+        if (attachment.type === "image") {
+            mediaItem = document.createElement("img");
+        }
+        else if (attachment.type === "video") {
+            mediaItem = document.createElement("video");
+            mediaItem.controls = true;
+        }
+        else if (attachment.type === "gifv") {
+            mediaItem = document.createElement("video");
+            mediaItem.controls = true;
+        }
+        else if (attachment.type === "audio") {
+            mediaItem = document.createElement("audio");
+            mediaItem.controls = true;
         }
         else {
-            const emojiReactionSpan = document.createElement("span");
-            emojiReactionSpan.innerText = emojiReaction.name;
-            emojiReactionSpan.className = "emoji-reaction-span";
-            emojiReactionDiv.appendChild(emojiReactionSpan);
+            throw new Error("Unknown media type: " + attachment.type);
         }
-        const emojiReactionCount = document.createElement("span");
-        emojiReactionCount.innerText = emojiReaction.count;
-        emojiReactionCount.className = "emoji-reaction-count";
-        emojiReactionDiv.appendChild(emojiReactionCount);
-        emojiReactionsRow.appendChild(emojiReactionDiv);
+        mediaItem.src = attachment.url;
+        mediaItem.className = "post-media-item";
+        if (isSensitive) {
+            mediaItem.className += " post-media-item-sensitive";
+        }
+        attachmentContainer.appendChild(mediaItem);
+        mediaRows[Math.floor(i / maxItemsInRow)].appendChild(attachmentContainer);
+    }
+    const media = createElement("div", "post-media");
+    for (let i = 0; i < mediaRows.length; i++) {
+        media.appendChild(mediaRows[i]);
+    }
+    return media;
+}
+function constructEmojiReactionsRow(emojiReactions) {
+    if (!emojiReactions || emojiReactions.length < 1)
+        return null;
+    const emojiReactionsRow = createElement("div", "emoji-reactions-row");
+    emojiReactions.forEach((emojiReaction) => {
+        emojiReactionsRow.appendChild(constructEmojiReaction(emojiReaction));
     });
     return emojiReactionsRow;
 }
+function constructEmojiReaction(emojiReaction) {
+    let emojiReactionElement;
+    if (emojiReaction.url) {
+        emojiReactionElement = createElement("img", "emoji emoji-reaction-img");
+        emojiReactionElement.src = emojiReaction.url;
+        emojiReactionElement.title = ":" + emojiReaction.name + ":";
+    }
+    else {
+        emojiReactionElement = createElement("span", "emoji emoji-reaction-span");
+        emojiReactionElement.innerText = emojiReaction.name;
+    }
+    const emojiReactionCount = createElement("span", "emoji-reaction-count");
+    emojiReactionCount.innerText = emojiReaction.count;
+    const emojiReactionDiv = createElement("div", "emoji-reaction-div");
+    emojiReactionDiv.appendChild(emojiReactionElement);
+    emojiReactionDiv.appendChild(emojiReactionCount);
+    return emojiReactionDiv;
+}
 async function constructInteractionRow(post) {
     async function constructInteractionItem(icon, className, spinny, text) {
-        const item = document.createElement("div");
-        item.className = "interaction-row-item";
-        const hiddenCheckbox = document.createElement("input");
+        const item = createElement("div", "interaction-row-item");
+        const checkboxId = "interaction-hidden-checkbox-" + className + "-" + post.id;
+        const hiddenCheckbox = createElement("input", "interaction-hidden-checkbox");
         hiddenCheckbox.type = "checkbox";
-        const checkboxId = "interaction-row-item-hidden-checkbox-" + className + "-" + post.id;
         hiddenCheckbox.id = checkboxId;
-        hiddenCheckbox.className = "interaction-row-item-hidden-checkbox";
         item.appendChild(hiddenCheckbox);
-        const itemIconLabel = document.createElement("label");
+        const itemIconLabel = createElement("label", "interaction-icon interaction-icon-" + className);
         itemIconLabel.htmlFor = checkboxId;
-        itemIconLabel.className = "interaction-row-item-icon interaction-row-item-icon-" + className;
         if (spinny) {
-            itemIconLabel.className += " spinny-interaction-row-item-icon";
+            itemIconLabel.className += " spinny-interaction-icon";
         }
         itemIconLabel.appendChild(await getIcon(icon));
         item.appendChild(itemIconLabel);
         if (text) {
-            const itemText = document.createElement("p");
-            itemText.className = "interaction-row-item-text";
+            const itemText = createElement("p", "interaction-text");
             itemText.innerText = text;
             item.appendChild(itemText);
         }
         return item;
     }
-    const interactionRow = document.createElement("div");
-    interactionRow.className = "interaction-bar";
     const replies = await constructInteractionItem(Icon.Reply, "replies", true, String(post.replies_count));
-    interactionRow.appendChild(replies);
     const repeats = await constructInteractionItem(Icon.Boost, "repeats", true, String(post.reblogs_count));
-    interactionRow.appendChild(repeats);
     const quote = await constructInteractionItem(Icon.Quote, "quote");
-    interactionRow.appendChild(quote);
     const favourites = await constructInteractionItem(Icon.Favourite, "favourites", true, String(post.favourites_count));
-    interactionRow.appendChild(favourites);
     const react = await constructInteractionItem(Icon.AddReaction, "react", true);
-    interactionRow.appendChild(react);
     const more = await constructInteractionItem(Icon.More, "more");
-    interactionRow.appendChild(more);
+    const interactionRow = createElement("div", "interaction-bar");
+    interactionRow.append(replies, repeats, quote, favourites, react, more);
     return interactionRow;
 }
-async function constructPosterInfo(post, isRepliedTo = false) {
-    const postInfoTop = document.createElement("div");
-    postInfoTop.className = "post-info-top";
-    if (!isRepliedTo) {
+async function constructPosterInfo(post, shouldIncludeAvatar) {
+    const postInfoTop = createElement("div", "post-info-top");
+    if (shouldIncludeAvatar) {
         const avatarDiv = await createAvatarDiv(post);
         postInfoTop.appendChild(avatarDiv);
     }
-    const posterTextInfo = document.createElement("div");
-    posterTextInfo.className = "poster-text-info";
-    postInfoTop.appendChild(posterTextInfo);
-    const col1 = document.createElement("div");
-    col1.className = "poster-info-column-1";
-    const displayName = document.createElement("p");
-    displayName.className = "post-display-name";
+    const displayName = createElement("p", "post-display-name");
     displayName.innerHTML = getAccountDisplayNameHTML(post.account);
+    const col1 = createElement("div", "poster-info-column-1");
     col1.appendChild(displayName);
-    let [username, instance] = post.account.acct.split("@");
-    const postAcct = document.createElement("a");
-    postAcct.href = `/${consts.accountsPath}/${post.account.id}`;
-    postAcct.className = "post-acct";
-    const acctUsername = document.createElement("span");
-    acctUsername.innerText = "@" + username;
-    acctUsername.className = "poster-username";
-    postAcct.appendChild(acctUsername);
-    // todo: is there any other case where instance wouldn't be defined, other than being on the same instance?
-    if (!instance) {
-        instance = consts.userSelectedInstance;
-    }
-    const acctInstance = document.createElement("span");
-    acctInstance.innerText = "@" + instance;
-    acctInstance.className = "poster-instance";
-    postAcct.appendChild(acctInstance);
-    if (post.account.akkoma && post.account.akkoma.instance) {
-        const posterInstanceFavicon = document.createElement("img");
-        posterInstanceFavicon.src = post.account.akkoma.instance.favicon;
-        posterInstanceFavicon.width = 16;
-        posterInstanceFavicon.height = 16;
-        posterInstanceFavicon.className = "post-instance-favicon";
-        let title = post.account.akkoma.instance.name;
-        if (post.account.akkoma.instance.nodeinfo &&
-            post.account.akkoma.instance.nodeinfo.software &&
-            post.account.akkoma.instance.nodeinfo.software.name &&
-            post.account.akkoma.instance.nodeinfo.software.version) {
-            title +=
-                " (" +
-                    post.account.akkoma.instance.nodeinfo.software.name +
-                    " " +
-                    post.account.akkoma.instance.nodeinfo.software.version +
-                    ")";
-        }
-        posterInstanceFavicon.title = title;
-        posterInstanceFavicon.ariaHidden = "true";
-        postAcct.appendChild(posterInstanceFavicon);
-    }
-    col1.appendChild(postAcct);
-    posterTextInfo.appendChild(col1);
-    const col2 = document.createElement("div");
-    col2.className = "poster-info-column-2";
-    const postTime = document.createElement("p");
-    postTime.className = "post-time";
-    const postTimeDate = new Date(post.created_at);
-    postTime.innerText = relativeTime(postTimeDate);
-    postTime.className = "post-time";
-    col2.appendChild(postTime);
+    col1.appendChild(constructAcct(post.account));
+    const postTime = createElement("p", "post-time");
+    postTime.innerText = relativeTime(new Date(post.created_at));
     const postVisibility = await getIconForVisibility(post.visibility);
-    postVisibility.className += "post-visibility";
+    postVisibility.className += " post-visibility";
     postVisibility.title = post.visibility;
+    const col2 = createElement("div", "poster-info-column-2");
+    col2.appendChild(postTime);
     col2.appendChild(postVisibility);
+    const posterTextInfo = createElement("div", "poster-text-info");
+    posterTextInfo.appendChild(col1);
     posterTextInfo.appendChild(col2);
+    postInfoTop.appendChild(posterTextInfo);
     return postInfoTop;
 }
 function constructPostPoll(post) {
     if (post.poll) {
-        const pollDiv = document.createElement("div");
+        const pollDiv = createElement("div", "post-poll");
         // TODO: polls
         return pollDiv;
     }
     return null;
 }
 async function createAvatarDiv(post) {
-    const avatarDiv = document.createElement("div");
-    avatarDiv.className = "post-avatar-div";
-    const avatarImg = document.createElement("img");
+    const avatarDiv = createElement("div", "post-avatar-div");
+    const avatarImg = createElement("img", "post-avatar");
     avatarImg.src = post.account.avatar;
-    avatarImg.width = 48;
-    avatarImg.height = 48;
-    avatarImg.className = "post-avatar";
     avatarDiv.appendChild(avatarImg);
-    const testDiv = document.createElement("div");
-    testDiv.className = "profile-preview-container";
+    const testDiv = createElement("div", "profile-preview-container");
     testDiv.appendChild(await generateProfilePreview(post.account));
     avatarDiv.appendChild(testDiv);
     return avatarDiv;

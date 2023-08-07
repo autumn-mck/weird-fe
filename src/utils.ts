@@ -70,7 +70,7 @@ export function formatInEmojis(string: string, emojis: any) {
 	// but akkoma-fe seems to just do it, and since that's easier i'll just do that too
 	for (const emoji of emojis) {
 		const emojiHtml = escapeHTML(emoji.shortcode);
-		const emojiImg = `<img src="${emoji.url}" height="20px" alt="${emojiHtml}" title="${emojiHtml}" class="emoji" />`;
+		const emojiImg = `<img src="${emoji.url}" alt="${emojiHtml}" title=":${emojiHtml}:" class="emoji" />`;
 		string = string.replaceAll(`:${emojiHtml}:`, emojiImg);
 	}
 	return string;
@@ -79,4 +79,11 @@ export function formatInEmojis(string: string, emojis: any) {
 export function getAccountDisplayNameHTML(account: Account) {
 	let displayNameHtml = escapeHTML(account.display_name);
 	return formatInEmojis(displayNameHtml, account.emojis);
+}
+
+export function createElement(elementType: string, classes: string) {
+	const element = document.createElement(elementType);
+	element.className = classes;
+
+	return element;
 }
