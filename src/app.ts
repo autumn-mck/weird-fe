@@ -4,6 +4,7 @@ import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
+import { Context } from "./models/context";
 
 const timelineDiv = document.getElementById("timeline-content")!;
 
@@ -11,22 +12,17 @@ const timelineDiv = document.getElementById("timeline-content")!;
  * Main function
  */
 async function main() {
-	document.location;
+	doStuffForUrl();
+}
 
-	let startTime = performance.now();
-	const data: Status[] = await getDataForUrl();
-	let endTime = performance.now();
-
+function renderTimeline(statuses: Status[]) {
 	timelineDiv.innerHTML = "constructing posts...";
 
-	console.log("fetched data in " + (endTime - startTime) + "ms");
-
-	startTime = performance.now();
 	console.log("fetching posts being replied to...");
 
-	startTime = performance.now();
-	Promise.all(data.map((post) => fetchPostsUpwards(post))).then((posts) => {
-		endTime = performance.now();
+	let startTime = performance.now();
+	Promise.all(statuses.map((post) => fetchPostsUpwards(post))).then((posts) => {
+		let endTime = performance.now();
 		console.log("fetched posts replied to in " + (endTime - startTime) + "ms");
 
 		startTime = performance.now();
@@ -101,17 +97,28 @@ async function constructReplyTopLine(post: Status) {
 	return repliesTopDiv;
 }
 
-async function getDataForUrl() {
+async function doStuffForUrl() {
 	let data;
 	const url = new URL(document.location.href);
 	const path = url.pathname.split("/");
 
 	if (path[1] === consts.accountsPath) {
-		const account = path[2];
+		// todo: be more careful with this? currently too tired to check if this could possibly be a security issue
+		// (writing code while being too tired to check its security risks is a flawless idea)
+		const accountId = path[2];
+		// todo also display account information
 		//data = await fetchJsonAsync(instance + "/api/v1/accounts/" + account);
-		data = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/accounts/" + account + "/statuses");
+		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/accounts/" + accountId + "/statuses");
+		renderTimeline(data);
+	} else if (path[1] === consts.statusesPath) {
+		const statusId = path[2];
+		let data: Context = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId + "/context");
+		let statuses = data.ancestors.concat(data.descendants);
+		timelineDiv.innerHTML = "";
+		timelineDiv.appendChild(await renderPostGroup(statuses));
 	} else {
-		data = fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
+		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
+		renderTimeline(data);
 	}
 
 	return data;
