@@ -15,42 +15,46 @@ async function main() {
     timelineDiv.innerHTML = "constructing posts...";
     console.log("fetched data in " + (endTime - startTime) + "ms");
     startTime = performance.now();
-    const loopResult = Promise.all(data.map(renderPost));
-    loopResult.then((posts) => {
-        timelineDiv.innerHTML = "";
-        posts.forEach((post) => {
-            timelineDiv.appendChild(post);
-        });
+    console.log("fetching posts being replied to...");
+    startTime = performance.now();
+    Promise.all(data.map((post) => fetchPostsUpwards(post))).then((posts) => {
         endTime = performance.now();
-        console.log("rendered posts in " + (endTime - startTime) + "ms");
+        console.log("fetched posts replied to in " + (endTime - startTime) + "ms");
+        startTime = performance.now();
+        console.log("rendering posts...");
+        Promise.all(posts.map(renderPostGroup)).then((postDivs) => {
+            endTime = performance.now();
+            console.log("rendered posts in " + (endTime - startTime) + "ms");
+            timelineDiv.innerHTML = "";
+            postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
+        });
     });
 }
-async function renderPost(post) {
-    const postContainer = document.createElement("div");
-    postContainer.className = "post-container";
-    const postDivs = await renderPostUpwards(post, 1, false);
-    postDivs.forEach((postDiv) => {
-        postContainer.appendChild(postDiv);
-    });
-    return Promise.resolve(postContainer);
-}
-async function renderPostUpwards(post, heightAbove, inludeSpaceForAvatarLine = true) {
-    const postDiv = (await constructPost(post, inludeSpaceForAvatarLine));
+async function fetchPostsUpwards(post, heightAbove = 1) {
+    const posts = [];
     if (post.in_reply_to_id) {
         if (heightAbove > 0) {
             const postAbove = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
-            const posts = await renderPostUpwards(postAbove, heightAbove - 1);
-            posts[posts.length - 1].className += " post-replied-to";
-            posts.push(postDiv);
-            return posts;
-        }
-        else {
-            postDiv.className += " post-reply-top";
-            const repliesTopDiv = await constructReplyTopLine(post);
-            return [repliesTopDiv, postDiv];
+            const postsAbove = await fetchPostsUpwards(postAbove, heightAbove - 1);
+            posts.push(...postsAbove);
         }
     }
-    return [postDiv];
+    posts.push(post);
+    return posts;
+}
+async function renderPostGroup(posts) {
+    const postContainer = createElement("div", "post-container");
+    for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
+        const postDiv = await constructPost(post, i !== posts.length - 1);
+        if (i === 0 && post.in_reply_to_id) {
+            postDiv.className += " post-reply-top";
+            const repliesTopDiv = await constructReplyTopLine(post);
+            postContainer.appendChild(repliesTopDiv);
+        }
+        postContainer.appendChild(postDiv);
+    }
+    return Promise.resolve(postContainer);
 }
 async function constructReplyTopLine(post) {
     const avatarLineContainer = createElement("div", "avatar-line-container");
