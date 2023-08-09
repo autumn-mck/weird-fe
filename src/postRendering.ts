@@ -4,6 +4,7 @@ import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, createElement 
 import { Icon } from "./models/icons.js";
 import { generateProfilePreview, constructAcct } from "./profileRendering.js";
 import { MediaAttatchment } from "./models/mediaAttatchment";
+import * as consts from "./consts.js";
 
 export async function constructPost(post: Status, inludeSpaceForAvatarLine = false, isQuoted = false) {
 	const postDiv = createElement("div", "post");
@@ -227,8 +228,9 @@ async function constructPosterInfo(post: Status, shouldIncludeAvatar: boolean) {
 	col1.appendChild(displayName);
 	col1.appendChild(constructAcct(post.account));
 
-	const postTime = createElement("p", "post-time");
+	const postTime = createElement("a", "post-time") as HTMLAnchorElement;
 	postTime.innerText = relativeTime(new Date(post.created_at));
+	postTime.href = "/" + consts.statusesPath + "/" + post.id;
 
 	const postVisibility = await getIconForVisibility(post.visibility);
 	postVisibility.className += " post-visibility";
