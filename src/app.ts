@@ -1,4 +1,4 @@
-import { Status } from "./models/status";
+import { Status, StatusTreeNode } from "./models/status";
 import { fetchJsonAsync, createElement } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
@@ -73,6 +73,23 @@ async function renderPostGroup(posts: Status[]): Promise<HTMLDivElement> {
 	return Promise.resolve(postContainer);
 }
 
+async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
+	const postDiv = await constructPost(tree, tree.children && tree.children.length > 0);
+
+	if (!tree.children || tree.children.length === 0) return [postDiv];
+	else if (tree.children.length === 1) {
+		return [postDiv, ...(await renderPostTree(tree.children[0]!))];
+	} else {
+		let childrenContainer = createElement("div", "post-children-container");
+		for (let i = 0; i < tree.children.length; i++) {
+			let children = await renderPostTree(tree.children[i]!);
+			children.forEach((child) => childrenContainer.appendChild(child));
+		}
+
+		return [postDiv, childrenContainer];
+	}
+}
+
 async function constructReplyTopLine(post: Status) {
 	const avatarLineContainer = createElement("div", "avatar-line-container");
 	avatarLineContainer.appendChild(createElement("div", "avatar-line-top"));
@@ -98,7 +115,6 @@ async function constructReplyTopLine(post: Status) {
 }
 
 async function doStuffForUrl() {
-	let data;
 	const url = new URL(document.location.href);
 	const path = url.pathname.split("/");
 
@@ -112,16 +128,40 @@ async function doStuffForUrl() {
 		renderTimeline(data);
 	} else if (path[1] === consts.statusesPath) {
 		const statusId = path[2];
-		let data: Context = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId + "/context");
-		let statuses = data.ancestors.concat(data.descendants);
+		let status: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId);
+		let context: Context = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId + "/context");
+		console.log(context);
+
+		let statuses = context.ancestors;
+		statuses.push(status);
+		statuses.push(...context.descendants);
+
+		let tree = buildPostTree(statuses);
+		console.log(tree);
+
 		timelineDiv.innerHTML = "";
-		timelineDiv.appendChild(await renderPostGroup(statuses));
+		let postDivs = await renderPostTree(tree[0]!);
+		postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
 	} else {
 		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
 		renderTimeline(data);
 	}
+}
 
-	return data;
+function buildPostTree(statuses: Status[]): StatusTreeNode[] {
+	let tree = [] as StatusTreeNode[];
+	for (let i = 0; i < statuses.length; i++) {
+		if (statuses[i]!.in_reply_to_id) {
+			let parent = statuses.filter((status) => status.id === statuses[i]!.in_reply_to_id).pop() as StatusTreeNode;
+			if (!parent.children) {
+				parent.children = [];
+			}
+			parent.children.push(statuses[i]! as StatusTreeNode);
+		} else {
+			tree.push(statuses[i]! as StatusTreeNode);
+		}
+	}
+	return tree;
 }
 
 // Run the main function

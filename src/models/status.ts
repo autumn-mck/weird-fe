@@ -68,3 +68,5 @@ export class StatusTag {
 	name!: string;
 	url!: string;
 }
+
+export type StatusTreeNode = Status & { children: StatusTreeNode[] };
