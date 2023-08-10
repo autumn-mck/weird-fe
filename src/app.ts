@@ -83,7 +83,11 @@ async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 		let childrenContainer = createElement("div", "post-children-container");
 		for (let i = 0; i < tree.children.length; i++) {
 			let children = await renderPostTree(tree.children[i]!);
-			children.forEach((child) => childrenContainer.appendChild(child));
+			let childrenDiv: HTMLElement = createElement("div", "post-child-container");
+			children.forEach((child) => {
+				childrenDiv.appendChild(child);
+			});
+			childrenContainer.appendChild(childrenDiv);
 		}
 
 		return [postDiv, childrenContainer];

@@ -96,6 +96,7 @@ https://stackoverflow.com/questions/25308823/targeting-positionsticky-elements-t
 	flex-direction: column;
 	backdrop-filter: blur(10px);
 	min-height: 100%;
+	background: var(--background-translucent);
 }
 
 p {
