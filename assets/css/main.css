@@ -24,6 +24,10 @@
 	--header-border-radius: 12px;
 }
 
+html {
+	scroll-padding-top: 3rem;
+}
+
 * {
 	box-sizing: border-box;
 	font-family: sans-serif;

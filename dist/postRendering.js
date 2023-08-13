@@ -5,6 +5,7 @@ import { generateProfilePreview, constructAcct } from "./profileRendering.js";
 import * as consts from "./consts.js";
 export async function constructPost(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
     const postDiv = createElement("div", "post");
+    postDiv.id = "post-" + post.id;
     const postBody = createElement("div", "post-body");
     if (post.reblog) {
         const boostInfo = await constructBoostInfo(post);

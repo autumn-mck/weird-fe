@@ -125,6 +125,7 @@ async function doStuffForUrl() {
         loadingPostsDiv.style.display = "none";
         let postDivs = await renderPostTree(tree[0]);
         postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
+        document.getElementById("post-" + statusId).scrollIntoView();
     }
     else {
         let data = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
