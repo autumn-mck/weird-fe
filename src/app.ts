@@ -142,21 +142,30 @@ async function doStuffForUrl() {
 		renderTimeline(data);
 	} else if (path[1] === consts.statusesPath) {
 		const statusId = path[2];
+		let startTime = performance.now();
 		let status: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId);
 		let context: Context = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId + "/context");
+		let endTime = performance.now();
+		console.log("fetched post and context in " + (endTime - startTime) + "ms");
 		console.log(context);
 
+		startTime = performance.now();
 		let statuses = context.ancestors;
 		statuses.push(status);
 		statuses.push(...context.descendants);
 
 		let tree = buildPostTree(statuses);
 		console.log(tree);
+		endTime = performance.now();
+		console.log("built post tree in " + (endTime - startTime) + "ms");
 
+		startTime = performance.now();
 		timelineDiv.innerHTML = "";
 		loadingPostsDiv.style.display = "none";
 		let postDivs = await renderPostTree(tree[0]!);
 		postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
+		endTime = performance.now();
+		console.log("rendered posts in " + (endTime - startTime) + "ms");
 
 		document.getElementById("post-" + statusId)!.scrollIntoView();
 	} else {
