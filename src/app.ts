@@ -161,13 +161,13 @@ async function doStuffForUrl() {
 
 		startTime = performance.now();
 		timelineDiv.innerHTML = "";
-		loadingPostsDiv.style.display = "none";
 		let postDivs = await renderPostTree(tree[0]!);
 		postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
 		endTime = performance.now();
 		console.log("rendered posts in " + (endTime - startTime) + "ms");
 
-		document.getElementById("post-" + statusId)!.scrollIntoView();
+		if (status.in_reply_to_id !== null) document.getElementById("post-" + statusId)!.scrollIntoView();
+		loadingPostsDiv.style.display = "none";
 	} else {
 		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
 		renderTimeline(data);
