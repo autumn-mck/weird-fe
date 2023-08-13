@@ -7,6 +7,7 @@ import { Icon } from "./models/icons.js";
 import { Context } from "./models/context";
 
 const timelineDiv = document.getElementById("timeline-content")!;
+const loadingPostsDiv = document.getElementById("loading-posts")!;
 
 /**
  * Main function
@@ -87,7 +88,16 @@ async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 			children.forEach((child) => {
 				childrenDiv.appendChild(child);
 			});
-			childrenContainer.appendChild(childrenDiv);
+
+			let lineContainer = createElement("div", "post-child-line-container");
+			lineContainer.appendChild(createElement("div", "post-child-line-connector"));
+			lineContainer.appendChild(createElement("div", "post-child-line"));
+
+			let postChildOuter = createElement("div", "post-child-container-outer");
+			postChildOuter.appendChild(lineContainer);
+			postChildOuter.appendChild(childrenDiv);
+
+			childrenContainer.appendChild(postChildOuter);
 		}
 
 		return [postDiv, childrenContainer];
@@ -144,6 +154,7 @@ async function doStuffForUrl() {
 		console.log(tree);
 
 		timelineDiv.innerHTML = "";
+		loadingPostsDiv.style.display = "none";
 		let postDivs = await renderPostTree(tree[0]!);
 		postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
 	} else {
