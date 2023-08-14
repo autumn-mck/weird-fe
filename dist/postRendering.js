@@ -104,6 +104,7 @@ function contstructMedia(attatchments, isSensitive) {
             mediaItem.controls = true;
         }
         else {
+            console.log(attachment);
             throw new Error("Unknown media type: " + attachment.type);
         }
         mediaItem.src = attachment.url;

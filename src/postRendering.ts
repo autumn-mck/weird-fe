@@ -120,6 +120,8 @@ function contstructMedia(attatchments: MediaAttatchment[], isSensitive: boolean)
 			mediaItem = document.createElement("audio");
 			mediaItem.controls = true;
 		} else {
+			console.log(attachment);
+
 			throw new Error("Unknown media type: " + attachment.type);
 		}
 
