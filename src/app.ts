@@ -1,5 +1,5 @@
 import { Status, StatusTreeNode } from "./models/status";
-import { fetchJsonAsync, createElement } from "./utils.js";
+import { fetchJsonAsync, createElement, putChildrenInContainer } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import * as consts from "./consts.js";
@@ -19,88 +19,76 @@ async function main() {
 function renderTimeline(statuses: Status[]) {
 	timelineDiv.innerHTML = "constructing posts...";
 
-	console.log("fetching posts being replied to...");
-
-	let startTime = performance.now();
-	Promise.all(statuses.map((post) => fetchPostsUpwards(post))).then((posts) => {
-		let endTime = performance.now();
-		console.log("fetched posts replied to in " + (endTime - startTime) + "ms");
-
-		startTime = performance.now();
-		console.log("rendering posts...");
-
-		Promise.all(posts.map(renderPostGroup)).then((postDivs) => {
-			endTime = performance.now();
-			console.log("rendered posts in " + (endTime - startTime) + "ms");
-
+	Promise.all(statuses.map(fetchPostsUpwards))
+		.then((posts) => {
+			return Promise.all(posts.map(renderPostGroup));
+		})
+		.then((postDivs) => {
 			timelineDiv.innerHTML = "";
 			postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
 		});
-	});
 }
 
 async function fetchPostsUpwards(post: Status, heightAbove: number = 1): Promise<Status[]> {
-	const posts: Status[] = [];
+	if (post.in_reply_to_id && heightAbove > 0) {
+		const postAbove: Status = await fetchPostById(post.in_reply_to_id);
+		const posts = await fetchPostsUpwards(postAbove, heightAbove - 1);
+		posts.push(post);
+		return posts;
+	} else return [post];
+}
 
-	if (post.in_reply_to_id) {
-		if (heightAbove > 0) {
-			const postAbove: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + post.in_reply_to_id);
-			const postsAbove = await fetchPostsUpwards(postAbove, heightAbove - 1);
-			posts.push(...postsAbove);
-		}
-	}
+async function fetchPostById(id: string): Promise<Status> {
+	return await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + id);
+}
 
-	posts.push(post);
-	return posts;
+async function fetchContextByPostId(id: string): Promise<Context> {
+	return await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + id + "/context");
 }
 
 async function renderPostGroup(posts: Status[]): Promise<HTMLDivElement> {
 	const postContainer = createElement("div", "post-container") as HTMLDivElement;
 
-	for (let i = 0; i < posts.length; i++) {
-		const post = posts[i]!;
-
-		const postDiv = await constructPost(post, i !== posts.length - 1);
-
-		if (i === 0 && post.in_reply_to_id) {
-			postDiv.className += " post-reply-top";
-			const repliesTopDiv = await constructReplyTopLine(post);
-			postContainer.appendChild(repliesTopDiv);
-		}
-
-		postContainer.appendChild(postDiv);
+	if (posts[0]!.in_reply_to_id) {
+		const repliesTopDiv = await constructReplyTopLine(posts[0]!);
+		postContainer.appendChild(repliesTopDiv);
 	}
 
-	return Promise.resolve(postContainer);
+	return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then((postDivs) => {
+		postDivs.forEach((postDiv) => {
+			postContainer.appendChild(postDiv);
+		});
+		return Promise.resolve(postContainer);
+	});
 }
 
 async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 	const postDiv = await constructPost(tree, tree.children && tree.children.length > 0);
 
-	if (!tree.children || tree.children.length === 0) return [postDiv];
-	else if (tree.children.length === 1) {
+	if (!tree.children || tree.children.length === 0) {
+		return [postDiv];
+	} else if (tree.children.length === 1) {
 		return [postDiv, ...(await renderPostTree(tree.children[0]!))];
 	} else {
-		let childrenContainer = createElement("div", "post-children-container");
-		for (let i = 0; i < tree.children.length; i++) {
-			let children = await renderPostTree(tree.children[i]!);
-			let childrenDiv: HTMLElement = createElement("div", "post-child-container");
-			children.forEach((child) => {
-				childrenDiv.appendChild(child);
+		return Promise.all(tree.children.map(renderPostTree))
+			.then((children) => children.map((child) => putChildrenInContainer(child, "post-child-container")))
+			.then((childrenDivs) => childrenDivs.map(putChildrenInContainerWithLine))
+			.then((childrenDivs) => putChildrenInContainer(childrenDivs, "post-children-container"))
+			.then((childrenContainer) => {
+				return [postDiv, childrenContainer];
 			});
+	}
 
-			let lineContainer = createElement("div", "post-child-line-container");
-			lineContainer.appendChild(createElement("div", "post-child-line-connector"));
-			lineContainer.appendChild(createElement("div", "post-child-line"));
+	function putChildrenInContainerWithLine(childrenDiv: HTMLElement) {
+		let lineContainer = createElement("div", "post-child-line-container");
+		lineContainer.appendChild(createElement("div", "post-child-line-connector"));
+		lineContainer.appendChild(createElement("div", "post-child-line"));
 
-			let postChildOuter = createElement("div", "post-child-container-outer");
-			postChildOuter.appendChild(lineContainer);
-			postChildOuter.appendChild(childrenDiv);
+		let postChildOuter = createElement("div", "post-child-container-outer");
+		postChildOuter.appendChild(lineContainer);
+		postChildOuter.appendChild(childrenDiv);
 
-			childrenContainer.appendChild(postChildOuter);
-		}
-
-		return [postDiv, childrenContainer];
+		return postChildOuter;
 	}
 }
 
@@ -112,7 +100,7 @@ async function constructReplyTopLine(post: Status) {
 	replyIco.className = "post-replies-top-icon";
 
 	const repliesTopText = createElement("a", "post-replies-top-text") as HTMLAnchorElement;
-	repliesTopText.href = "/" + consts.statusesPath + "/" + post.id;
+	repliesTopText.href = "/" + consts.statusesPath + "/" + post.in_reply_to_id;
 	let replyTo = post.mentions.find((mention) => mention.id === post.in_reply_to_account_id);
 	// if mention not found, assume they're replying to themselves
 	if (!replyTo) replyTo = post.account;
@@ -123,7 +111,6 @@ async function constructReplyTopLine(post: Status) {
 	repliesTopDiv.className = "post-replies-top";
 	repliesTopDiv.appendChild(avatarLineContainer);
 	repliesTopDiv.appendChild(replyIco);
-
 	repliesTopDiv.appendChild(repliesTopText);
 	return repliesTopDiv;
 }
@@ -132,45 +119,36 @@ async function doStuffForUrl() {
 	const url = new URL(document.location.href);
 	const path = url.pathname.split("/");
 
-	if (path[1] === consts.accountsPath) {
-		// todo: be more careful with this? currently too tired to check if this could possibly be a security issue
-		// (writing code while being too tired to check its security risks is a flawless idea)
-		const accountId = path[2];
-		// todo also display account information
-		//data = await fetchJsonAsync(instance + "/api/v1/accounts/" + account);
-		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/accounts/" + accountId + "/statuses");
-		renderTimeline(data);
-	} else if (path[1] === consts.statusesPath) {
-		const statusId = path[2];
-		let startTime = performance.now();
-		let status: Status = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId);
-		let context: Context = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + statusId + "/context");
-		let endTime = performance.now();
-		console.log("fetched post and context in " + (endTime - startTime) + "ms");
-		console.log(context);
+	switch (path[1]) {
+		case consts.accountsPath:
+			const accountId = path[2];
+			// todo also display account information, also filter posts n stuff
+			let accountStatuses: Status[] = await fetchJsonAsync(
+				consts.userSelectedInstanceUrl + "/api/v1/accounts/" + accountId + "/statuses"
+			);
+			renderTimeline(accountStatuses);
+			break;
+		case consts.statusesPath:
+			const statusId = path[2]!;
 
-		startTime = performance.now();
-		let statuses = context.ancestors;
-		statuses.push(status);
-		statuses.push(...context.descendants);
+			Promise.all([fetchPostById(statusId), fetchContextByPostId(statusId)])
+				.then(([status, context]) => [status, [...context.ancestors, status, ...context.descendants]])
+				.then(([status, flatStatuses]) => [status, buildPostTree(flatStatuses as Status[])])
+				.then(async ([status, tree]) => [status, await renderPostTree((tree as StatusTreeNode[])[0]!)])
+				.then(async ([status, postDivs]) => {
+					(postDivs as HTMLElement[]).forEach((postDiv) => timelineDiv.appendChild(postDiv));
+					return status as Status;
+				})
+				.then((status) => {
+					if (status.in_reply_to_id !== null) document.getElementById("post-" + status.id)!.scrollIntoView();
+					loadingPostsDiv.style.display = "none";
+				});
 
-		let tree = buildPostTree(statuses);
-		console.log(tree);
-		endTime = performance.now();
-		console.log("built post tree in " + (endTime - startTime) + "ms");
-
-		startTime = performance.now();
-		timelineDiv.innerHTML = "";
-		let postDivs = await renderPostTree(tree[0]!);
-		postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
-		endTime = performance.now();
-		console.log("rendered posts in " + (endTime - startTime) + "ms");
-
-		if (status.in_reply_to_id !== null) document.getElementById("post-" + statusId)!.scrollIntoView();
-		loadingPostsDiv.style.display = "none";
-	} else {
-		let data: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
-		renderTimeline(data);
+			break;
+		default:
+			let timelinePosts: Status[] = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
+			renderTimeline(timelinePosts);
+			break;
 	}
 }
 

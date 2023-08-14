@@ -75,4 +75,9 @@ export function createElement(elementType, classes) {
     element.className = classes;
     return element;
 }
+export function putChildrenInContainer(children, containerClass) {
+    let childrenContainer = createElement("div", containerClass);
+    childrenContainer.append(...children);
+    return childrenContainer;
+}
 //# sourceMappingURL=utils.js.map

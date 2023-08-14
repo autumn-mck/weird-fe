@@ -87,3 +87,9 @@ export function createElement(elementType: string, classes: string) {
 
 	return element;
 }
+
+export function putChildrenInContainer(children: HTMLElement[], containerClass: string): HTMLElement {
+	let childrenContainer: HTMLElement = createElement("div", containerClass);
+	childrenContainer.append(...children);
+	return childrenContainer;
+}
