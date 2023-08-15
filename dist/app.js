@@ -1,8 +1,9 @@
-import { fetchJsonAsync, createElement, putChildrenInContainer } from "./utils.js";
+import { createElement, putChildrenInCurryContainer, putChildInCurryContainer, putChildrenInNewContainer } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
-import * as consts from "./consts.js";
 import { Icon } from "./models/icons.js";
+import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
+import * as consts from "./consts.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
 /**
@@ -11,45 +12,63 @@ const loadingPostsDiv = document.getElementById("loading-posts");
 async function main() {
     doStuffForUrl();
 }
+async function doStuffForUrl() {
+    const url = new URL(document.location.href);
+    const path = url.pathname.split("/");
+    switch (path[1]) {
+        case consts.accountsPath:
+            const accountId = path[2];
+            // todo also display account information, also filter posts n stuff
+            fetchUserStatuses(accountId).then(renderTimeline);
+            break;
+        case consts.statusesPath:
+            const statusId = path[2];
+            let [status, context] = await fetchStatusAndContext(statusId);
+            let postTrees = await putStatusInContext(status, context).then(buildPostTree);
+            // todo handle quotes
+            renderPostTree(postTrees[0])
+                .then(putChildrenInCurryContainer(timelineDiv))
+                .then(() => {
+                scrollToIfReply(status);
+                loadingPostsDiv.style.display = "none";
+            });
+            break;
+        default:
+            fetchFederatedTimeline().then(renderTimeline);
+            break;
+    }
+}
+function scrollToIfReply(status) {
+    if (status.in_reply_to_id)
+        scrollToElementWithId("post-" + status.id);
+}
+function scrollToElementWithId(id) {
+    document.getElementById(id).scrollIntoView();
+}
+async function putStatusInContext(status, context) {
+    return [...context.ancestors, status, ...context.descendants];
+}
 function renderTimeline(statuses) {
-    timelineDiv.innerHTML = "constructing posts...";
+    timelineDiv.innerHTML = "";
     Promise.all(statuses.map(fetchPostsUpwards))
-        .then((posts) => {
-        return Promise.all(posts.map(renderPostGroup));
-    })
-        .then((postDivs) => {
-        timelineDiv.innerHTML = "";
-        postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
-    });
+        .then((posts) => Promise.all(posts.map(renderPostGroup)))
+        .then(putChildrenInCurryContainer(timelineDiv));
 }
 async function fetchPostsUpwards(post, heightAbove = 1) {
     if (post.in_reply_to_id && heightAbove > 0) {
-        const postAbove = await fetchPostById(post.in_reply_to_id);
-        const posts = await fetchPostsUpwards(postAbove, heightAbove - 1);
-        posts.push(post);
-        return posts;
+        return fetchStatusById(post.in_reply_to_id)
+            .then((fetchedPost) => fetchPostsUpwards(fetchedPost, heightAbove - 1))
+            .then((posts) => [...posts, post]);
     }
     else
         return [post];
 }
-async function fetchPostById(id) {
-    return await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + id);
-}
-async function fetchContextByPostId(id) {
-    return await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/statuses/" + id + "/context");
-}
 async function renderPostGroup(posts) {
     const postContainer = createElement("div", "post-container");
     if (posts[0].in_reply_to_id) {
-        const repliesTopDiv = await constructReplyTopLine(posts[0]);
-        postContainer.appendChild(repliesTopDiv);
+        constructReplyTopLine(posts[0]).then(putChildInCurryContainer(postContainer));
     }
-    return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then((postDivs) => {
-        postDivs.forEach((postDiv) => {
-            postContainer.appendChild(postDiv);
-        });
-        return Promise.resolve(postContainer);
-    });
+    return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then(putChildrenInCurryContainer(postContainer));
 }
 async function renderPostTree(tree) {
     const postDiv = await constructPost(tree, tree.children && tree.children.length > 0);
@@ -61,9 +80,9 @@ async function renderPostTree(tree) {
     }
     else {
         return Promise.all(tree.children.map(renderPostTree))
-            .then((children) => children.map((child) => putChildrenInContainer(child, "post-child-container")))
+            .then((children) => children.map((child) => putChildrenInNewContainer(child, "post-child-container")))
             .then((childrenDivs) => childrenDivs.map(putChildrenInContainerWithLine))
-            .then((childrenDivs) => putChildrenInContainer(childrenDivs, "post-children-container"))
+            .then((childrenDivs) => putChildrenInNewContainer(childrenDivs, "post-children-container"))
             .then((childrenContainer) => {
             return [postDiv, childrenContainer];
         });
@@ -96,38 +115,6 @@ async function constructReplyTopLine(post) {
     repliesTopDiv.appendChild(replyIco);
     repliesTopDiv.appendChild(repliesTopText);
     return repliesTopDiv;
-}
-async function doStuffForUrl() {
-    const url = new URL(document.location.href);
-    const path = url.pathname.split("/");
-    switch (path[1]) {
-        case consts.accountsPath:
-            const accountId = path[2];
-            // todo also display account information, also filter posts n stuff
-            let accountStatuses = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/accounts/" + accountId + "/statuses");
-            renderTimeline(accountStatuses);
-            break;
-        case consts.statusesPath:
-            const statusId = path[2];
-            Promise.all([fetchPostById(statusId), fetchContextByPostId(statusId)])
-                .then(([status, context]) => [status, [...context.ancestors, status, ...context.descendants]])
-                .then(([status, flatStatuses]) => [status, buildPostTree(flatStatuses)])
-                .then(async ([status, tree]) => [status, await renderPostTree(tree[0])])
-                .then(async ([status, postDivs]) => {
-                postDivs.forEach((postDiv) => timelineDiv.appendChild(postDiv));
-                return status;
-            })
-                .then((status) => {
-                if (status.in_reply_to_id !== null)
-                    document.getElementById("post-" + status.id).scrollIntoView();
-                loadingPostsDiv.style.display = "none";
-            });
-            break;
-        default:
-            let timelinePosts = await fetchJsonAsync(consts.userSelectedInstanceUrl + "/api/v1/timelines/public");
-            renderTimeline(timelinePosts);
-            break;
-    }
 }
 function buildPostTree(statuses) {
     let tree = [];
