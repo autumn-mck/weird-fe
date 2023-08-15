@@ -28,6 +28,7 @@
 	white-space: pre-wrap;
 }
 
+/*#region Boosts */
 .boosted-post,
 .boosted-post:hover {
 	padding: 0;
@@ -40,10 +41,19 @@
 	width: auto;
 	margin-left: auto;
 }
+/*#endregion*/
 
+/*#region Quoted posts */
 .post-quote {
 	margin-top: 0.5rem;
 }
+
+.quoted-post {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: none;
+}
+/*#endregion*/
 
 /* akkoma sends the inline quote text (RE: <Link to quoted post>) in a span with this class */
 .quote-inline {
@@ -53,12 +63,6 @@
 /* but on quoted posts that are also quoting something, probably a good idea to show that it is */
 .post-quote .quote-inline {
 	display: inline;
-}
-
-.quoted-post {
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	background: none;
 }
 
 .post-body {
@@ -166,6 +170,7 @@
 	margin-left: 1rem;
 }
 
+/*#region Left column */
 .poster-info-col-1 {
 	display: inline-block;
 }
@@ -175,6 +180,12 @@
 	color: var(--text);
 	margin: 0;
 	display: inline-block;
+}
+
+/*#region Username */
+.acct {
+	display: flex;
+	align-items: center;
 }
 
 .poster-username {
@@ -188,17 +199,15 @@
 	color: var(--subtext);
 }
 
-.acct {
-	display: flex;
-	align-items: center;
-}
-
 .post-instance-favicon {
 	margin-left: 0.5rem;
 	width: 16px;
 	height: 16px;
 }
+/*#endregion*/
+/*#endregion*/
 
+/*#region Right column */
 .poster-info-column-2 * {
 	text-align: right;
 }
@@ -206,7 +215,9 @@
 .post-visibility {
 	fill: var(--subtext);
 }
+/*#endregion*/
 
+/*#region emojis */
 .emoji {
 	vertical-align: middle;
 	/* stares at https://bugzilla.mozilla.org/show_bug.cgi?id=1310170 */
@@ -220,7 +231,29 @@
 	z-index: 1;
 	transform: scale(2);
 }
+/*#endregion*/
 
+/*#region Emoji reactions */
+.emoji-reactions-row {
+	margin-top: 0.5rem;
+	display: flex;
+	align-items: center;
+}
+
+.emoji-reaction-div {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem;
+	padding-right: 1rem;
+}
+
+.emoji-reaction-img,
+.emoji-reaction-span {
+	margin-right: 0.5rem;
+}
+/*#endregion*/
+
+/*#region Post media */
 .post-media {
 	display: flex;
 	flex-direction: column;
@@ -256,29 +289,13 @@
 	display: block;
 	object-fit: contain;
 }
+/*#endregion*/
 
 .post-media-item-sensitive {
 	filter: blur(8px);
 }
 
-.emoji-reactions-row {
-	margin-top: 0.5rem;
-	display: flex;
-	align-items: center;
-}
-
-.emoji-reaction-div {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	padding-right: 1rem;
-}
-
-.emoji-reaction-img,
-.emoji-reaction-span {
-	margin-right: 0.5rem;
-}
-
+/*#region Interact with post */
 .interaction-bar {
 	display: flex;
 	justify-content: space-between;
@@ -338,7 +355,9 @@
 .interaction-hidden-checkbox:checked + .spinny-interaction-icon {
 	transform: rotate(360deg);
 }
+/*#endregion*/
 
+/*#region Threaded post replies */
 .post-child-container-outer {
 	display: flex;
 	flex-shrink: 0;
@@ -379,3 +398,4 @@
 .post-child-container-outer:last-child > .post-child-line-container > .post-child-line {
 	height: 1rem;
 }
+/*#endregion*/
