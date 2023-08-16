@@ -76,11 +76,6 @@ export function formatInEmojis(string: string, emojis: any) {
 	return string;
 }
 
-export function getAccountDisplayNameHTML(account: Account) {
-	let displayNameHtml = escapeHTML(account.display_name);
-	return formatInEmojis(displayNameHtml, account.emojis);
-}
-
 export function createElement(elementType: string, classes: string) {
 	const element = document.createElement(elementType);
 	element.className = classes;

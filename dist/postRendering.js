@@ -1,9 +1,9 @@
-import { getIcon, getIconForVisibility } from "./assets.js";
-import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, aCreateElement } from "./utils.js";
-import { Icon } from "./models/icons.js";
-import { generateProfilePreview, constructAcct, constructDisplayName } from "./profileRendering.js";
-import { setImgSrc, setLabelHtmlFor, setInputType, setAnchorHref, putChildrenInNewCurryContainer, setInnerHTML, addClasses, putChildInNewCurryContainer, putChildInCurryContainer, setInnerText, setId, setTitle, } from "./curryingUtils.js";
-import * as consts from "./consts.js";
+import { formatInEmojis, aCreateElement } from "./utils.js";
+import { setImgSrc, putChildrenInNewCurryContainer, setInnerHTML, addClasses, putChildInNewCurryContainer, putChildInCurryContainer, setInnerText, setId, setTitle, } from "./curryingUtils.js";
+import BoostedBy from "./elements/post/boostedBy.js";
+import InteractionsRow from "./elements/post/interactionsRow.js";
+import AvatarWithPreview from "./elements/post/avatarWithPreview.js";
+import PosterInfo from "./elements/post/posterInfo.js";
 export async function constructPost(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
     return await (post.reblog ? constructBoost(post) : constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted))
         .then(putChildrenInNewCurryContainer("post"))
@@ -17,11 +17,11 @@ function constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted) {
 }
 function constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted) {
     return Promise.all([
-        constructPosterInfo(post, !inludeSpaceForAvatarLine),
+        new PosterInfo(post, !inludeSpaceForAvatarLine),
         createPostSpoiler(post.spoiler_text),
         createPostInnerBody(post),
         !isQuoted ? constructEmojiReactionsRow(post.emoji_reactions) : "",
-        !isQuoted ? constructInteractionRow(post) : "",
+        !isQuoted ? new InteractionsRow(post) : "",
     ])
         .then(putChildrenInNewCurryContainer("post-body"))
         .then((postBody) => {
@@ -59,16 +59,13 @@ async function createPostAvatarDiv(inludeSpaceForAvatarLine, account) {
     if (!inludeSpaceForAvatarLine)
         return "";
     else
-        return aCreateElement("div", "avatar-line").then(putChildInCurryContainer(await createAvatarDiv(account)));
+        return aCreateElement("div", "avatar-line").then(putChildInCurryContainer(new AvatarWithPreview(account, inludeSpaceForAvatarLine)));
 }
 async function constructBoostInfo(post) {
     if (!post.reblog)
         return "";
-    return Promise.all([
-        getIcon(Icon.Boost).then(addClasses("boosted-by-ico")),
-        aCreateElement("p", "boosted-by").then(setInnerHTML("Boosted by " + getAccountDisplayNameHTML(post.account))),
-        aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
-    ]).then(putChildrenInNewCurryContainer("boosted-by-container"));
+    console.log(post);
+    return new BoostedBy(post);
 }
 async function contstructMedia(attachments, isSensitive) {
     const maxItemsInRow = 3;
@@ -136,55 +133,9 @@ function constructEmojiReaction(emojiReaction) {
         }
     }
 }
-async function constructInteractionRow(post) {
-    return Promise.all([
-        constructInteractionItem(post.id, Icon.Reply, "replies", true, String(post.replies_count)),
-        constructInteractionItem(post.id, Icon.Boost, "repeats", true, String(post.reblogs_count)),
-        constructInteractionItem(post.id, Icon.Quote, "quote"),
-        constructInteractionItem(post.id, Icon.Favourite, "favourites", true, String(post.favourites_count)),
-        constructInteractionItem(post.id, Icon.AddReaction, "react", true),
-        constructInteractionItem(post.id, Icon.More, "more"),
-    ]).then(putChildrenInNewCurryContainer("interaction-bar"));
-    async function constructInteractionItem(postId, icon, className, spinny, text) {
-        const checkboxId = "interaction-hidden-checkbox-" + className + "-" + postId;
-        return Promise.all([
-            aCreateElement("input", "interaction-hidden-checkbox").then(setInputType("checkbox")).then(setId(checkboxId)),
-            getIcon(icon).then(putChildInCurryContainer(await aCreateElement("label", "interaction-icon interaction-icon-" + className)
-                .then(setLabelHtmlFor(checkboxId))
-                .then(addClasses(spinny ? "spinny-interaction-icon" : "")))),
-            text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
-        ]).then(putChildrenInNewCurryContainer("interaction-row-item"));
-    }
-}
-async function constructPosterInfo(post, shouldIncludeAvatar) {
-    return Promise.all([
-        shouldIncludeAvatar ? createAvatarDiv(post.account) : "",
-        Promise.all([constructLeftCol(post), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
-    ]).then(putChildrenInNewCurryContainer("post-info-top"));
-    function constructLeftCol(post) {
-        return Promise.all([
-            constructDisplayName(post.account).then(addClasses("post-display-name")),
-            constructAcct(post.account),
-        ]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
-    }
-    function constructRightCol(post) {
-        return Promise.all([
-            aCreateElement("a", "post-time")
-                .then(setInnerText(relativeTime(new Date(post.created_at))))
-                .then(setAnchorHref("/" + consts.statusesPath + "/" + post.id)),
-            getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
-        ]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
-    }
-}
 function constructPostPoll(post) {
     if (!post.poll)
         return "";
     return aCreateElement("div", "post-poll").then(setInnerHTML("TODO: polls"));
-}
-async function createAvatarDiv(account) {
-    return Promise.all([
-        aCreateElement("img", "post-avatar").then(setImgSrc(account.avatar)),
-        generateProfilePreview(account).then(putChildInNewCurryContainer("profile-preview-container")),
-    ]).then(putChildrenInNewCurryContainer("post-avatar-div"));
 }
 //# sourceMappingURL=postRendering.js.map

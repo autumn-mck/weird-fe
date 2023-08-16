@@ -5,6 +5,15 @@ import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUs
 import { aCreateElement, putChildrenInNewContainer } from "./utils.js";
 import { addClasses, putChildInCurryContainer, putChildInNewCurryContainer, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, } from "./curryingUtils.js";
 import * as consts from "./consts.js";
+import InteractionItem from "./elements/post/postInteractionItem.js";
+import BoostedBy from "./elements/post/boostedBy.js";
+import UsernameAcct from "./elements/account/usernameAcct.js";
+import InteractionsRow from "./elements/post/interactionsRow.js";
+import ProfilePreview from "./elements/account/profilePreview.js";
+import Avatar from "./elements/account/avatar.js";
+import AvatarWithPreview from "./elements/post/avatarWithPreview.js";
+import PosterInfo from "./elements/post/posterInfo.js";
+import DisplayName from "./elements/account/displayName.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
 let perfLastTime = performance.now();
@@ -12,7 +21,19 @@ let perfLastTime = performance.now();
  * Main function
  */
 async function main() {
+    defineCustomElements();
     doStuffForUrl();
+}
+function defineCustomElements() {
+    customElements.define("x-avatar", Avatar);
+    customElements.define("display-name", DisplayName);
+    customElements.define("profile-preview", ProfilePreview);
+    customElements.define("username-acct", UsernameAcct);
+    customElements.define("avatar-with-preview", AvatarWithPreview);
+    customElements.define("boosted-by", BoostedBy);
+    customElements.define("post-interactions-row", InteractionsRow);
+    customElements.define("poster-info", PosterInfo);
+    customElements.define("post-interaction-item", InteractionItem);
 }
 async function doStuffForUrl() {
     const url = new URL(document.location.href);
@@ -32,6 +53,7 @@ async function doStuffForUrl() {
             let [status, context] = await fetchStatusAndContext(statusId).then(perfMessage("fetchStatusAndContext"));
             let postTrees = await putStatusInContext(status, context).then(buildPostTree).then(perfMessage("buildPostTree"));
             // todo handle quotes
+            // /statuses/AYb499YWRvchIjmLiq is a good test
             renderPostTree(postTrees[0])
                 .then(perfMessage("renderPostTree"))
                 .then(putChildrenInCurryContainer(timelineDiv))

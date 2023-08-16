@@ -32,15 +32,10 @@
 .boosted-post,
 .boosted-post:hover {
 	padding: 0;
+	margin: 0;
 	background: none;
 }
 
-.boosted-time {
-	text-align: right;
-	display: inline-block;
-	width: auto;
-	margin-left: auto;
-}
 /*#endregion*/
 
 /*#region Quoted posts */
@@ -67,18 +62,6 @@
 
 .post-body {
 	width: 100%;
-}
-
-.boosted-by-container {
-	color: var(--repeated);
-	display: flex;
-	padding-bottom: 0.5rem;
-	padding-left: calc(var(--post-pfp-size) + 0.5rem - 24px);
-}
-
-.boosted-by-ico {
-	margin-right: 0.5rem;
-	fill: var(--repeated);
 }
 
 .post-spoiler .post-inner-body {
@@ -133,89 +116,6 @@
 .post-replied-to > .post-content {
 	margin-left: calc(var(--post-pfp-size) + 1rem);
 }
-
-.post-info-top {
-	margin-bottom: 0.5rem;
-	display: flex;
-	align-items: center;
-}
-
-.post-avatar-div {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: var(--post-pfp-size);
-}
-
-.avatar-line {
-	display: flex;
-	background: var(--border);
-	width: 4px;
-	flex-grow: 1;
-	margin-bottom: -20px;
-}
-
-.post-avatar {
-	height: var(--post-pfp-size);
-	width: var(--post-pfp-size);
-	border-radius: 8px;
-	z-index: 1;
-}
-
-.poster-text-info {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	margin-left: 1rem;
-}
-
-/*#region Left column */
-.poster-info-col-1 {
-	display: inline-block;
-}
-
-.post-display-name {
-	font-weight: bold;
-	color: var(--text);
-	margin: 0;
-	display: inline-block;
-}
-
-/*#region Username */
-.acct {
-	display: flex;
-	align-items: center;
-}
-
-.poster-username {
-	color: var(--text);
-	margin: 0;
-	display: flex;
-	align-items: center;
-}
-
-.poster-instance {
-	color: var(--subtext);
-}
-
-.post-instance-favicon {
-	margin-left: 0.5rem;
-	width: 16px;
-	height: 16px;
-}
-/*#endregion*/
-/*#endregion*/
-
-/*#region Right column */
-.poster-info-column-2 * {
-	text-align: right;
-}
-
-.post-visibility {
-	fill: var(--subtext);
-}
-/*#endregion*/
 
 /*#region emojis */
 .emoji {
@@ -295,68 +195,6 @@
 .post-media-item-sensitive {
 	filter: blur(8px);
 }
-
-/*#region Interact with post */
-.interaction-bar {
-	display: flex;
-	justify-content: space-between;
-	margin-top: 0.5rem;
-	margin-bottom: 0.8rem;
-	margin-left: calc(var(--post-pfp-size) + 1rem);
-	margin-right: calc(var(--post-pfp-size) + 1rem);
-}
-
-.post-replied-to .interaction-bar {
-	margin-left: 1rem;
-}
-
-.interaction-row-item {
-	display: flex;
-	align-items: center;
-}
-
-.interaction-icon {
-	box-sizing: content-box;
-	height: 24px;
-	width: 24px;
-	margin-right: 0.3rem;
-	padding: 0.25rem;
-	transition: fill 0.2s ease-in, transform 0.7s ease-in-out;
-	fill: var(--post-interaction);
-	cursor: pointer;
-}
-
-.interaction-icon-favourites {
-	transform-origin: 50% 54%;
-}
-
-.interaction-icon:hover {
-	fill: var(--accent);
-}
-
-.interaction-hidden-checkbox {
-	display: none;
-}
-
-.interaction-hidden-checkbox:checked + .interaction-icon-replies,
-.interaction-hidden-checkbox:checked + .interaction-icon-quote,
-.interaction-hidden-checkbox:checked + .interaction-icon-react {
-	fill: var(--interacted);
-}
-
-.interaction-hidden-checkbox:checked + .interaction-icon-repeats {
-	fill: var(--repeated);
-}
-
-.interaction-hidden-checkbox:checked + .interaction-icon-favourites {
-	fill: var(--favourited);
-}
-
-.spinny-interaction-icon:hover,
-.interaction-hidden-checkbox:checked + .spinny-interaction-icon {
-	transform: rotate(360deg);
-}
-/*#endregion*/
 
 /*#region Threaded post replies */
 .post-child-container-outer {

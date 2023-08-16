@@ -12,11 +12,23 @@ export function putChildInCurryContainer(container) {
         return container;
     };
 }
-export function putChildInNewCurryContainer(containerClass) {
+export function putChildInNewCurryContainer(containerClass, elementType = "div") {
     return function (child) {
-        let container = createElement("div", containerClass);
+        let container = createElement(elementType, containerClass);
         container.appendChild(child);
         return container;
+    };
+}
+export function putChildrenInShadowDOM(shadow) {
+    return function (children) {
+        shadow.append(...children);
+        return shadow;
+    };
+}
+export function putChildInShadowDOM(shadow) {
+    return function (child) {
+        shadow.appendChild(child);
+        return shadow;
     };
 }
 export function putChildrenInNewCurryContainer(containerClass) {

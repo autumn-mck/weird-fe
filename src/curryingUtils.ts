@@ -14,11 +14,25 @@ export function putChildInCurryContainer(container: HTMLElement) {
 	};
 }
 
-export function putChildInNewCurryContainer(containerClass: string) {
+export function putChildInNewCurryContainer(containerClass: string, elementType = "div") {
 	return function (child: HTMLElement) {
-		let container: HTMLElement = createElement("div", containerClass);
+		let container: HTMLElement = createElement(elementType, containerClass);
 		container.appendChild(child);
 		return container;
+	};
+}
+
+export function putChildrenInShadowDOM(shadow: ShadowRoot) {
+	return function (children: (Node | string)[]) {
+		shadow.append(...children);
+		return shadow;
+	};
+}
+
+export function putChildInShadowDOM(shadow: ShadowRoot) {
+	return function (child: Node) {
+		shadow.appendChild(child);
+		return shadow;
 	};
 }
 
