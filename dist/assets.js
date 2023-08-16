@@ -1,4 +1,4 @@
-import { aCreateElement, fetchAsync } from "./utils.js";
+import { aCreateElement, clone, fetchAsync } from "./utils.js";
 import { IconSet } from "./models/iconSet.js";
 import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
@@ -7,22 +7,25 @@ let icons = {};
 export async function getIcon(icon) {
     const iconSet = IconSet.MaterialSymbols;
     if (!icons[icon]) {
-        icons[icon] = (await aCreateElement("div").then(setInnerHTML(await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg"))));
+        icons[icon] = fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then((svg) => aCreateElement("div").then(setInnerHTML(svg)));
     }
-    return icons[icon].cloneNode(true);
+    return icons[icon];
 }
 export async function getIconForVisibility(visibility) {
+    return getIconEnumForVisibility(visibility).then(getIcon).then(clone);
+}
+async function getIconEnumForVisibility(visibility) {
     switch (visibility) {
         case Visibility.Public:
-            return await getIcon(Icon.VisibilityPublic);
+            return Icon.VisibilityPublic;
         case Visibility.Unlisted:
-            return await getIcon(Icon.VisibilityUnlisted);
+            return Icon.VisibilityUnlisted;
         case Visibility.Local:
-            return await getIcon(Icon.VisibilityLocal);
+            return Icon.VisibilityLocal;
         case Visibility.Followers:
-            return await getIcon(Icon.VisibilityFollowers);
+            return Icon.VisibilityFollowers;
         case Visibility.Direct:
-            return await getIcon(Icon.VisibilityDirect);
+            return Icon.VisibilityDirect;
         default:
             throw new Error("Unknown visibility: " + visibility);
     }

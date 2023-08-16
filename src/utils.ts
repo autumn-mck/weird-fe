@@ -95,3 +95,7 @@ export function putChildrenInNewContainer(children: HTMLElement[], containerClas
 	childrenContainer.append(...children);
 	return childrenContainer;
 }
+
+export function clone(element: HTMLElement) {
+	return element.cloneNode(true) as HTMLElement;
+}

@@ -81,4 +81,7 @@ export function putChildrenInNewContainer(children, containerClass) {
     childrenContainer.append(...children);
     return childrenContainer;
 }
+export function clone(element) {
+    return element.cloneNode(true);
+}
 //# sourceMappingURL=utils.js.map

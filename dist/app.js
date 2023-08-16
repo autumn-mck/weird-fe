@@ -2,7 +2,7 @@ import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import { Icon } from "./models/icons.js";
 import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
-import { aCreateElement, putChildrenInNewContainer } from "./utils.js";
+import { aCreateElement, clone, putChildrenInNewContainer } from "./utils.js";
 import { addClasses, putChildInCurryContainer, putChildInNewCurryContainer, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, } from "./curryingUtils.js";
 import * as consts from "./consts.js";
 import InteractionItem from "./elements/post/postInteractionItem.js";
@@ -136,7 +136,7 @@ async function constructReplyTopLine(post) {
         aCreateElement("div", "avatar-line-top")
             .then(putChildInNewCurryContainer("avatar-line-container"))
             .then(perfMessage("avatar-line-container")),
-        getIcon(Icon.Reply).then(addClasses("post-replies-top-icon")),
+        getIcon(Icon.Reply).then(clone).then(addClasses("post-replies-top-icon")),
         aCreateElement("a", "post-replies-top-text")
             .then(setAnchorHref(`/${consts.statusesPath}/${post.in_reply_to_id}`))
             .then(setInnerText("Reply to " + replyTo.acct)),

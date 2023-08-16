@@ -1,6 +1,6 @@
 import { getIcon } from "../../assets.js";
 import { addClasses, putChildrenInShadowDOM, setInnerHTML, setInnerText } from "../../curryingUtils.js";
-import { aCreateElement, relativeTime } from "../../utils.js";
+import { aCreateElement, clone, relativeTime } from "../../utils.js";
 import { Status } from "../../models/status";
 import { Icon } from "../../models/icons.js";
 import DisplayName from "../account/displayName.js";
@@ -48,7 +48,7 @@ export default class BoostedBy extends HTMLElement {
 		shadow.adoptedStyleSheets = [sheet];
 
 		Promise.all([
-			getIcon(Icon.Boost).then(addClasses("boosted-by-ico")),
+			getIcon(Icon.Boost).then(clone).then(addClasses("boosted-by-ico")),
 			aCreateElement("p", "boosted-by").then(setInnerText("Boosted by")),
 			new DisplayName(post.account),
 			aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),

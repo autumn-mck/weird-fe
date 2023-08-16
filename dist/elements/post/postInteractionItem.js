@@ -1,6 +1,6 @@
 import { getIcon } from "../../assets.js";
 import { addClasses, putChildInNewCurryContainer, putChildrenInShadowDOM, setId, setInnerText, setInputType, setLabelHtmlFor, } from "../../curryingUtils.js";
-import { aCreateElement } from "../../utils.js";
+import { aCreateElement, clone } from "../../utils.js";
 import { Icon } from "../../models/icons.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -59,6 +59,7 @@ export default class InteractionItem extends HTMLElement {
         Promise.all([
             aCreateElement("input", "hidden-checkbox").then(setInputType("checkbox")).then(setId(postId)),
             getIcon(icon)
+                .then(clone)
                 .then(putChildInNewCurryContainer(`icon icon-${icon}`, "label"))
                 .then(setLabelHtmlFor(postId))
                 .then(addClasses(shouldBeSpinny(icon) ? "spinny-icon" : "")),
