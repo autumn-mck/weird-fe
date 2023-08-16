@@ -107,7 +107,7 @@ async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 		return [postDiv, ...(await renderPostTree(tree.children[0]!))];
 	} else {
 		return Promise.all(tree.children.map(renderPostTree))
-			.then((children) => children.map(putChildrenInNewCurryContainer("post-children-container")))
+			.then((children) => children.map(putChildrenInNewCurryContainer("post-child-container")))
 			.then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine)))
 			.then(putChildrenInNewCurryContainer("post-children-container"))
 			.then((childrenContainer) => {

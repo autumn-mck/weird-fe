@@ -81,7 +81,7 @@ async function renderPostTree(tree) {
     }
     else {
         return Promise.all(tree.children.map(renderPostTree))
-            .then((children) => children.map(putChildrenInNewCurryContainer("post-children-container")))
+            .then((children) => children.map(putChildrenInNewCurryContainer("post-child-container")))
             .then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine)))
             .then(putChildrenInNewCurryContainer("post-children-container"))
             .then((childrenContainer) => {
