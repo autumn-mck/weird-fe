@@ -7,6 +7,7 @@ import { addClasses, putChildInCurryContainer, putChildInNewCurryContainer, putC
 import * as consts from "./consts.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
+let perfLastTime = performance.now();
 /**
  * Main function
  */
@@ -16,18 +17,23 @@ async function main() {
 async function doStuffForUrl() {
     const url = new URL(document.location.href);
     const path = url.pathname.split("/");
+    perfLastTime = performance.now();
     switch (path[1]) {
         case consts.accountsPath:
             const accountId = path[2];
             // todo also display account information, also filter posts n stuff
-            fetchUserStatuses(accountId).then(renderTimeline);
+            fetchUserStatuses(accountId)
+                .then(perfMessage("fetchUserStatuses"))
+                .then(renderTimeline)
+                .then(perfMessage("renderTimeline"));
             break;
         case consts.statusesPath:
             const statusId = path[2];
-            let [status, context] = await fetchStatusAndContext(statusId);
-            let postTrees = await putStatusInContext(status, context).then(buildPostTree);
+            let [status, context] = await fetchStatusAndContext(statusId).then(perfMessage("fetchStatusAndContext"));
+            let postTrees = await putStatusInContext(status, context).then(buildPostTree).then(perfMessage("buildPostTree"));
             // todo handle quotes
             renderPostTree(postTrees[0])
+                .then(perfMessage("renderPostTree"))
                 .then(putChildrenInCurryContainer(timelineDiv))
                 .then(() => {
                 scrollToIfReply(status);
@@ -35,7 +41,10 @@ async function doStuffForUrl() {
             });
             break;
         default:
-            fetchFederatedTimeline().then(renderTimeline);
+            fetchFederatedTimeline()
+                .then(perfMessage("fetchFederatedTimeline"))
+                .then(renderTimeline)
+                .then(perfMessage("renderTimeline"));
             break;
     }
 }
@@ -51,8 +60,10 @@ async function putStatusInContext(status, context) {
 }
 function renderTimeline(statuses) {
     timelineDiv.innerHTML = "";
-    Promise.all(statuses.map(fetchPostsUpwards))
+    return Promise.all(statuses.map(fetchPostsUpwards))
+        .then(perfMessage("fetchPostsUpwards"))
         .then((posts) => Promise.all(posts.map(renderPostGroup)))
+        .then(perfMessage("renderPostGroup"))
         .then(putChildrenInCurryContainer(timelineDiv));
 }
 async function fetchPostsUpwards(post, heightAbove = 1) {
@@ -100,7 +111,9 @@ async function constructReplyTopLine(post) {
     if (!replyTo)
         replyTo = post.account;
     return Promise.all([
-        aCreateElement("div", "avatar-line-top").then(putChildInNewCurryContainer("avatar-line-container")),
+        aCreateElement("div", "avatar-line-top")
+            .then(putChildInNewCurryContainer("avatar-line-container"))
+            .then(perfMessage("avatar-line-container")),
         getIcon(Icon.Reply).then(addClasses("post-replies-top-icon")),
         aCreateElement("a", "post-replies-top-text")
             .then(setAnchorHref(`/${consts.statusesPath}/${post.in_reply_to_id}`))
@@ -122,6 +135,14 @@ function buildPostTree(statuses) {
         }
     }
     return tree;
+}
+function perfMessage(message) {
+    return async function (value = undefined) {
+        await value;
+        console.log(message + " took " + (performance.now() - perfLastTime) + "ms");
+        perfLastTime = performance.now();
+        return value;
+    };
 }
 // Run the main function
 main().catch(console.error);
