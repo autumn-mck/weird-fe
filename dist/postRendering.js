@@ -1,91 +1,93 @@
 import { getIcon, getIconForVisibility } from "./assets.js";
-import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, createElement } from "./utils.js";
+import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, aCreateElement } from "./utils.js";
 import { Icon } from "./models/icons.js";
-import { generateProfilePreview, constructAcct } from "./profileRendering.js";
+import { generateProfilePreview, constructAcct, constructDisplayName } from "./profileRendering.js";
+import { setImgSrc, setLabelHtmlFor, setInputType, setAnchorHref, putChildrenInNewCurryContainer, setInnerHTML, addClasses, putChildInNewCurryContainer, putChildInCurryContainer, setInnerText, setId, setTitle, } from "./curryingUtils.js";
 import * as consts from "./consts.js";
 export async function constructPost(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
-    const postDiv = createElement("div", "post");
-    postDiv.id = "post-" + post.id;
-    const postBody = createElement("div", "post-body");
-    if (post.reblog) {
-        const boostInfo = await constructBoostInfo(post);
-        if (boostInfo)
-            postBody.appendChild(boostInfo);
-        const boostedPost = await constructPost(post.reblog);
-        boostedPost.className += " boosted-post";
-        postBody.appendChild(boostedPost);
-    }
-    else {
-        if (inludeSpaceForAvatarLine) {
-            const avatarDiv = await createAvatarDiv(post);
-            const avatarLine = createElement("div", "avatar-line");
-            avatarDiv.appendChild(avatarLine);
-            postDiv.appendChild(avatarDiv);
-        }
-        const posterInfo = await constructPosterInfo(post, !inludeSpaceForAvatarLine);
-        postBody.appendChild(posterInfo);
-        const content = createElement("p", "post-content");
-        content.innerHTML = formatInEmojis(post.content, post.emojis);
-        const media = contstructMedia(post.media_attachments, post.sensitive);
-        const postInnerBody = createElement("div", "post-inner-body");
-        postInnerBody.appendChild(content);
-        if (media)
-            postInnerBody.appendChild(media);
-        // todo handle properly
-        if (post.spoiler_text) {
-            const spoilerText = createElement("p", "post-spoiler-text");
-            spoilerText.innerText = post.spoiler_text;
-            postBody.appendChild(spoilerText);
+    return await (post.reblog ? constructBoost(post) : constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted))
+        .then(putChildrenInNewCurryContainer("post"))
+        .then(setId("post-" + post.id));
+}
+function constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted) {
+    return Promise.all([
+        createPostAvatarDiv(inludeSpaceForAvatarLine, post.account),
+        constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted),
+    ]);
+}
+function constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted) {
+    return Promise.all([
+        constructPosterInfo(post, !inludeSpaceForAvatarLine),
+        createPostSpoiler(post.spoiler_text),
+        createPostInnerBody(post),
+        !isQuoted ? constructEmojiReactionsRow(post.emoji_reactions) : "",
+        !isQuoted ? constructInteractionRow(post) : "",
+    ])
+        .then(putChildrenInNewCurryContainer("post-body"))
+        .then((postBody) => {
+        if (post.spoiler_text)
             postBody.className += " post-spoiler";
-        }
-        postBody.appendChild(postInnerBody);
-        let postPoll = constructPostPoll(post);
-        if (postPoll)
-            postBody.appendChild(postPoll);
-        if (post.quote) {
-            const quoteDiv = createElement("div", "post-quote");
-            const quotePostDiv = await constructPost(post.quote, false, true);
-            quotePostDiv.className += " quoted-post";
-            quoteDiv.appendChild(quotePostDiv);
-            postBody.appendChild(quoteDiv);
-        }
-        if (!isQuoted) {
-            const emojiReactionsRow = constructEmojiReactionsRow(post.emoji_reactions);
-            if (emojiReactionsRow)
-                postBody.appendChild(emojiReactionsRow);
-            const interactionRow = await constructInteractionRow(post);
-            postBody.appendChild(interactionRow);
-        }
-    }
-    postDiv.appendChild(postBody);
-    return postDiv;
+        return postBody;
+    });
+}
+function constructBoost(post) {
+    return Promise.all([constructBoostInfo(post), constructPost(post.reblog).then(addClasses("boosted-post"))])
+        .then(putChildrenInNewCurryContainer("post-body"))
+        .then((body) => [body]);
+}
+function createPostInnerBody(post) {
+    return Promise.all([
+        aCreateElement("p", "post-content").then(setInnerHTML(formatInEmojis(post.content, post.emojis))),
+        contstructMedia(post.media_attachments, post.sensitive),
+        constructPostPoll(post),
+        createPostQuoteDiv(post.quote),
+    ]).then(putChildrenInNewCurryContainer("post-inner-body"));
+}
+async function createPostSpoiler(spoiler) {
+    if (!spoiler)
+        return "";
+    else
+        return aCreateElement("p", "post-spoiler-text").then(setInnerHTML(spoiler));
+}
+async function createPostQuoteDiv(postQuote) {
+    if (!postQuote)
+        return "";
+    else
+        return constructPost(postQuote, false, true).then(addClasses("quoted-post")).then(putChildInNewCurryContainer("post-quote"));
+}
+async function createPostAvatarDiv(inludeSpaceForAvatarLine, account) {
+    if (!inludeSpaceForAvatarLine)
+        return "";
+    else
+        return aCreateElement("div", "avatar-line").then(putChildInCurryContainer(await createAvatarDiv(account)));
 }
 async function constructBoostInfo(post) {
     if (!post.reblog)
-        return null;
-    const boostIco = await getIcon(Icon.Boost);
-    boostIco.className += " boosted-by-ico";
-    const rebloggedBy = createElement("p", "boosted-by");
-    rebloggedBy.innerHTML = "Boosted by " + getAccountDisplayNameHTML(post.account);
-    const reblogTime = createElement("p", "boosted-time");
-    reblogTime.textContent = relativeTime(new Date(post.created_at));
-    const boostedByDiv = createElement("div", "boosted-by-container");
-    boostedByDiv.appendChild(boostIco);
-    boostedByDiv.appendChild(rebloggedBy);
-    boostedByDiv.appendChild(reblogTime);
-    return boostedByDiv;
+        return "";
+    return Promise.all([
+        getIcon(Icon.Boost).then(addClasses("boosted-by-ico")),
+        aCreateElement("p", "boosted-by").then(setInnerHTML("Boosted by " + getAccountDisplayNameHTML(post.account))),
+        aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
+    ]).then(putChildrenInNewCurryContainer("boosted-by-container"));
 }
-function contstructMedia(attatchments, isSensitive) {
-    if (!attatchments || attatchments.length < 1)
-        return null;
-    let mediaRows = [];
+async function contstructMedia(attachments, isSensitive) {
     const maxItemsInRow = 3;
-    for (let i = 0; i < attatchments.length; i++) {
-        if (i % maxItemsInRow === 0) {
-            mediaRows.push(createElement("div", "post-media-row"));
-        }
-        const attachmentContainer = createElement("div", "post-media-item-container");
-        const attachment = attatchments[i];
+    if (!attachments || attachments.length < 1)
+        return "";
+    else
+        return Promise.all(attachments.map((attachment) => constructMediaDomItem(attachment)
+            .then(setImgSrc(attachment.url))
+            .then(addClasses("post-media-item"))
+            .then((mediaItem) => {
+            if (isSensitive)
+                mediaItem.className += " post-media-item-sensitive";
+            return mediaItem;
+        })
+            .then(putChildInNewCurryContainer("post-media-item-container"))))
+            .then((mediaItems) => chunkArray(mediaItems, maxItemsInRow))
+            .then((mediaRows) => Promise.all(mediaRows.map(putChildrenInNewCurryContainer("post-media-row"))))
+            .then(putChildrenInNewCurryContainer("post-media"));
+    async function constructMediaDomItem(attachment) {
         let mediaItem;
         // todo handle better
         if (attachment.type === "image") {
@@ -107,121 +109,82 @@ function contstructMedia(attatchments, isSensitive) {
             console.log(attachment);
             throw new Error("Unknown media type: " + attachment.type);
         }
-        mediaItem.src = attachment.url;
-        mediaItem.className = "post-media-item";
-        if (isSensitive) {
-            mediaItem.className += " post-media-item-sensitive";
-        }
-        attachmentContainer.appendChild(mediaItem);
-        mediaRows[Math.floor(i / maxItemsInRow)].appendChild(attachmentContainer);
+        return mediaItem;
     }
-    const media = createElement("div", "post-media");
-    for (let i = 0; i < mediaRows.length; i++) {
-        media.appendChild(mediaRows[i]);
-    }
-    return media;
+}
+async function chunkArray(array, chunkSize) {
+    return array.map((_item, index) => (index % chunkSize === 0 ? array.slice(index, index + chunkSize) : null)).filter(Boolean);
 }
 function constructEmojiReactionsRow(emojiReactions) {
     if (!emojiReactions || emojiReactions.length < 1)
-        return null;
-    const emojiReactionsRow = createElement("div", "emoji-reactions-row");
-    emojiReactions.forEach((emojiReaction) => {
-        emojiReactionsRow.appendChild(constructEmojiReaction(emojiReaction));
-    });
-    return emojiReactionsRow;
+        return "";
+    return Promise.all(emojiReactions.map((emojiReaction) => constructEmojiReaction(emojiReaction))).then(putChildrenInNewCurryContainer("emoji-reactions-row"));
 }
 function constructEmojiReaction(emojiReaction) {
-    let emojiReactionElement;
-    if (emojiReaction.url) {
-        emojiReactionElement = createElement("img", "emoji emoji-reaction-img");
-        emojiReactionElement.src = emojiReaction.url;
-        emojiReactionElement.title = ":" + emojiReaction.name + ":";
+    return Promise.all([
+        createEmojiElement(emojiReaction).then(addClasses("emoji")),
+        aCreateElement("span", "emoji-reaction-count").then(setInnerText(String(emojiReaction.count))),
+    ]).then(putChildrenInNewCurryContainer("emoji-reaction-div"));
+    function createEmojiElement(emojiReaction) {
+        if (emojiReaction.url) {
+            return aCreateElement("img", "emoji-reaction-img")
+                .then(setImgSrc(emojiReaction.url))
+                .then(setTitle(":" + emojiReaction.name + ":"));
+        }
+        else {
+            return aCreateElement("span", "emoji-reaction-span").then(setInnerText(emojiReaction.name));
+        }
     }
-    else {
-        emojiReactionElement = createElement("span", "emoji emoji-reaction-span");
-        emojiReactionElement.innerText = emojiReaction.name;
-    }
-    const emojiReactionCount = createElement("span", "emoji-reaction-count");
-    emojiReactionCount.innerText = emojiReaction.count;
-    const emojiReactionDiv = createElement("div", "emoji-reaction-div");
-    emojiReactionDiv.appendChild(emojiReactionElement);
-    emojiReactionDiv.appendChild(emojiReactionCount);
-    return emojiReactionDiv;
 }
 async function constructInteractionRow(post) {
-    async function constructInteractionItem(icon, className, spinny, text) {
-        const item = createElement("div", "interaction-row-item");
-        const checkboxId = "interaction-hidden-checkbox-" + className + "-" + post.id;
-        const hiddenCheckbox = createElement("input", "interaction-hidden-checkbox");
-        hiddenCheckbox.type = "checkbox";
-        hiddenCheckbox.id = checkboxId;
-        item.appendChild(hiddenCheckbox);
-        const itemIconLabel = createElement("label", "interaction-icon interaction-icon-" + className);
-        itemIconLabel.htmlFor = checkboxId;
-        if (spinny) {
-            itemIconLabel.className += " spinny-interaction-icon";
-        }
-        itemIconLabel.appendChild(await getIcon(icon));
-        item.appendChild(itemIconLabel);
-        if (text) {
-            const itemText = createElement("p", "interaction-text");
-            itemText.innerText = text;
-            item.appendChild(itemText);
-        }
-        return item;
+    return Promise.all([
+        constructInteractionItem(post.id, Icon.Reply, "replies", true, String(post.replies_count)),
+        constructInteractionItem(post.id, Icon.Boost, "repeats", true, String(post.reblogs_count)),
+        constructInteractionItem(post.id, Icon.Quote, "quote"),
+        constructInteractionItem(post.id, Icon.Favourite, "favourites", true, String(post.favourites_count)),
+        constructInteractionItem(post.id, Icon.AddReaction, "react", true),
+        constructInteractionItem(post.id, Icon.More, "more"),
+    ]).then(putChildrenInNewCurryContainer("interaction-bar"));
+    async function constructInteractionItem(postId, icon, className, spinny, text) {
+        const checkboxId = "interaction-hidden-checkbox-" + className + "-" + postId;
+        return Promise.all([
+            aCreateElement("input", "interaction-hidden-checkbox").then(setInputType("checkbox")).then(setId(checkboxId)),
+            getIcon(icon).then(putChildInCurryContainer(await aCreateElement("label", "interaction-icon interaction-icon-" + className)
+                .then(setLabelHtmlFor(checkboxId))
+                .then(addClasses(spinny ? "spinny-interaction-icon" : "")))),
+            text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
+        ]).then(putChildrenInNewCurryContainer("interaction-row-item"));
     }
-    const replies = await constructInteractionItem(Icon.Reply, "replies", true, String(post.replies_count));
-    const repeats = await constructInteractionItem(Icon.Boost, "repeats", true, String(post.reblogs_count));
-    const quote = await constructInteractionItem(Icon.Quote, "quote");
-    const favourites = await constructInteractionItem(Icon.Favourite, "favourites", true, String(post.favourites_count));
-    const react = await constructInteractionItem(Icon.AddReaction, "react", true);
-    const more = await constructInteractionItem(Icon.More, "more");
-    const interactionRow = createElement("div", "interaction-bar");
-    interactionRow.append(replies, repeats, quote, favourites, react, more);
-    return interactionRow;
 }
 async function constructPosterInfo(post, shouldIncludeAvatar) {
-    const postInfoTop = createElement("div", "post-info-top");
-    if (shouldIncludeAvatar) {
-        const avatarDiv = await createAvatarDiv(post);
-        postInfoTop.appendChild(avatarDiv);
+    return Promise.all([
+        shouldIncludeAvatar ? createAvatarDiv(post.account) : "",
+        Promise.all([constructLeftCol(post), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
+    ]).then(putChildrenInNewCurryContainer("post-info-top"));
+    function constructLeftCol(post) {
+        return Promise.all([
+            constructDisplayName(post.account).then(addClasses("post-display-name")),
+            constructAcct(post.account),
+        ]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
     }
-    const displayName = createElement("p", "post-display-name");
-    displayName.innerHTML = getAccountDisplayNameHTML(post.account);
-    const col1 = createElement("div", "poster-info-column-1");
-    col1.appendChild(displayName);
-    col1.appendChild(constructAcct(post.account));
-    const postTime = createElement("a", "post-time");
-    postTime.innerText = relativeTime(new Date(post.created_at));
-    postTime.href = "/" + consts.statusesPath + "/" + post.id;
-    const postVisibility = await getIconForVisibility(post.visibility);
-    postVisibility.className += " post-visibility";
-    postVisibility.title = post.visibility;
-    const col2 = createElement("div", "poster-info-column-2");
-    col2.appendChild(postTime);
-    col2.appendChild(postVisibility);
-    const posterTextInfo = createElement("div", "poster-text-info");
-    posterTextInfo.appendChild(col1);
-    posterTextInfo.appendChild(col2);
-    postInfoTop.appendChild(posterTextInfo);
-    return postInfoTop;
+    function constructRightCol(post) {
+        return Promise.all([
+            aCreateElement("a", "post-time")
+                .then(setInnerText(relativeTime(new Date(post.created_at))))
+                .then(setAnchorHref("/" + consts.statusesPath + "/" + post.id)),
+            getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
+        ]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
+    }
 }
 function constructPostPoll(post) {
-    if (post.poll) {
-        const pollDiv = createElement("div", "post-poll");
-        // TODO: polls
-        return pollDiv;
-    }
-    return null;
+    if (!post.poll)
+        return "";
+    return aCreateElement("div", "post-poll").then(setInnerHTML("TODO: polls"));
 }
-async function createAvatarDiv(post) {
-    const avatarDiv = createElement("div", "post-avatar-div");
-    const avatarImg = createElement("img", "post-avatar");
-    avatarImg.src = post.account.avatar;
-    avatarDiv.appendChild(avatarImg);
-    const testDiv = createElement("div", "profile-preview-container");
-    testDiv.appendChild(await generateProfilePreview(post.account));
-    avatarDiv.appendChild(testDiv);
-    return avatarDiv;
+async function createAvatarDiv(account) {
+    return Promise.all([
+        aCreateElement("img", "post-avatar").then(setImgSrc(account.avatar)),
+        generateProfilePreview(account).then(putChildInNewCurryContainer("profile-preview-container")),
+    ]).then(putChildrenInNewCurryContainer("post-avatar-div"));
 }
 //# sourceMappingURL=postRendering.js.map

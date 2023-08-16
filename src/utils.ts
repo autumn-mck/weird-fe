@@ -88,22 +88,15 @@ export function createElement(elementType: string, classes: string) {
 	return element;
 }
 
+export async function aCreateElement(elementType: string, classes = "") {
+	const element = document.createElement(elementType);
+	element.className = classes;
+
+	return element;
+}
+
 export function putChildrenInNewContainer(children: HTMLElement[], containerClass: string): HTMLElement {
 	let childrenContainer: HTMLElement = createElement("div", containerClass);
 	childrenContainer.append(...children);
 	return childrenContainer;
-}
-
-export function putChildrenInCurryContainer(container: HTMLElement) {
-	return function (children: HTMLElement[]) {
-		container.append(...children);
-		return container;
-	};
-}
-
-export function putChildInCurryContainer(container: HTMLElement) {
-	return function (child: HTMLElement) {
-		container.appendChild(child);
-		return container;
-	};
 }

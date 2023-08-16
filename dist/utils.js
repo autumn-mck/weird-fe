@@ -75,21 +75,14 @@ export function createElement(elementType, classes) {
     element.className = classes;
     return element;
 }
+export async function aCreateElement(elementType, classes = "") {
+    const element = document.createElement(elementType);
+    element.className = classes;
+    return element;
+}
 export function putChildrenInNewContainer(children, containerClass) {
     let childrenContainer = createElement("div", containerClass);
     childrenContainer.append(...children);
     return childrenContainer;
-}
-export function putChildrenInCurryContainer(container) {
-    return function (children) {
-        container.append(...children);
-        return container;
-    };
-}
-export function putChildInCurryContainer(container) {
-    return function (child) {
-        container.appendChild(child);
-        return container;
-    };
 }
 //# sourceMappingURL=utils.js.map

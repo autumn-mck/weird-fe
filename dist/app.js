@@ -1,8 +1,9 @@
-import { createElement, putChildrenInCurryContainer, putChildInCurryContainer, putChildrenInNewContainer } from "./utils.js";
 import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import { Icon } from "./models/icons.js";
 import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
+import { aCreateElement, putChildrenInNewContainer } from "./utils.js";
+import { addClasses, putChildInCurryContainer, putChildInNewCurryContainer, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, } from "./curryingUtils.js";
 import * as consts from "./consts.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
@@ -64,11 +65,11 @@ async function fetchPostsUpwards(post, heightAbove = 1) {
         return [post];
 }
 async function renderPostGroup(posts) {
-    const postContainer = createElement("div", "post-container");
+    const postContainer = aCreateElement("div", "post-container");
     if (posts[0].in_reply_to_id) {
-        constructReplyTopLine(posts[0]).then(putChildInCurryContainer(postContainer));
+        constructReplyTopLine(posts[0]).then(putChildInCurryContainer(await postContainer));
     }
-    return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then(putChildrenInCurryContainer(postContainer));
+    return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then(putChildrenInCurryContainer(await postContainer));
 }
 async function renderPostTree(tree) {
     const postDiv = await constructPost(tree, tree.children && tree.children.length > 0);
@@ -80,41 +81,31 @@ async function renderPostTree(tree) {
     }
     else {
         return Promise.all(tree.children.map(renderPostTree))
-            .then((children) => children.map((child) => putChildrenInNewContainer(child, "post-child-container")))
-            .then((childrenDivs) => childrenDivs.map(putChildrenInContainerWithLine))
-            .then((childrenDivs) => putChildrenInNewContainer(childrenDivs, "post-children-container"))
+            .then((children) => children.map(putChildrenInNewCurryContainer("post-children-container")))
+            .then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine)))
+            .then(putChildrenInNewCurryContainer("post-children-container"))
             .then((childrenContainer) => {
             return [postDiv, childrenContainer];
         });
     }
-    function putChildrenInContainerWithLine(childrenDiv) {
-        let lineContainer = createElement("div", "post-child-line-container");
-        lineContainer.appendChild(createElement("div", "post-child-line-connector"));
-        lineContainer.appendChild(createElement("div", "post-child-line"));
-        let postChildOuter = createElement("div", "post-child-container-outer");
-        postChildOuter.appendChild(lineContainer);
-        postChildOuter.appendChild(childrenDiv);
-        return postChildOuter;
+    async function putChildrenInContainerWithLine(childrenDiv) {
+        return Promise.all([aCreateElement("div", "post-child-line-connector"), aCreateElement("div", "post-child-line")])
+            .then(putChildrenInNewCurryContainer("post-child-line-container"))
+            .then((lineContainer) => putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer"));
     }
 }
 async function constructReplyTopLine(post) {
-    const avatarLineContainer = createElement("div", "avatar-line-container");
-    avatarLineContainer.appendChild(createElement("div", "avatar-line-top"));
-    const replyIco = await getIcon(Icon.Reply);
-    replyIco.className = "post-replies-top-icon";
-    const repliesTopText = createElement("a", "post-replies-top-text");
-    repliesTopText.href = "/" + consts.statusesPath + "/" + post.in_reply_to_id;
     let replyTo = post.mentions.find((mention) => mention.id === post.in_reply_to_account_id);
     // if mention not found, assume they're replying to themselves
     if (!replyTo)
         replyTo = post.account;
-    repliesTopText.innerText = "Reply to " + replyTo.acct;
-    const repliesTopDiv = document.createElement("div");
-    repliesTopDiv.className = "post-replies-top";
-    repliesTopDiv.appendChild(avatarLineContainer);
-    repliesTopDiv.appendChild(replyIco);
-    repliesTopDiv.appendChild(repliesTopText);
-    return repliesTopDiv;
+    return Promise.all([
+        aCreateElement("div", "avatar-line-top").then(putChildInNewCurryContainer("avatar-line-container")),
+        getIcon(Icon.Reply).then(addClasses("post-replies-top-icon")),
+        aCreateElement("a", "post-replies-top-text")
+            .then(setAnchorHref(`/${consts.statusesPath}/${post.in_reply_to_id}`))
+            .then(setInnerText("Reply to " + replyTo.acct)),
+    ]).then(putChildrenInNewCurryContainer("post-replies-top"));
 }
 function buildPostTree(statuses) {
     let tree = [];

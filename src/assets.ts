@@ -1,17 +1,17 @@
-import { fetchAsync } from "./utils.js";
+import { aCreateElement, fetchAsync } from "./utils.js";
 import { IconSet } from "./models/iconSet.js";
 import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
+import { setInnerHTML } from "./curryingUtils.js";
 
 let icons: { [key: string]: HTMLDivElement } = {};
 
 export async function getIcon(icon: Icon): Promise<HTMLDivElement> {
 	const iconSet = IconSet.MaterialSymbols;
 	if (!icons[icon]) {
-		const svg = await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg");
-		const div = document.createElement("div");
-		div.innerHTML = svg;
-		icons[icon] = div;
+		icons[icon] = (await aCreateElement("div").then(
+			setInnerHTML(await fetchAsync("/assets/svgs/" + iconSet + "/" + icon + ".svg"))
+		)) as HTMLDivElement;
 	}
 
 	return icons[icon]!.cloneNode(true) as HTMLDivElement;

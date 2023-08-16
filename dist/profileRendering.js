@@ -1,62 +1,47 @@
-import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, createElement } from "./utils.js";
+import { getAccountDisplayNameHTML, formatInEmojis, relativeTime, aCreateElement } from "./utils.js";
 import * as consts from "./consts.js";
+import { addClasses, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setImgSrc, setInnerHTML, setInnerText, setTitle, } from "./curryingUtils.js";
 export async function generateProfilePreview(account) {
-    const accountDisplayName = getAccountDisplayNameHTML(account);
     const accountBio = formatInEmojis(account.note, account.emojis);
     const accountCreatedAt = relativeTime(new Date(account.created_at));
-    const displayName = createElement("div", "profile-preview-name");
-    displayName.innerHTML = accountDisplayName;
-    const bio = createElement("div", "profile-preview-bio");
-    bio.innerHTML = accountBio;
-    const createdAt = createElement("div", "profile-preview-created-at");
-    createdAt.textContent = accountCreatedAt;
-    const profilePreviewText = createElement("div", "profile-preview-text");
-    profilePreviewText.append(displayName, bio, createdAt);
-    const accountAvatar = createElement("img", "preview-avatar");
-    accountAvatar.src = account.avatar;
-    accountAvatar.loading = "lazy";
-    const profilePreviewContent = createElement("div", "profile-preview-content");
-    profilePreviewContent.append(accountAvatar, profilePreviewText);
-    const headerImg = createElement("img", "preview-header");
-    headerImg.src = account.header;
-    headerImg.loading = "lazy";
-    const profilePreview = createElement("div", "profile-preview");
-    profilePreview.append(headerImg, profilePreviewContent);
-    return profilePreview;
+    return Promise.all([
+        aCreateElement("img", "preview-header").then(setImgSrc(account.header)),
+        Promise.all([
+            aCreateElement("img", "preview-avatar").then(setImgSrc(account.avatar)),
+            Promise.all([
+                constructDisplayName(account).then(addClasses("profile-preview-name")),
+                aCreateElement("p").then(setInnerHTML(accountBio)).then(addClasses("profile-preview-bio")),
+                aCreateElement("p").then(setInnerText(accountCreatedAt)).then(addClasses("profile-preview-created-at")),
+            ]).then(putChildrenInNewCurryContainer("profile-preview-text")),
+        ]).then(putChildrenInNewCurryContainer("profile-preview-content")),
+    ]).then(putChildrenInNewCurryContainer("profile-preview"));
 }
 export function constructAcct(account) {
     let [username, instance] = account.acct.split("@");
     // assuming that the only case where instance wouldn't be defined here is if the account is on the user's own instance
     if (!instance)
         instance = consts.userSelectedInstance;
-    const acctUsername = createElement("span", "poster-username");
-    acctUsername.innerText = "@" + username;
-    const acctInstance = createElement("span", "poster-instance");
-    acctInstance.innerText = "@" + instance;
-    const acct = createElement("a", "acct");
-    acct.href = `/${consts.accountsPath}/${account.id}`;
-    acct.appendChild(acctUsername);
-    acct.appendChild(acctInstance);
-    if (account.akkoma) {
-        const posterInstanceFavicon = getInstanceFavicon(account.akkoma.instance);
-        if (posterInstanceFavicon)
-            acct.appendChild(posterInstanceFavicon);
-    }
-    return acct;
+    return aCreateElement("a", "acct")
+        .then(setAnchorHref(`/${consts.accountsPath}/${account.id}`))
+        .then((acct) => {
+        Promise.all([
+            aCreateElement("span", "poster-username").then(setInnerText("@" + username)),
+            aCreateElement("span", "poster-instance").then(setInnerText("@" + instance)),
+            account.akkoma ? getInstanceFavicon(account.akkoma.instance) : "",
+        ]).then(putChildrenInCurryContainer(acct));
+        return acct;
+    });
+}
+export async function constructDisplayName(account) {
+    return aCreateElement("p").then(setInnerHTML(getAccountDisplayNameHTML(account)));
 }
 function getInstanceFavicon(instance) {
     if (!instance || !instance.favicon)
-        return null;
-    const posterInstanceFavicon = createElement("img", "post-instance-favicon");
-    posterInstanceFavicon.src = instance.favicon;
-    posterInstanceFavicon.width = 16;
-    posterInstanceFavicon.height = 16;
+        return "";
     let title = instance.name;
     if (instance.nodeinfo && instance.nodeinfo.software && instance.nodeinfo.software.name && instance.nodeinfo.software.version) {
         title += " (" + instance.nodeinfo.software.name + " " + instance.nodeinfo.software.version + ")";
     }
-    posterInstanceFavicon.title = title;
-    posterInstanceFavicon.ariaHidden = "true";
-    return posterInstanceFavicon;
+    return aCreateElement("img", "post-instance-favicon").then(setImgSrc(instance.favicon)).then(setTitle(title));
 }
 //# sourceMappingURL=profileRendering.js.map
