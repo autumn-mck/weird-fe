@@ -1,18 +1,12 @@
 import { getIconForVisibility } from "../../assets.js";
-import {
-	addClasses,
-	putChildrenInNewCurryContainer,
-	putChildrenInShadowDOM,
-	setAnchorHref,
-	setInnerText,
-	setTitle,
-} from "../../curryingUtils.js";
+import { addClasses, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, setTitle } from "../../curryingUtils.js";
 import { aCreateElement, relativeTime } from "../../utils.js";
 import UsernameAcct from "../account/usernameAcct.js";
 import { Status } from "../../models/status.js";
 import AvatarWithPreview from "./avatarWithPreview.js";
 import * as consts from "../../consts.js";
 import DisplayName from "../account/displayName.js";
+import CustomHTMLElement from "../customElement.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -47,20 +41,15 @@ a {
 }
 `);
 
-export default class PosterInfo extends HTMLElement {
-	constructor(post: Status, shouldIncludeAvatar: boolean) {
-		super();
-
-		const shadow = this.attachShadow({ mode: "closed" });
-		shadow.adoptedStyleSheets = [sheet];
-
-		Promise.all([
-			shouldIncludeAvatar ? new AvatarWithPreview(post.account) : "",
+export default class PosterInfo extends CustomHTMLElement {
+	static async build(post: Status, shouldIncludeAvatar: boolean): Promise<CustomHTMLElement> {
+		return Promise.all([
+			shouldIncludeAvatar ? AvatarWithPreview.build(post.account) : "",
 			Promise.all([constructLeftCol(post), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
-		]).then(putChildrenInShadowDOM(shadow));
+		]).then(this.createNew);
 
 		function constructLeftCol(post: Status): Promise<HTMLElement> {
-			return Promise.all([new DisplayName(post.account), new UsernameAcct(post.account)]).then(
+			return Promise.all([DisplayName.build(post.account), UsernameAcct.build(post.account)]).then(
 				putChildrenInNewCurryContainer("poster-info-column-1")
 			);
 		}
@@ -74,5 +63,9 @@ export default class PosterInfo extends HTMLElement {
 				getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
 			]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
 		}
+	}
+
+	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
+		return new PosterInfo(sheet, elements);
 	}
 }

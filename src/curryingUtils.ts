@@ -22,20 +22,6 @@ export function putChildInNewCurryContainer(containerClass: string, elementType 
 	};
 }
 
-export function putChildrenInShadowDOM(shadow: ShadowRoot) {
-	return function (children: (Node | string)[]) {
-		shadow.append(...children);
-		return shadow;
-	};
-}
-
-export function putChildInShadowDOM(shadow: ShadowRoot) {
-	return function (child: Node) {
-		shadow.appendChild(child);
-		return shadow;
-	};
-}
-
 export function putChildrenInNewCurryContainer(containerClass: string) {
 	return function (children: (HTMLElement | string)[]) {
 		let container: HTMLElement = createElement("div", containerClass);

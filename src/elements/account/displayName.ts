@@ -1,6 +1,7 @@
-import { putChildInShadowDOM, setInnerHTML } from "../../curryingUtils.js";
+import { setInnerHTML } from "../../curryingUtils.js";
 import { aCreateElement, escapeHTML, formatInEmojis } from "../../utils.js";
 import { Account } from "../../models/account";
+import CustomHTMLElement from "../customElement.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -26,20 +27,19 @@ p {
 }
 `);
 
-export default class DisplayName extends HTMLElement {
-	constructor(account: Account) {
-		super();
+export default class DisplayName extends CustomHTMLElement {
+	static async build(account: Account): Promise<CustomHTMLElement> {
+		return aCreateElement("p")
+			.then(setInnerHTML(this.#getAccountDisplayNameHTML(account)))
+			.then(this.createNew);
+	}
 
-		const shadow = this.attachShadow({ mode: "closed" });
-		shadow.adoptedStyleSheets = [sheet];
+	static #getAccountDisplayNameHTML(account: Account) {
+		let displayNameHtml = escapeHTML(account.display_name);
+		return formatInEmojis(displayNameHtml, account.emojis);
+	}
 
-		aCreateElement("p")
-			.then(setInnerHTML(getAccountDisplayNameHTML(account)))
-			.then(putChildInShadowDOM(shadow));
-
-		function getAccountDisplayNameHTML(account: Account) {
-			let displayNameHtml = escapeHTML(account.display_name);
-			return formatInEmojis(displayNameHtml, account.emojis);
-		}
+	protected static createNew(element: HTMLElement | string): CustomHTMLElement {
+		return new DisplayName(sheet, [element]);
 	}
 }

@@ -1,7 +1,7 @@
-import { putChildrenInShadowDOM } from "../../curryingUtils.js";
 import ProfilePreview from "../account/profilePreview.js";
 import Avatar from "../account/avatar.js";
 import { aCreateElement } from "../../utils.js";
+import CustomHTMLElement from "../customElement.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
@@ -29,18 +29,17 @@ profile-preview:hover {
 	z-index: 9;
 	width: 70ch;
 }
-
 `);
-export default class AvatarWithPreview extends HTMLElement {
-    constructor(account, includeSpaceForAvatarLine = false) {
-        super();
-        const shadow = this.attachShadow({ mode: "closed" });
-        shadow.adoptedStyleSheets = [sheet];
-        Promise.all([
-            new Avatar(account.avatar),
-            new ProfilePreview(account),
+export default class AvatarWithPreview extends CustomHTMLElement {
+    static async build(account, includeSpaceForAvatarLine = false) {
+        return Promise.all([
+            Avatar.build(account.avatar),
+            ProfilePreview.build(account),
             includeSpaceForAvatarLine ? aCreateElement("div", "avatar-line") : "",
-        ]).then(putChildrenInShadowDOM(shadow));
+        ]).then(this.createNew);
+    }
+    static createNew(elements) {
+        return new AvatarWithPreview(sheet, elements);
     }
 }
 //# sourceMappingURL=avatarWithPreview.js.map

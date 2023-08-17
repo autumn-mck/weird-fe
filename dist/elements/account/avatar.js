@@ -1,5 +1,6 @@
-import { putChildInShadowDOM, setImgSrc } from "../../curryingUtils.js";
+import { setImgSrc } from "../../curryingUtils.js";
 import { aCreateElement } from "../../utils.js";
+import CustomHTMLElement from "../customElement.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
@@ -14,12 +15,12 @@ sheet.replaceSync(`
 	z-index: 1;
 }
 `);
-export default class Avatar extends HTMLElement {
-    constructor(avatarSrc) {
-        super();
-        const shadow = this.attachShadow({ mode: "closed" });
-        shadow.adoptedStyleSheets = [sheet];
-        aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(putChildInShadowDOM(shadow));
+export default class Avatar extends CustomHTMLElement {
+    static async build(avatarSrc) {
+        return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(this.createNew);
+    }
+    static createNew(element) {
+        return new Avatar(sheet, [element]);
     }
 }
 //# sourceMappingURL=avatar.js.map

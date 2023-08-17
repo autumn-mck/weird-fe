@@ -19,18 +19,6 @@ export function putChildInNewCurryContainer(containerClass, elementType = "div")
         return container;
     };
 }
-export function putChildrenInShadowDOM(shadow) {
-    return function (children) {
-        shadow.append(...children);
-        return shadow;
-    };
-}
-export function putChildInShadowDOM(shadow) {
-    return function (child) {
-        shadow.appendChild(child);
-        return shadow;
-    };
-}
 export function putChildrenInNewCurryContainer(containerClass) {
     return function (children) {
         let container = createElement("div", containerClass);

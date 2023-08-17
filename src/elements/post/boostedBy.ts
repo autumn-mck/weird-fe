@@ -1,9 +1,10 @@
 import { getIcon } from "../../assets.js";
-import { addClasses, putChildrenInShadowDOM, setInnerHTML, setInnerText } from "../../curryingUtils.js";
+import { addClasses, setInnerText } from "../../curryingUtils.js";
 import { aCreateElement, clone, relativeTime } from "../../utils.js";
 import { Status } from "../../models/status";
 import { Icon } from "../../models/icons.js";
 import DisplayName from "../account/displayName.js";
+import CustomHTMLElement from "../customElement.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -40,18 +41,17 @@ display-name {
 }
 `);
 
-export default class BoostedBy extends HTMLElement {
-	constructor(post: Status) {
-		super();
-
-		const shadow = this.attachShadow({ mode: "closed" });
-		shadow.adoptedStyleSheets = [sheet];
-
-		Promise.all([
+export default class BoostedBy extends CustomHTMLElement {
+	static async build(post: Status): Promise<CustomHTMLElement> {
+		return Promise.all([
 			getIcon(Icon.Boost).then(clone).then(addClasses("boosted-by-ico")),
 			aCreateElement("p", "boosted-by").then(setInnerText("Boosted by")),
-			new DisplayName(post.account),
+			DisplayName.build(post.account),
 			aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
-		]).then(putChildrenInShadowDOM(shadow));
+		]).then(this.createNew);
+	}
+
+	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
+		return new BoostedBy(sheet, elements);
 	}
 }

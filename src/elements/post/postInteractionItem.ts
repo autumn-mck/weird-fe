@@ -2,7 +2,6 @@ import { getIcon } from "../../assets.js";
 import {
 	addClasses,
 	putChildInNewCurryContainer,
-	putChildrenInShadowDOM,
 	setId,
 	setInnerText,
 	setInputType,
@@ -10,6 +9,7 @@ import {
 } from "../../curryingUtils.js";
 import { aCreateElement, clone } from "../../utils.js";
 import { Icon } from "../../models/icons.js";
+import CustomHTMLElement from "../customElement.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -61,35 +61,34 @@ sheet.replaceSync(`
 }
 `);
 
-export default class InteractionItem extends HTMLElement {
-	constructor(icon: Icon, postId: string, text?: string) {
-		super();
-
-		const shadow = this.attachShadow({ mode: "closed" });
-		shadow.adoptedStyleSheets = [sheet];
-
-		Promise.all([
+export default class InteractionItem extends CustomHTMLElement {
+	static async build(icon: Icon, postId: string, text?: string): Promise<CustomHTMLElement> {
+		return Promise.all([
 			aCreateElement("input", "hidden-checkbox").then(setInputType("checkbox")).then(setId(postId)),
 
 			getIcon(icon)
 				.then(clone)
 				.then(putChildInNewCurryContainer(`icon icon-${icon}`, "label"))
 				.then(setLabelHtmlFor(postId))
-				.then(addClasses(shouldBeSpinny(icon) ? "spinny-icon" : "")),
+				.then(addClasses(InteractionItem.#shouldBeSpinny(icon) ? "spinny-icon" : "")),
 
 			text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
-		]).then(putChildrenInShadowDOM(shadow));
+		]).then(this.createNew);
+	}
 
-		function shouldBeSpinny(icon: Icon) {
-			switch (icon) {
-				case Icon.Reply:
-				case Icon.Boost:
-				case Icon.Favourite:
-				case Icon.AddReaction:
-					return true;
-				default:
-					return false;
-			}
+	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
+		return new InteractionItem(sheet, elements);
+	}
+
+	static #shouldBeSpinny(icon: Icon) {
+		switch (icon) {
+			case Icon.Reply:
+			case Icon.Boost:
+			case Icon.Favourite:
+			case Icon.AddReaction:
+				return true;
+			default:
+				return false;
 		}
 	}
 }

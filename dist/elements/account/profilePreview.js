@@ -1,10 +1,15 @@
-import { addClasses, putChildInShadowDOM, putChildrenInNewCurryContainer, setImgSrc, setInnerHTML, setInnerText, } from "../../curryingUtils.js";
+import { addClasses, putChildrenInNewCurryContainer, setImgSrc, setInnerHTML, setInnerText } from "../../curryingUtils.js";
 import { aCreateElement, formatInEmojis, relativeTime } from "../../utils.js";
 import DisplayName from "./displayName.js";
+import CustomHTMLElement from "../customElement.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
 	display: none;
+}
+
+a {
+	color: var(--accent);
 }
 
 .profile-preview {
@@ -30,27 +35,42 @@ sheet.replaceSync(`
 .profile-preview-content {
 	padding: 1rem;
 }
+
+.emoji {
+	vertical-align: middle;
+	/* stares at https://bugzilla.mozilla.org/show_bug.cgi?id=1310170 */
+	height: 1.375rem;
+	min-width: 1.375rem;
+	transition: transform 0.1s ease-in-out;
+	max-width: 100%;
+	object-fit: contain;
+}
+
+.emoji:hover {
+	z-index: 1;
+	transform: scale(2);
+}
 `);
-export default class ProfilePreview extends HTMLElement {
-    constructor(account) {
-        super();
-        const shadow = this.attachShadow({ mode: "closed" });
-        shadow.adoptedStyleSheets = [sheet];
+export default class ProfilePreview extends CustomHTMLElement {
+    static async build(account) {
         const accountBio = formatInEmojis(account.note, account.emojis);
         const accountCreatedAt = relativeTime(new Date(account.created_at));
-        Promise.all([
+        return Promise.all([
             aCreateElement("img", "preview-header").then(setImgSrc(account.header)),
             Promise.all([
                 aCreateElement("img", "preview-avatar").then(setImgSrc(account.avatar)),
                 Promise.all([
-                    new DisplayName(account),
+                    DisplayName.build(account),
                     aCreateElement("p").then(setInnerHTML(accountBio)).then(addClasses("profile-preview-bio")),
                     aCreateElement("p").then(setInnerText(accountCreatedAt)).then(addClasses("profile-preview-created-at")),
                 ]).then(putChildrenInNewCurryContainer("profile-preview-text")),
             ]).then(putChildrenInNewCurryContainer("profile-preview-content")),
         ])
             .then(putChildrenInNewCurryContainer("profile-preview"))
-            .then(putChildInShadowDOM(shadow));
+            .then(this.createNew);
+    }
+    static createNew(element) {
+        return new ProfilePreview(sheet, [element]);
     }
 }
 //# sourceMappingURL=profilePreview.js.map

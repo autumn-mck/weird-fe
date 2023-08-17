@@ -139,18 +139,7 @@
 	margin-top: 0.5rem;
 	display: flex;
 	align-items: center;
-}
-
-.emoji-reaction-div {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	padding-right: 1rem;
-}
-
-.emoji-reaction-img,
-.emoji-reaction-span {
-	margin-right: 0.5rem;
+	flex-wrap: wrap;
 }
 /*#endregion*/
 
@@ -168,27 +157,6 @@
 	gap: 0.5rem;
 	width: auto;
 	max-width: 100%;
-}
-
-.post-media-item-container {
-	border-radius: 8px;
-	border: 1px solid var(--border);
-	max-width: 100%;
-	height: 18rem;
-	overflow: hidden;
-	display: flex;
-	justify-content: center;
-	min-width: 20%;
-	width: auto;
-}
-
-.post-media-item {
-	width: auto;
-	height: 100%;
-	max-width: 100%;
-	margin: auto;
-	display: block;
-	object-fit: contain;
 }
 /*#endregion*/
 

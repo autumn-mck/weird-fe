@@ -1,6 +1,6 @@
-import { putChildInShadowDOM, setImgSrc } from "../../curryingUtils.js";
+import { setImgSrc } from "../../curryingUtils.js";
 import { aCreateElement } from "../../utils.js";
-import { Account } from "../../models/account";
+import CustomHTMLElement from "../customElement.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -17,13 +17,12 @@ sheet.replaceSync(`
 }
 `);
 
-export default class Avatar extends HTMLElement {
-	constructor(avatarSrc: string) {
-		super();
+export default class Avatar extends CustomHTMLElement {
+	static async build(avatarSrc: string): Promise<CustomHTMLElement> {
+		return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(this.createNew);
+	}
 
-		const shadow = this.attachShadow({ mode: "closed" });
-		shadow.adoptedStyleSheets = [sheet];
-
-		aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(putChildInShadowDOM(shadow));
+	protected static createNew(element: HTMLElement | string): CustomHTMLElement {
+		return new Avatar(sheet, [element]);
 	}
 }

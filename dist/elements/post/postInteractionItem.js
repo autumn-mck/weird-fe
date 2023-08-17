@@ -1,7 +1,8 @@
 import { getIcon } from "../../assets.js";
-import { addClasses, putChildInNewCurryContainer, putChildrenInShadowDOM, setId, setInnerText, setInputType, setLabelHtmlFor, } from "../../curryingUtils.js";
+import { addClasses, putChildInNewCurryContainer, setId, setInnerText, setInputType, setLabelHtmlFor, } from "../../curryingUtils.js";
 import { aCreateElement, clone } from "../../utils.js";
 import { Icon } from "../../models/icons.js";
+import CustomHTMLElement from "../customElement.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
@@ -51,30 +52,30 @@ sheet.replaceSync(`
 	transform: rotate(360deg);
 }
 `);
-export default class InteractionItem extends HTMLElement {
-    constructor(icon, postId, text) {
-        super();
-        const shadow = this.attachShadow({ mode: "closed" });
-        shadow.adoptedStyleSheets = [sheet];
-        Promise.all([
+export default class InteractionItem extends CustomHTMLElement {
+    static async build(icon, postId, text) {
+        return Promise.all([
             aCreateElement("input", "hidden-checkbox").then(setInputType("checkbox")).then(setId(postId)),
             getIcon(icon)
                 .then(clone)
                 .then(putChildInNewCurryContainer(`icon icon-${icon}`, "label"))
                 .then(setLabelHtmlFor(postId))
-                .then(addClasses(shouldBeSpinny(icon) ? "spinny-icon" : "")),
+                .then(addClasses(InteractionItem.#shouldBeSpinny(icon) ? "spinny-icon" : "")),
             text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
-        ]).then(putChildrenInShadowDOM(shadow));
-        function shouldBeSpinny(icon) {
-            switch (icon) {
-                case Icon.Reply:
-                case Icon.Boost:
-                case Icon.Favourite:
-                case Icon.AddReaction:
-                    return true;
-                default:
-                    return false;
-            }
+        ]).then(this.createNew);
+    }
+    static createNew(elements) {
+        return new InteractionItem(sheet, elements);
+    }
+    static #shouldBeSpinny(icon) {
+        switch (icon) {
+            case Icon.Reply:
+            case Icon.Boost:
+            case Icon.Favourite:
+            case Icon.AddReaction:
+                return true;
+            default:
+                return false;
         }
     }
 }
