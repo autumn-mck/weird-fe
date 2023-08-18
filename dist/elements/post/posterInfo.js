@@ -25,7 +25,6 @@ a {
 	margin-left: 1rem;
 }
 
-
 .poster-info-col-1 {
 	display: inline-block;
 }
@@ -42,10 +41,10 @@ export default class PosterInfo extends CustomHTMLElement {
     static async build(post, shouldIncludeAvatar) {
         return Promise.all([
             shouldIncludeAvatar ? AvatarWithPreview.build(post.account) : "",
-            Promise.all([constructLeftCol(post), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
+            Promise.all([constructLeftCol(post.account), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
         ]).then(this.createNew);
-        function constructLeftCol(post) {
-            return Promise.all([DisplayName.build(post.account), UsernameAcct.build(post.account)]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
+        function constructLeftCol(account) {
+            return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
         }
         function constructRightCol(post) {
             return Promise.all([

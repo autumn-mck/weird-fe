@@ -18,16 +18,6 @@
 	background: var(--background-post-hover);
 }
 
-.post-content {
-	overflow-wrap: break-word;
-	word-break: break-word;
-	hyphens: auto;
-}
-
-.post-content pre {
-	white-space: pre-wrap;
-}
-
 /*#region Boosts */
 .boosted-post,
 .boosted-post:hover {
@@ -37,28 +27,6 @@
 }
 
 /*#endregion*/
-
-/*#region Quoted posts */
-.post-quote {
-	margin-top: 0.5rem;
-}
-
-.quoted-post {
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	background: none;
-}
-/*#endregion*/
-
-/* akkoma sends the inline quote text (RE: <Link to quoted post>) in a span with this class */
-.quote-inline {
-	display: none;
-}
-
-/* but on quoted posts that are also quoting something, probably a good idea to show that it is */
-.post-quote .quote-inline {
-	display: inline;
-}
 
 .post-body {
 	width: 100%;
@@ -78,7 +46,6 @@
 .post-replies-top {
 	box-sizing: content-box;
 	padding-left: 1rem;
-	background: var(--background-translucent);
 	position: relative;
 	display: flex;
 	flex-direction: row;
@@ -108,57 +75,6 @@
 .post-replies-top-text {
 	margin-left: 0.25rem;
 }
-
-.post-replied-to {
-	padding-bottom: 0;
-}
-
-.post-replied-to > .post-content {
-	margin-left: calc(var(--post-pfp-size) + 1rem);
-}
-
-/*#region emojis */
-.emoji {
-	vertical-align: middle;
-	/* stares at https://bugzilla.mozilla.org/show_bug.cgi?id=1310170 */
-	height: 1.375rem;
-	min-width: 1.375rem;
-	transition: transform 0.1s ease-in-out;
-	max-width: 100%;
-	object-fit: contain;
-}
-
-.emoji:hover {
-	z-index: 1;
-	transform: scale(2);
-}
-/*#endregion*/
-
-/*#region Emoji reactions */
-.emoji-reactions-row {
-	margin-top: 0.5rem;
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-}
-/*#endregion*/
-
-/*#region Post media */
-.post-media {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	width: 100%;
-}
-
-.post-media-row {
-	display: flex;
-	justify-content: center;
-	gap: 0.5rem;
-	width: auto;
-	max-width: 100%;
-}
-/*#endregion*/
 
 .post-media-item-sensitive {
 	filter: blur(8px);

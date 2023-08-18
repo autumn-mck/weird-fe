@@ -1,5 +1,5 @@
 export default abstract class CustomHTMLElement extends HTMLElement {
-	constructor(css: CSSStyleSheet, children: (HTMLElement | string)[]) {
+	constructor(css: CSSStyleSheet, children: (Node | string)[]) {
 		super();
 
 		const shadow = this.attachShadow({ mode: "closed" });

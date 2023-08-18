@@ -56,7 +56,7 @@ export function escapeHTML(string) {
     };
     return string.replace(/[&"'<>]/g, (c) => lookup[c]);
 }
-export function formatInEmojis(string, emojis) {
+export async function formatInEmojis(string, emojis) {
     // i would have assumed i'd need to check to make sure emojis aren't inserted into preformatted elements or whatever,
     // but akkoma-fe seems to just do it, and since that's easier i'll just do that too
     for (const emoji of emojis) {
@@ -83,5 +83,15 @@ export function putChildrenInNewContainer(children, containerClass) {
 }
 export function clone(element) {
     return element.cloneNode(true);
+}
+const parser = new DOMParser();
+export function parseHTML(html) {
+    return Array.from(parser.parseFromString(`${html}`, "text/html").body.childNodes);
+}
+export function parseSVG(svg) {
+    return parser.parseFromString(svg, "image/svg+xml").firstChild;
+}
+export async function chunkArray(array, chunkSize) {
+    return array.map((_item, index) => (index % chunkSize === 0 ? array.slice(index, index + chunkSize) : null)).filter(Boolean);
 }
 //# sourceMappingURL=utils.js.map

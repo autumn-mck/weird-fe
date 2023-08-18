@@ -1,7 +1,8 @@
-import { addClasses, putChildrenInNewCurryContainer, setImgSrc, setInnerHTML, setInnerText } from "../../curryingUtils.js";
-import { aCreateElement, formatInEmojis, relativeTime } from "../../utils.js";
+import { addClasses, putChildrenInNewCurryContainer, setImgSrc, setInnerText } from "../../curryingUtils.js";
+import { aCreateElement, formatInEmojis, parseHTML, relativeTime } from "../../utils.js";
 import DisplayName from "./displayName.js";
 import CustomHTMLElement from "../customElement.js";
+import * as consts from "../../consts.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
@@ -36,20 +37,7 @@ a {
 	padding: 1rem;
 }
 
-.emoji {
-	vertical-align: middle;
-	/* stares at https://bugzilla.mozilla.org/show_bug.cgi?id=1310170 */
-	height: 1.375rem;
-	min-width: 1.375rem;
-	transition: transform 0.1s ease-in-out;
-	max-width: 100%;
-	object-fit: contain;
-}
-
-.emoji:hover {
-	z-index: 1;
-	transform: scale(2);
-}
+${consts.emojiCSS}
 `);
 export default class ProfilePreview extends CustomHTMLElement {
     static async build(account) {
@@ -60,8 +48,10 @@ export default class ProfilePreview extends CustomHTMLElement {
             Promise.all([
                 aCreateElement("img", "preview-avatar").then(setImgSrc(account.avatar)),
                 Promise.all([
-                    DisplayName.build(account),
-                    aCreateElement("p").then(setInnerHTML(accountBio)).then(addClasses("profile-preview-bio")),
+                    DisplayName.build(account.display_name, account.emojis),
+                    formatInEmojis(account.note, account.emojis)
+                        .then(parseHTML)
+                        .then(putChildrenInNewCurryContainer("profile-preview-bio")),
                     aCreateElement("p").then(setInnerText(accountCreatedAt)).then(addClasses("profile-preview-created-at")),
                 ]).then(putChildrenInNewCurryContainer("profile-preview-text")),
             ]).then(putChildrenInNewCurryContainer("profile-preview-content")),

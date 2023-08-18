@@ -43,7 +43,7 @@ export default class BoostedBy extends CustomHTMLElement {
         return Promise.all([
             getIcon(Icon.Boost).then(clone).then(addClasses("boosted-by-ico")),
             aCreateElement("p", "boosted-by").then(setInnerText("Boosted by")),
-            DisplayName.build(post.account),
+            DisplayName.build(post.account.display_name, post.account.emojis),
             aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
         ]).then(this.createNew);
     }

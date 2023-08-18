@@ -16,6 +16,10 @@ import PosterInfo from "./elements/post/posterInfo.js";
 import DisplayName from "./elements/account/displayName.js";
 import PostMediaItem from "./elements/post/postMediaItem.js";
 import EmojiReaction from "./elements/post/emojiReaction.js";
+import PostTextContent from "./elements/post/postTextContent.js";
+import QuotedPost from "./elements/post/quotedPost.js";
+import EmojiReactionsRow from "./elements/post/emojiReactionsRow.js";
+import PostMedia from "./elements/post/postMedia.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
 let perfLastTime = performance.now();
@@ -34,10 +38,14 @@ function defineCustomElements() {
     customElements.define("avatar-with-preview", AvatarWithPreview);
     customElements.define("boosted-by", BoostedBy);
     customElements.define("emoji-reaction", EmojiReaction);
+    customElements.define("emoji-reactions-row", EmojiReactionsRow);
     customElements.define("post-interactions-row", InteractionsRow);
+    customElements.define("post-text-content", PostTextContent);
     customElements.define("poster-info", PosterInfo);
     customElements.define("post-interaction-item", InteractionItem);
+    customElements.define("post-media", PostMedia);
     customElements.define("post-media-item", PostMediaItem);
+    customElements.define("quoted-post", QuotedPost);
 }
 async function doStuffForUrl() {
     const url = new URL(document.location.href);

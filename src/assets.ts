@@ -1,15 +1,15 @@
-import { aCreateElement, clone, fetchAsync } from "./utils.js";
+import { clone, fetchAsync, parseSVG } from "./utils.js";
 import { IconSet } from "./models/iconSet.js";
 import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
-import { setInnerHTML } from "./curryingUtils.js";
+import { putChildInNewCurryContainer } from "./curryingUtils.js";
 
 let icons: { [key: string]: Promise<HTMLElement> } = {};
 
 export async function getIcon(icon: Icon): Promise<HTMLElement> {
 	const iconSet = IconSet.MaterialSymbols;
 	if (!icons[icon]) {
-		icons[icon] = fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then((svg) => aCreateElement("div").then(setInnerHTML(svg)));
+		icons[icon] = fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then(parseSVG).then(putChildInNewCurryContainer("svg"));
 	}
 
 	return icons[icon]!;

@@ -26,12 +26,6 @@ export function putChildrenInNewCurryContainer(containerClass) {
         return container;
     };
 }
-export function setInnerHTML(html) {
-    return function (element) {
-        element.innerHTML = html;
-        return element;
-    };
-}
 export function setInnerText(text) {
     return function (element) {
         element.innerText = text;

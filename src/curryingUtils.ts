@@ -15,7 +15,7 @@ export function putChildInCurryContainer(container: HTMLElement) {
 }
 
 export function putChildInNewCurryContainer(containerClass: string, elementType = "div") {
-	return function (child: HTMLElement) {
+	return function (child: Node) {
 		let container: HTMLElement = createElement(elementType, containerClass);
 		container.appendChild(child);
 		return container;
@@ -23,17 +23,10 @@ export function putChildInNewCurryContainer(containerClass: string, elementType 
 }
 
 export function putChildrenInNewCurryContainer(containerClass: string) {
-	return function (children: (HTMLElement | string)[]) {
+	return function (children: (Node | string)[]) {
 		let container: HTMLElement = createElement("div", containerClass);
 		container.append(...children);
 		return container;
-	};
-}
-
-export function setInnerHTML(html: string) {
-	return function (element: HTMLElement) {
-		element.innerHTML = html;
-		return element;
 	};
 }
 

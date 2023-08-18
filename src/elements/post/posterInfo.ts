@@ -7,6 +7,7 @@ import AvatarWithPreview from "./avatarWithPreview.js";
 import * as consts from "../../consts.js";
 import DisplayName from "../account/displayName.js";
 import CustomHTMLElement from "../customElement.js";
+import { Account } from "../../models/account.js";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -27,7 +28,6 @@ a {
 	margin-left: 1rem;
 }
 
-
 .poster-info-col-1 {
 	display: inline-block;
 }
@@ -45,11 +45,13 @@ export default class PosterInfo extends CustomHTMLElement {
 	static async build(post: Status, shouldIncludeAvatar: boolean): Promise<CustomHTMLElement> {
 		return Promise.all([
 			shouldIncludeAvatar ? AvatarWithPreview.build(post.account) : "",
-			Promise.all([constructLeftCol(post), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
+			Promise.all([constructLeftCol(post.account), constructRightCol(post)]).then(
+				putChildrenInNewCurryContainer("poster-text-info")
+			),
 		]).then(this.createNew);
 
-		function constructLeftCol(post: Status): Promise<HTMLElement> {
-			return Promise.all([DisplayName.build(post.account), UsernameAcct.build(post.account)]).then(
+		function constructLeftCol(account: Account): Promise<HTMLElement> {
+			return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(
 				putChildrenInNewCurryContainer("poster-info-column-1")
 			);
 		}
