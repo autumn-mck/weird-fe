@@ -44,11 +44,23 @@ display-name {
 export default class BoostedBy extends CustomHTMLElement {
 	static async build(post: Status): Promise<CustomHTMLElement> {
 		return Promise.all([
-			getIcon(Icon.Boost).then(clone).then(addClasses("boosted-by-ico")),
-			aCreateElement("p", "boosted-by").then(setInnerText("Boosted by")),
+			BoostedBy.getBoostedByIcon(),
+			BoostedBy.getBoostedByText(),
 			DisplayName.build(post.account.display_name, post.account.emojis),
-			aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
-		]).then(this.createNew);
+			BoostedBy.buildBoostedDate(post.created_at),
+		]).then(BoostedBy.createNew);
+	}
+
+	private static async buildBoostedDate(createdAt: string): Promise<HTMLElement> {
+		return aCreateElement("p", "boosted-time").then(setInnerText(relativeTime(new Date(createdAt))));
+	}
+
+	private static async getBoostedByText(): Promise<HTMLElement> {
+		return aCreateElement("p", "boosted-by").then(setInnerText("Boosted by"));
+	}
+
+	private static async getBoostedByIcon(): Promise<HTMLElement> {
+		return getIcon(Icon.Boost).then(clone).then(addClasses("boosted-by-ico"));
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {

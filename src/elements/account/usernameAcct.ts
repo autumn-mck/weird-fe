@@ -52,11 +52,11 @@ export default class UsernameAcct extends CustomHTMLElement {
 					]).then(putChildrenInCurryContainer(acct));
 					return acct;
 				}),
-			account.akkoma ? this.#constructInstanceFavicon(account.akkoma.instance) : "",
-		]).then(this.createNew);
+			account.akkoma ? UsernameAcct.constructInstanceFavicon(account.akkoma.instance) : "",
+		]).then(UsernameAcct.createNew);
 	}
 
-	static #constructInstanceFavicon(instance: any | undefined) {
+	private static constructInstanceFavicon(instance: any | undefined) {
 		if (!instance || !instance.favicon) return "";
 
 		let title = instance.name;
@@ -66,7 +66,7 @@ export default class UsernameAcct extends CustomHTMLElement {
 			instance.nodeinfo.software.name &&
 			instance.nodeinfo.software.version
 		) {
-			title += " (" + instance.nodeinfo.software.name + " " + instance.nodeinfo.software.version + ")";
+			title += ` (${instance.nodeinfo.software.name} ${instance.nodeinfo.software.version})`;
 		}
 
 		return aCreateElement("img", "favicon").then(setImgSrc(instance.favicon)).then(setTitle(title));

@@ -16,14 +16,17 @@ ${consts.emojiCSS}
 export default class EmojiReaction extends CustomHTMLElement {
     static async build(emojiReaction) {
         return Promise.all([
-            EmojiReaction.#createEmojiElement(emojiReaction).then(addClasses("emoji")),
-            aCreateElement("span", "emoji-reaction-count").then(setInnerText(String(emojiReaction.count))),
+            EmojiReaction.createEmojiElement(emojiReaction).then(addClasses("emoji")),
+            EmojiReaction.buildReactionCount(emojiReaction.count),
         ]).then(EmojiReaction.createNew);
+    }
+    static buildReactionCount(count) {
+        return aCreateElement("span", "emoji-reaction-count").then(setInnerText(String(count)));
     }
     static createNew(elements) {
         return new EmojiReaction(sheet, elements);
     }
-    static async #createEmojiElement(emojiReaction) {
+    static async createEmojiElement(emojiReaction) {
         if (emojiReaction.url) {
             return aCreateElement("img", "emoji-reaction-img")
                 .then(setImgSrc(emojiReaction.url))

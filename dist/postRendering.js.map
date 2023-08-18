@@ -1,1 +1,0 @@
-{"version":3,"file":"postRendering.js","sourceRoot":"","sources":["../src/postRendering.ts"],"names":[],"mappings":"AAEA,OAAO,IAAI,MAAM,yBAAyB,CAAC;AAE3C,MAAM,CAAC,KAAK,UAAU,aAAa,CAAC,IAAY,EAAE,wBAAwB,GAAG,KAAK,EAAE,QAAQ,GAAG,KAAK;IACnG,OAAO,IAAI,CAAC,KAAK,CAAC,IAAI,EAAE,wBAAwB,EAAE,QAAQ,CAAC,CAAC;AAC7D,CAAC"}

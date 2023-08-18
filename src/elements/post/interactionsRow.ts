@@ -24,7 +24,7 @@ export default class InteractionsRow extends HTMLElement {
 			InteractionItem.build(Icon.Favourite, post.id, String(post.favourites_count)),
 			InteractionItem.build(Icon.AddReaction, post.id),
 			InteractionItem.build(Icon.More, post.id),
-		]).then(this.createNew);
+		]).then(InteractionsRow.createNew);
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {

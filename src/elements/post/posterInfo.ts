@@ -45,26 +45,26 @@ export default class PosterInfo extends CustomHTMLElement {
 	static async build(post: Status, shouldIncludeAvatar: boolean): Promise<CustomHTMLElement> {
 		return Promise.all([
 			shouldIncludeAvatar ? AvatarWithPreview.build(post.account) : "",
-			Promise.all([constructLeftCol(post.account), constructRightCol(post)]).then(
+			Promise.all([PosterInfo.constructLeftCol(post.account), PosterInfo.constructRightCol(post)]).then(
 				putChildrenInNewCurryContainer("poster-text-info")
 			),
-		]).then(this.createNew);
+		]).then(PosterInfo.createNew);
+	}
 
-		function constructLeftCol(account: Account): Promise<HTMLElement> {
-			return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(
-				putChildrenInNewCurryContainer("poster-info-column-1")
-			);
-		}
+	private static async constructLeftCol(account: Account): Promise<HTMLElement> {
+		return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(
+			putChildrenInNewCurryContainer("poster-info-column-1")
+		);
+	}
 
-		function constructRightCol(post: Status): Promise<HTMLElement> {
-			return Promise.all([
-				aCreateElement("a", "post-time")
-					.then(setInnerText(relativeTime(new Date(post.created_at))))
-					.then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
+	private static async constructRightCol(post: Status): Promise<HTMLElement> {
+		return Promise.all([
+			aCreateElement("a", "post-time")
+				.then(setInnerText(relativeTime(new Date(post.created_at))))
+				.then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
 
-				getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
-			]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
-		}
+			getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
+		]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {

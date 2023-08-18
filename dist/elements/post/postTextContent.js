@@ -36,7 +36,7 @@ ${consts.emojiCSS}
 `);
 export default class PostTextContent extends CustomHTMLElement {
     static async build(content, emojis) {
-        return formatInEmojis(content, emojis).then(parseHTML).then(this.createNew);
+        return formatInEmojis(content, emojis).then(parseHTML).then(PostTextContent.createNew);
     }
     static createNew(elements) {
         return new PostTextContent(sheet, elements);

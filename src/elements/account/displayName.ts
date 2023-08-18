@@ -16,7 +16,7 @@ ${consts.emojiCSS}
 
 export default class DisplayName extends CustomHTMLElement {
 	static async build(display_name: string, emojis: CustomEmoji[]): Promise<CustomHTMLElement> {
-		return formatInEmojis(display_name, emojis).then(parseHTML).then(this.createNew);
+		return formatInEmojis(display_name, emojis).then(parseHTML).then(DisplayName.createNew);
 	}
 
 	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {

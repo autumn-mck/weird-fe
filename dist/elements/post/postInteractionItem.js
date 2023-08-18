@@ -60,14 +60,14 @@ export default class InteractionItem extends CustomHTMLElement {
                 .then(clone)
                 .then(putChildInNewCurryContainer(`icon icon-${icon}`, "label"))
                 .then(setLabelHtmlFor(postId))
-                .then(addClasses(InteractionItem.#shouldBeSpinny(icon) ? "spinny-icon" : "")),
+                .then(addClasses(InteractionItem.shouldBeSpinny(icon) ? "spinny-icon" : "")),
             text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
-        ]).then(this.createNew);
+        ]).then(InteractionItem.createNew);
     }
     static createNew(elements) {
         return new InteractionItem(sheet, elements);
     }
-    static #shouldBeSpinny(icon) {
+    static shouldBeSpinny(icon) {
         switch (icon) {
             case Icon.Reply:
             case Icon.Boost:

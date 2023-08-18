@@ -2,7 +2,7 @@ import { getIcon } from "./assets.js";
 import { Icon } from "./models/icons.js";
 import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
 import { aCreateElement, clone, putChildrenInNewContainer } from "./utils.js";
-import { addClasses, putChildInCurryContainer, putChildInNewCurryContainer, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, } from "./curryingUtils.js";
+import { addClasses, putChildInCurryContainer, putChildrenInCurryContainer, putChildrenInNewCurryContainer, setAnchorHref, setInnerText, } from "./curryingUtils.js";
 import * as consts from "./consts.js";
 import InteractionItem from "./elements/post/postInteractionItem.js";
 import BoostedBy from "./elements/post/boostedBy.js";
@@ -78,6 +78,7 @@ async function doStuffForUrl() {
             break;
         }
         default: {
+            // todo default should really be an actual 404 page
             fetchFederatedTimeline()
                 .then(perfMessage("fetchFederatedTimeline"))
                 .then(renderTimeline)
@@ -88,7 +89,7 @@ async function doStuffForUrl() {
 }
 function scrollToIfReply(status) {
     if (status.in_reply_to_id)
-        scrollToElementWithId("post-" + status.id);
+        scrollToElementWithId(status.id);
 }
 function scrollToElementWithId(id) {
     document.getElementById(id).scrollIntoView();
@@ -149,9 +150,7 @@ async function constructReplyTopLine(post) {
     if (!replyTo)
         replyTo = post.account;
     return Promise.all([
-        aCreateElement("div", "avatar-line-top")
-            .then(putChildInNewCurryContainer("avatar-line-container"))
-            .then(perfMessage("avatar-line-container")),
+        aCreateElement("div", "avatar-line-top"),
         getIcon(Icon.Reply).then(clone).then(addClasses("post-replies-top-icon")),
         aCreateElement("a", "post-replies-top-text")
             .then(setAnchorHref(`/${consts.statusesPath}/${post.in_reply_to_id}`))

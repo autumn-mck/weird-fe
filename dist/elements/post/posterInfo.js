@@ -41,19 +41,19 @@ export default class PosterInfo extends CustomHTMLElement {
     static async build(post, shouldIncludeAvatar) {
         return Promise.all([
             shouldIncludeAvatar ? AvatarWithPreview.build(post.account) : "",
-            Promise.all([constructLeftCol(post.account), constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
-        ]).then(this.createNew);
-        function constructLeftCol(account) {
-            return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
-        }
-        function constructRightCol(post) {
-            return Promise.all([
-                aCreateElement("a", "post-time")
-                    .then(setInnerText(relativeTime(new Date(post.created_at))))
-                    .then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
-                getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
-            ]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
-        }
+            Promise.all([PosterInfo.constructLeftCol(post.account), PosterInfo.constructRightCol(post)]).then(putChildrenInNewCurryContainer("poster-text-info")),
+        ]).then(PosterInfo.createNew);
+    }
+    static async constructLeftCol(account) {
+        return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
+    }
+    static async constructRightCol(post) {
+        return Promise.all([
+            aCreateElement("a", "post-time")
+                .then(setInnerText(relativeTime(new Date(post.created_at))))
+                .then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
+            getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
+        ]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
     }
     static createNew(elements) {
         return new PosterInfo(sheet, elements);

@@ -14,7 +14,7 @@ sheet.replaceSync(`
 `);
 export default class QuotedPost extends CustomHTMLElement {
     static async build(post) {
-        return Post.build(post, false, true).then(addClasses("quoted-post")).then(this.createNew);
+        return Post.build(post, false, true).then(addClasses("quoted-post")).then(QuotedPost.createNew);
     }
     static createNew(element) {
         return new QuotedPost(sheet, [element]);

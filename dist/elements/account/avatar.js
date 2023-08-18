@@ -17,7 +17,7 @@ sheet.replaceSync(`
 `);
 export default class Avatar extends CustomHTMLElement {
     static async build(avatarSrc) {
-        return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(this.createNew);
+        return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(Avatar.createNew);
     }
     static createNew(element) {
         return new Avatar(sheet, [element]);

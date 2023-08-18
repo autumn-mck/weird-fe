@@ -1,4 +1,4 @@
-import { addClasses, putChildrenInNewCurryContainer, setInnerText } from "../../curryingUtils.js";
+import { addClasses, putChildrenInNewCurryContainer, setId, setInnerText } from "../../curryingUtils.js";
 import { aCreateElement } from "../../utils.js";
 import CustomHTMLElement from "../customElement.js";
 import AvatarWithPreview from "./avatarWithPreview.js";
@@ -47,45 +47,52 @@ sheet.replaceSync(`
 `);
 export default class Post extends CustomHTMLElement {
     static async build(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
-        return (post.reblog ? this.#constructBoost(post) : this.#constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted)).then((elements) => this.createNew(elements, post.id));
+        return (post.reblog ? Post.constructBoost(post) : Post.constructPost(inludeSpaceForAvatarLine, post, isQuoted))
+            .then(Post.createNew)
+            .then(setId(post.id));
     }
-    static async #constructBoost(post) {
+    static async constructBoost(post) {
         return Promise.all([BoostedBy.build(post), Post.build(post.reblog).then(addClasses("boosted-post"))])
             .then(putChildrenInNewCurryContainer("post-body"))
             .then((body) => [body]);
     }
-    static async #constructStandardPost(inludeSpaceForAvatarLine, post, isQuoted) {
+    static async constructPost(inludeSpaceForAvatarLine, post, isQuoted) {
         return Promise.all([
             inludeSpaceForAvatarLine ? AvatarWithPreview.build(post.account, inludeSpaceForAvatarLine) : "",
-            this.#constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted),
+            Post.constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted),
         ]);
     }
-    static async #constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted) {
+    static async constructStandardPostBody(post, inludeSpaceForAvatarLine, isQuoted) {
         return Promise.all([
             PosterInfo.build(post, !inludeSpaceForAvatarLine),
             post.spoiler_text ? aCreateElement("p", "post-spoiler-text").then(setInnerText(post.spoiler_text)) : "",
-            Promise.all([
-                PostTextContent.build(post.content, post.emojis),
-                post.media_attachments && post.media_attachments.length > 0
-                    ? PostMedia.build(post.media_attachments, post.sensitive)
-                    : "",
-                post.poll ? "TODO: poll" : "",
-                post.quote ? QuotedPost.build(post.quote) : "",
-            ]).then(putChildrenInNewCurryContainer("post-inner-body")),
-            !isQuoted && post.emoji_reactions && post.emoji_reactions.length > 0 ? EmojiReactionsRow.build(post.emoji_reactions) : "",
+            Post.constructInnerBody(post),
+            Post.shouldDisplayEmojiReactionRow(isQuoted, post.emoji_reactions) ? EmojiReactionsRow.build(post.emoji_reactions) : "",
             !isQuoted ? InteractionsRow.build(post) : "",
         ])
             .then(putChildrenInNewCurryContainer("post-body"))
-            .then((postBody) => {
-            if (post.spoiler_text)
+            .then(Post.markSpoilerIfNeeded(post.spoiler_text));
+    }
+    static markSpoilerIfNeeded(postSpoilerText) {
+        return function (postBody) {
+            if (postSpoilerText)
                 postBody.className += " post-spoiler";
             return postBody;
-        });
+        };
     }
-    static createNew(elements, id) {
-        const post = new Post(sheet, elements);
-        post.id = id;
-        return post;
+    static shouldDisplayEmojiReactionRow(isQuoted, emojiReactions) {
+        return !isQuoted && emojiReactions && emojiReactions.length > 0;
+    }
+    static constructInnerBody(post) {
+        return Promise.all([
+            PostTextContent.build(post.content, post.emojis),
+            post.media_attachments && post.media_attachments.length > 0 ? PostMedia.build(post.media_attachments, post.sensitive) : "",
+            post.poll ? "TODO: poll" : "",
+            post.quote ? QuotedPost.build(post.quote) : "",
+        ]).then(putChildrenInNewCurryContainer("post-inner-body"));
+    }
+    static createNew(elements) {
+        return new Post(sheet, elements);
     }
 }
 //# sourceMappingURL=post.js.map

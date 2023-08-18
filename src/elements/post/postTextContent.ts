@@ -39,7 +39,7 @@ ${consts.emojiCSS}
 
 export default class PostTextContent extends CustomHTMLElement {
 	static async build(content: string, emojis: CustomEmoji[]): Promise<CustomHTMLElement> {
-		return formatInEmojis(content, emojis).then(parseHTML).then(this.createNew);
+		return formatInEmojis(content, emojis).then(parseHTML).then(PostTextContent.createNew);
 	}
 
 	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {

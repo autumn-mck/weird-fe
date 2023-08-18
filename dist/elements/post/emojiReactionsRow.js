@@ -11,7 +11,7 @@ sheet.replaceSync(`
 `);
 export default class EmojiReactionsRow extends CustomHTMLElement {
     static async build(emojiReactions) {
-        return Promise.all(emojiReactions.map(EmojiReaction.build)).then(this.createNew);
+        return Promise.all(emojiReactions.map(EmojiReaction.build)).then(EmojiReactionsRow.createNew);
     }
     static createNew(elements) {
         return new EmojiReactionsRow(sheet, elements);

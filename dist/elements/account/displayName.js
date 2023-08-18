@@ -13,7 +13,7 @@ ${consts.emojiCSS}
 `);
 export default class DisplayName extends CustomHTMLElement {
     static async build(display_name, emojis) {
-        return formatInEmojis(display_name, emojis).then(parseHTML).then(this.createNew);
+        return formatInEmojis(display_name, emojis).then(parseHTML).then(DisplayName.createNew);
     }
     static createNew(elements) {
         return new DisplayName(sheet, elements);

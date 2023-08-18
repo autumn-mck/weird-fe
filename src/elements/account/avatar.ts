@@ -19,7 +19,7 @@ sheet.replaceSync(`
 
 export default class Avatar extends CustomHTMLElement {
 	static async build(avatarSrc: string): Promise<CustomHTMLElement> {
-		return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(this.createNew);
+		return aCreateElement("img", "avatar").then(setImgSrc(avatarSrc)).then(Avatar.createNew);
 	}
 
 	protected static createNew(element: HTMLElement | string): CustomHTMLElement {

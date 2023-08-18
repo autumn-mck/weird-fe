@@ -62,7 +62,7 @@ export default class ProfilePreview extends CustomHTMLElement {
 			]).then(putChildrenInNewCurryContainer("profile-preview-content")),
 		])
 			.then(putChildrenInNewCurryContainer("profile-preview"))
-			.then(this.createNew);
+			.then(ProfilePreview.createNew);
 	}
 
 	protected static createNew(element: HTMLElement | string): CustomHTMLElement {

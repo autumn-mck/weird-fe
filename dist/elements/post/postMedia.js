@@ -25,7 +25,7 @@ export default class PostMedia extends CustomHTMLElement {
         return Promise.all(attachments.map((attatchment) => PostMediaItem.build(attatchment, isSensitive)))
             .then((mediaItems) => chunkArray(mediaItems, maxItemsInRow))
             .then((mediaRows) => Promise.all(mediaRows.map(putChildrenInNewCurryContainer("row"))))
-            .then(this.createNew);
+            .then(PostMedia.createNew);
     }
     static createNew(elements) {
         return new PostMedia(sheet, elements);

@@ -29,7 +29,7 @@ export default class PostMedia extends CustomHTMLElement {
 		return Promise.all(attachments.map((attatchment) => PostMediaItem.build(attatchment, isSensitive)))
 			.then((mediaItems) => chunkArray(mediaItems, maxItemsInRow) as unknown as HTMLElement[][])
 			.then((mediaRows) => Promise.all(mediaRows.map(putChildrenInNewCurryContainer("row"))))
-			.then(this.createNew);
+			.then(PostMedia.createNew);
 	}
 
 	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {

@@ -32,37 +32,49 @@ sheet.replaceSync(`
 
 export default class PostMediaItem extends CustomHTMLElement {
 	static async build(attachment: MediaAttatchment, isSensitive: boolean): Promise<CustomHTMLElement> {
-		return this.#constructMediaDomItem(attachment)
+		return PostMediaItem.constructMediaDomItem(attachment)
+			.then(PostMediaItem.enableMediaControlsIfNeeded(attachment.type))
+			.then(PostMediaItem.markSensitiveIfNeeded(isSensitive))
 			.then(setImgSrc(attachment.url))
 			.then(addClasses("post-media-item"))
-			.then((mediaItem) => {
-				if (isSensitive) mediaItem.className += " sensitive";
-				return mediaItem;
-			})
-			.then(this.createNew);
+			.then(PostMediaItem.createNew);
 	}
 
-	static async #constructMediaDomItem(attachment: MediaAttatchment) {
-		let mediaItem: HTMLImageElement | HTMLVideoElement | HTMLAudioElement;
+	private static markSensitiveIfNeeded(isSensitive: boolean) {
+		return function (mediaItem: HTMLElement) {
+			if (isSensitive) mediaItem.className += " sensitive";
+			return mediaItem;
+		};
+	}
 
-		// todo handle better
-		if (attachment.type === "image") {
-			mediaItem = document.createElement("img");
-		} else if (attachment.type === "video") {
-			mediaItem = document.createElement("video");
-			mediaItem.controls = true;
-		} else if (attachment.type === "gifv") {
-			mediaItem = document.createElement("video");
-			mediaItem.controls = true;
-		} else if (attachment.type === "audio") {
-			mediaItem = document.createElement("audio");
-			mediaItem.controls = true;
-		} else {
-			console.log(attachment);
-
-			throw new Error("Unknown media type: " + attachment.type);
+	private static async constructMediaDomItem(attachment: MediaAttatchment) {
+		switch (attachment.type) {
+			case "image":
+				return document.createElement("img");
+			case "gifv":
+			case "video":
+				return document.createElement("video");
+			case "audio":
+				return document.createElement("audio");
+			default:
+				console.log(attachment);
+				throw new Error("Unknown media type: " + attachment.type);
 		}
-		return mediaItem;
+	}
+
+	private static enableMediaControlsIfNeeded(attachmentType: string) {
+		return function (mediaItem: HTMLElement) {
+			switch (attachmentType) {
+				case "video":
+				case "gifv":
+				case "audio":
+					mediaItem.setAttribute("controls", "");
+					return mediaItem;
+
+				default:
+					return mediaItem;
+			}
+		};
 	}
 
 	protected static createNew(element: HTMLElement | string): CustomHTMLElement {

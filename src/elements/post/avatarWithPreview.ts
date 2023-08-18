@@ -39,7 +39,7 @@ export default class AvatarWithPreview extends CustomHTMLElement {
 			Avatar.build(account.avatar),
 			ProfilePreview.build(account),
 			includeSpaceForAvatarLine ? aCreateElement("div", "avatar-line") : "",
-		]).then(this.createNew);
+		]).then(AvatarWithPreview.createNew);
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {

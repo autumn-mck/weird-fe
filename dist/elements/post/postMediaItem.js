@@ -29,39 +29,46 @@ sheet.replaceSync(`
 `);
 export default class PostMediaItem extends CustomHTMLElement {
     static async build(attachment, isSensitive) {
-        return this.#constructMediaDomItem(attachment)
+        return PostMediaItem.constructMediaDomItem(attachment)
+            .then(PostMediaItem.enableMediaControlsIfNeeded(attachment.type))
+            .then(PostMediaItem.markSensitiveIfNeeded(isSensitive))
             .then(setImgSrc(attachment.url))
             .then(addClasses("post-media-item"))
-            .then((mediaItem) => {
+            .then(PostMediaItem.createNew);
+    }
+    static markSensitiveIfNeeded(isSensitive) {
+        return function (mediaItem) {
             if (isSensitive)
                 mediaItem.className += " sensitive";
             return mediaItem;
-        })
-            .then(this.createNew);
+        };
     }
-    static async #constructMediaDomItem(attachment) {
-        let mediaItem;
-        // todo handle better
-        if (attachment.type === "image") {
-            mediaItem = document.createElement("img");
+    static async constructMediaDomItem(attachment) {
+        switch (attachment.type) {
+            case "image":
+                return document.createElement("img");
+            case "gifv":
+            case "video":
+                return document.createElement("video");
+            case "audio":
+                return document.createElement("audio");
+            default:
+                console.log(attachment);
+                throw new Error("Unknown media type: " + attachment.type);
         }
-        else if (attachment.type === "video") {
-            mediaItem = document.createElement("video");
-            mediaItem.controls = true;
-        }
-        else if (attachment.type === "gifv") {
-            mediaItem = document.createElement("video");
-            mediaItem.controls = true;
-        }
-        else if (attachment.type === "audio") {
-            mediaItem = document.createElement("audio");
-            mediaItem.controls = true;
-        }
-        else {
-            console.log(attachment);
-            throw new Error("Unknown media type: " + attachment.type);
-        }
-        return mediaItem;
+    }
+    static enableMediaControlsIfNeeded(attachmentType) {
+        return function (mediaItem) {
+            switch (attachmentType) {
+                case "video":
+                case "gifv":
+                case "audio":
+                    mediaItem.setAttribute("controls", "");
+                    return mediaItem;
+                default:
+                    return mediaItem;
+            }
+        };
     }
     static createNew(element) {
         return new PostMediaItem(sheet, [element]);

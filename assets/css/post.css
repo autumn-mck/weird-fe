@@ -23,15 +23,13 @@
 	margin-left: 0.25rem;
 }
 
-.avatar-line-container {
-	width: var(--post-pfp-size);
-}
-
 .avatar-line-top {
 	background-image: linear-gradient(transparent, var(--border));
 	width: 4px;
 	height: 3rem;
-	margin: auto;
+	margin-top: -1.5rem;
+	margin-left: calc(var(--post-pfp-size) / 2 - 2px);
+	margin-right: calc(var(--post-pfp-size) / 2 - 2px);
 	margin-bottom: -2.5rem;
 }
 
