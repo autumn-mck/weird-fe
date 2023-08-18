@@ -12,7 +12,6 @@ import { Account } from "../../models/account.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
-	margin-bottom: 0.5rem;
 	display: flex;
 	align-items: center;
 }
@@ -28,12 +27,20 @@ a {
 	margin-left: 1rem;
 }
 
-.poster-info-col-1 {
-	display: inline-block;
+.left-column {
+	display: flex;
+	flex-direction: column;
 }
 
-.poster-info-column-2 * {
-	text-align: right;
+.right-column {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.svg {
+	height: 24px;
+	width: 24px;
 }
 
 .post-visibility {
@@ -53,7 +60,7 @@ export default class PosterInfo extends CustomHTMLElement {
 
 	private static async constructLeftCol(account: Account): Promise<HTMLElement> {
 		return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(
-			putChildrenInNewCurryContainer("poster-info-column-1")
+			putChildrenInNewCurryContainer("left-column")
 		);
 	}
 
@@ -64,7 +71,7 @@ export default class PosterInfo extends CustomHTMLElement {
 				.then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
 
 			getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
-		]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
+		]).then(putChildrenInNewCurryContainer("right-column"));
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {

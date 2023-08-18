@@ -42,6 +42,13 @@ let perfLastTime = performance.now();
  */
 async function main() {
 	defineCustomElements();
+
+	addEventListener("popstate", () => {
+		console.log("popstate");
+
+		doStuffForUrl();
+	});
+
 	doStuffForUrl();
 }
 
@@ -68,6 +75,7 @@ function defineCustomElements() {
 async function doStuffForUrl() {
 	const url = new URL(document.location.href);
 	const path = url.pathname.split("/");
+	timelineDiv.innerHTML = "";
 
 	perfLastTime = performance.now();
 

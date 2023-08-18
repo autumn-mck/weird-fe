@@ -9,7 +9,6 @@ import CustomHTMLElement from "../customElement.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
-	margin-bottom: 0.5rem;
 	display: flex;
 	align-items: center;
 }
@@ -25,12 +24,20 @@ a {
 	margin-left: 1rem;
 }
 
-.poster-info-col-1 {
-	display: inline-block;
+.left-column {
+	display: flex;
+	flex-direction: column;
 }
 
-.poster-info-column-2 * {
-	text-align: right;
+.right-column {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.svg {
+	height: 24px;
+	width: 24px;
 }
 
 .post-visibility {
@@ -45,7 +52,7 @@ export default class PosterInfo extends CustomHTMLElement {
         ]).then(PosterInfo.createNew);
     }
     static async constructLeftCol(account) {
-        return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(putChildrenInNewCurryContainer("poster-info-column-1"));
+        return Promise.all([DisplayName.build(account.display_name, account.emojis), UsernameAcct.build(account)]).then(putChildrenInNewCurryContainer("left-column"));
     }
     static async constructRightCol(post) {
         return Promise.all([
@@ -53,7 +60,7 @@ export default class PosterInfo extends CustomHTMLElement {
                 .then(setInnerText(relativeTime(new Date(post.created_at))))
                 .then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
             getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
-        ]).then(putChildrenInNewCurryContainer("poster-info-column-2"));
+        ]).then(putChildrenInNewCurryContainer("right-column"));
     }
     static createNew(elements) {
         return new PosterInfo(sheet, elements);

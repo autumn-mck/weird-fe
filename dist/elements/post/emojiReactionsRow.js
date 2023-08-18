@@ -7,6 +7,8 @@ sheet.replaceSync(`
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
+	gap: 0.5rem;
+	row-gap: 0.5rem;
 }
 `);
 export default class EmojiReactionsRow extends CustomHTMLElement {

@@ -14,7 +14,7 @@ sheet.replaceSync(`
 :host {
 	width: calc(100% - 1rem);
 	/* todo root post should have top split 50/50 */
-	padding: 0.5rem 0.5rem 0 0.5rem;
+	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
 	margin: 0.5rem 0.5rem 0 0.5rem;
 	display: flex;
 	background: transparent;
@@ -36,6 +36,15 @@ sheet.replaceSync(`
 
 .post-body {
 	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.post-inner-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .post-spoiler .post-inner-body {
@@ -85,7 +94,7 @@ export default class Post extends CustomHTMLElement {
     }
     static constructInnerBody(post) {
         return Promise.all([
-            PostTextContent.build(post.content, post.emojis),
+            PostTextContent.build(post.content, post.emojis, post.mentions),
             post.media_attachments && post.media_attachments.length > 0 ? PostMedia.build(post.media_attachments, post.sensitive) : "",
             post.poll ? "TODO: poll" : "",
             post.quote ? QuotedPost.build(post.quote) : "",

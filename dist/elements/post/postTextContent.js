@@ -35,8 +35,34 @@ a {
 ${consts.emojiCSS}
 `);
 export default class PostTextContent extends CustomHTMLElement {
-    static async build(content, emojis) {
-        return formatInEmojis(content, emojis).then(parseHTML).then(PostTextContent.createNew);
+    static async build(content, emojis, mentions) {
+        return formatInEmojis(content, emojis)
+            .then(parseHTML)
+            .then((elements) => PostTextContent.addOnClickListenersToMentions(elements, mentions))
+            .then(PostTextContent.createNew);
+    }
+    static addOnClickListenersToMentions(elements, mentions) {
+        elements.forEach((element) => PostTextContent.walk(element, mentions));
+        return elements;
+    }
+    static walk(node, mentions) {
+        const children = node.childNodes;
+        children.forEach((child) => PostTextContent.walk(child, mentions));
+        PostTextContent.interceptUrlMentions(node, mentions);
+    }
+    static interceptUrlMentions(node, mentions) {
+        if (!(node instanceof HTMLAnchorElement))
+            return;
+        const mention = mentions.find((mention) => mention.url === node.href);
+        if (!mention)
+            return;
+        node.title = mention.acct;
+        node.addEventListener("click", (e) => {
+            e.preventDefault();
+            history.pushState(null, "", `/${consts.accountsPath}/${mention.id}`);
+            window.dispatchEvent(new Event("popstate"));
+            console.log("clicked mention", mention);
+        });
     }
     static createNew(elements) {
         return new PostTextContent(sheet, elements);

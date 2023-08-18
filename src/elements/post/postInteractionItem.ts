@@ -22,11 +22,19 @@ sheet.replaceSync(`
 	box-sizing: content-box;
 	height: 24px;
 	width: 24px;
-	margin-right: 0.3rem;
 	padding: 0.25rem;
 	transition: fill 0.2s ease-in, transform 0.7s ease-in-out;
 	fill: var(--post-interaction);
 	cursor: pointer;
+}
+
+.interaction-text {
+	margin-left: 0.25rem;
+}
+
+.svg {
+	height: 24px;
+	width: 24px;
 }
 
 .icon-${Icon.Favourite} {
@@ -72,7 +80,7 @@ export default class InteractionItem extends CustomHTMLElement {
 				.then(setLabelHtmlFor(postId))
 				.then(addClasses(InteractionItem.shouldBeSpinny(icon) ? "spinny-icon" : "")),
 
-			text ? aCreateElement("p", "interaction-text").then(setInnerText(text)) : "",
+			text ? aCreateElement("span", "interaction-text").then(setInnerText(text)) : "",
 		]).then(InteractionItem.createNew);
 	}
 

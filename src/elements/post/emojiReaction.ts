@@ -9,10 +9,25 @@ sheet.replaceSync(`
 	display: flex;
 	align-items: center;
 	padding: 0.5rem;
-	padding-right: 1rem;
+	gap: 0.5rem;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	transition: border 0.2s ease-in-out;
 }
 
 ${consts.emojiCSS}
+
+:host(:hover) {
+	border-color: var(--accent);
+}
+
+.emoji:hover {
+	transform: scale(1);
+}
+
+:host(:hover) .emoji {
+	transform: scale(1.5);
+}
 `);
 
 export default class EmojiReaction extends CustomHTMLElement {

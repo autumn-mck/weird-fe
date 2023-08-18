@@ -19,7 +19,7 @@ sheet.replaceSync(`
 	background: var(--border);
 	width: 4px;
 	flex-grow: 1;
-	margin-bottom: -20px;
+	margin-bottom: -1.5rem;
 }
 
 x-avatar:hover + profile-preview,

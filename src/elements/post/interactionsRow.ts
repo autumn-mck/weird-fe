@@ -8,8 +8,6 @@ sheet.replaceSync(`
 :host {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 0.5rem;
-	margin-bottom: 0.8rem;
 	margin-left: calc(var(--post-pfp-size) + 1rem);
 	margin-right: calc(var(--post-pfp-size) + 1rem);
 }

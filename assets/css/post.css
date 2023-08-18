@@ -1,5 +1,6 @@
 .post-container {
 	border-bottom: 1px solid var(--border);
+	padding-bottom: 0.5rem;
 }
 
 .post-replies-top {
