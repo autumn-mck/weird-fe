@@ -4,7 +4,7 @@ import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
 import { putChildInNewCurryContainer } from "./curryingUtils.js";
 
-let icons: { [key: string]: Promise<HTMLElement> } = {};
+const icons: { [key: string]: Promise<HTMLElement> } = {};
 
 export async function getIcon(icon: Icon): Promise<HTMLElement> {
 	const iconSet = IconSet.MaterialSymbols;

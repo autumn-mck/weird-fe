@@ -1,5 +1,3 @@
-import { Account } from "./models/account";
-
 export function relativeTime(date: Date) {
 	const formatter = new Intl.RelativeTimeFormat("en", {
 		numeric: "always",
@@ -91,7 +89,7 @@ export async function aCreateElement(elementType: string, classes = "") {
 }
 
 export function putChildrenInNewContainer(children: HTMLElement[], containerClass: string): HTMLElement {
-	let childrenContainer: HTMLElement = createElement("div", containerClass);
+	const childrenContainer: HTMLElement = createElement("div", containerClass);
 	childrenContainer.append(...children);
 	return childrenContainer;
 }

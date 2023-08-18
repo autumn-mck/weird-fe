@@ -41,7 +41,6 @@ ${consts.emojiCSS}
 `);
 export default class ProfilePreview extends CustomHTMLElement {
     static async build(account) {
-        const accountBio = formatInEmojis(account.note, account.emojis);
         const accountCreatedAt = relativeTime(new Date(account.created_at));
         return Promise.all([
             aCreateElement("img", "preview-header").then(setImgSrc(account.header)),

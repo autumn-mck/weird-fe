@@ -3,7 +3,7 @@ import { IconSet } from "./models/iconSet.js";
 import { Icon } from "./models/icons.js";
 import { Visibility } from "./models/visibility.js";
 import { putChildInNewCurryContainer } from "./curryingUtils.js";
-let icons = {};
+const icons = {};
 export async function getIcon(icon) {
     const iconSet = IconSet.MaterialSymbols;
     if (!icons[icon]) {

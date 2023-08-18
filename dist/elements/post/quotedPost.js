@@ -1,6 +1,6 @@
 import { addClasses } from "../../curryingUtils.js";
-import { constructPost } from "../../postRendering.js";
 import CustomHTMLElement from "../customElement.js";
+import Post from "./post.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
@@ -14,7 +14,7 @@ sheet.replaceSync(`
 `);
 export default class QuotedPost extends CustomHTMLElement {
     static async build(post) {
-        return constructPost(post, false, true).then(addClasses("quoted-post")).then(this.createNew);
+        return Post.build(post, false, true).then(addClasses("quoted-post")).then(this.createNew);
     }
     static createNew(element) {
         return new QuotedPost(sheet, [element]);

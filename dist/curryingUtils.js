@@ -14,14 +14,14 @@ export function putChildInCurryContainer(container) {
 }
 export function putChildInNewCurryContainer(containerClass, elementType = "div") {
     return function (child) {
-        let container = createElement(elementType, containerClass);
+        const container = createElement(elementType, containerClass);
         container.appendChild(child);
         return container;
     };
 }
 export function putChildrenInNewCurryContainer(containerClass) {
     return function (children) {
-        let container = createElement("div", containerClass);
+        const container = createElement("div", containerClass);
         container.append(...children);
         return container;
     };

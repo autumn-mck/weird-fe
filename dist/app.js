@@ -1,4 +1,3 @@
-import { constructPost } from "./postRendering.js";
 import { getIcon } from "./assets.js";
 import { Icon } from "./models/icons.js";
 import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
@@ -20,6 +19,7 @@ import PostTextContent from "./elements/post/postTextContent.js";
 import QuotedPost from "./elements/post/quotedPost.js";
 import EmojiReactionsRow from "./elements/post/emojiReactionsRow.js";
 import PostMedia from "./elements/post/postMedia.js";
+import Post from "./elements/post/post.js";
 const timelineDiv = document.getElementById("timeline-content");
 const loadingPostsDiv = document.getElementById("loading-posts");
 let perfLastTime = performance.now();
@@ -41,6 +41,7 @@ function defineCustomElements() {
     customElements.define("emoji-reactions-row", EmojiReactionsRow);
     customElements.define("post-interactions-row", InteractionsRow);
     customElements.define("post-text-content", PostTextContent);
+    customElements.define("x-post", Post);
     customElements.define("poster-info", PosterInfo);
     customElements.define("post-interaction-item", InteractionItem);
     customElements.define("post-media", PostMedia);
@@ -52,7 +53,7 @@ async function doStuffForUrl() {
     const path = url.pathname.split("/");
     perfLastTime = performance.now();
     switch (path[1]) {
-        case consts.accountsPath:
+        case consts.accountsPath: {
             const accountId = path[2];
             // todo also display account information, also filter posts n stuff
             fetchUserStatuses(accountId)
@@ -60,10 +61,11 @@ async function doStuffForUrl() {
                 .then(renderTimeline)
                 .then(perfMessage("renderTimeline"));
             break;
-        case consts.statusesPath:
+        }
+        case consts.statusesPath: {
             const statusId = path[2];
-            let [status, context] = await fetchStatusAndContext(statusId).then(perfMessage("fetchStatusAndContext"));
-            let postTrees = await putStatusInContext(status, context).then(buildPostTree).then(perfMessage("buildPostTree"));
+            const [status, context] = await fetchStatusAndContext(statusId).then(perfMessage("fetchStatusAndContext"));
+            const postTrees = await putStatusInContext(status, context).then(buildPostTree).then(perfMessage("buildPostTree"));
             // todo handle quotes
             // /statuses/AYb499YWRvchIjmLiq is a good test
             renderPostTree(postTrees[0])
@@ -74,12 +76,14 @@ async function doStuffForUrl() {
                 loadingPostsDiv.style.display = "none";
             });
             break;
-        default:
+        }
+        default: {
             fetchFederatedTimeline()
                 .then(perfMessage("fetchFederatedTimeline"))
                 .then(renderTimeline)
                 .then(perfMessage("renderTimeline"));
             break;
+        }
     }
 }
 function scrollToIfReply(status) {
@@ -114,23 +118,23 @@ async function renderPostGroup(posts) {
     if (posts[0].in_reply_to_id) {
         constructReplyTopLine(posts[0]).then(putChildInCurryContainer(await postContainer));
     }
-    return Promise.all(posts.map((post, index, { length }) => constructPost(post, index !== length - 1))).then(putChildrenInCurryContainer(await postContainer));
+    return Promise.all(posts.map((post, index, { length }) => Post.build(post, index !== length - 1))).then(putChildrenInCurryContainer(await postContainer));
 }
 async function renderPostTree(tree) {
-    const postDiv = await constructPost(tree, tree.children && tree.children.length > 0);
+    const postDiv = Post.build(tree, tree.children && tree.children.length > 0);
     if (!tree.children || tree.children.length === 0) {
-        return [postDiv];
+        return [await postDiv];
     }
     else if (tree.children.length === 1) {
-        return [postDiv, ...(await renderPostTree(tree.children[0]))];
+        return [await postDiv, ...(await renderPostTree(tree.children[0]))];
     }
     else {
         return Promise.all(tree.children.map(renderPostTree))
             .then((children) => children.map(putChildrenInNewCurryContainer("post-child-container")))
             .then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine)))
             .then(putChildrenInNewCurryContainer("post-children-container"))
-            .then((childrenContainer) => {
-            return [postDiv, childrenContainer];
+            .then(async (childrenContainer) => {
+            return [await postDiv, childrenContainer];
         });
     }
     async function putChildrenInContainerWithLine(childrenDiv) {
@@ -155,10 +159,10 @@ async function constructReplyTopLine(post) {
     ]).then(putChildrenInNewCurryContainer("post-replies-top"));
 }
 function buildPostTree(statuses) {
-    let tree = [];
+    const tree = [];
     for (let i = 0; i < statuses.length; i++) {
         if (statuses[i].in_reply_to_id) {
-            let parent = statuses.filter((status) => status.id === statuses[i].in_reply_to_id).pop();
+            const parent = statuses.filter((status) => status.id === statuses[i].in_reply_to_id).pop();
             if (!parent.children) {
                 parent.children = [];
             }

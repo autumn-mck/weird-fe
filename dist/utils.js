@@ -77,7 +77,7 @@ export async function aCreateElement(elementType, classes = "") {
     return element;
 }
 export function putChildrenInNewContainer(children, containerClass) {
-    let childrenContainer = createElement("div", containerClass);
+    const childrenContainer = createElement("div", containerClass);
     childrenContainer.append(...children);
     return childrenContainer;
 }

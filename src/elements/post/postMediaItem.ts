@@ -24,6 +24,10 @@ sheet.replaceSync(`
 	display: block;
 	object-fit: contain;
 }
+
+.post-media-item.sensitive {
+	filter: blur(8px);
+}
 `);
 
 export default class PostMediaItem extends CustomHTMLElement {
@@ -32,7 +36,7 @@ export default class PostMediaItem extends CustomHTMLElement {
 			.then(setImgSrc(attachment.url))
 			.then(addClasses("post-media-item"))
 			.then((mediaItem) => {
-				if (isSensitive) mediaItem.className += " post-media-item-sensitive";
+				if (isSensitive) mediaItem.className += " sensitive";
 				return mediaItem;
 			})
 			.then(this.createNew);
