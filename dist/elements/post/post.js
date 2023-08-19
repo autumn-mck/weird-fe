@@ -77,7 +77,7 @@ export default class Post extends CustomHTMLElement {
             post.spoiler_text ? aCreateElement("p", "post-spoiler-text").then(setInnerText(post.spoiler_text)) : "",
             Post.constructInnerBody(post),
             Post.shouldDisplayEmojiReactionRow(isQuoted, post.emoji_reactions) ? EmojiReactionsRow.build(post.emoji_reactions) : "",
-            !isQuoted ? InteractionsRow.build(post) : "",
+            !isQuoted ? InteractionsRow.build(post, inludeSpaceForAvatarLine) : "",
         ])
             .then(putChildrenInNewCurryContainer("post-body"))
             .then(Post.markSpoilerIfNeeded(post.spoiler_text));

@@ -1,3 +1,4 @@
+import { addClasses } from "../../curryingUtils.js";
 import { Icon } from "../../models/icons.js";
 import { Status } from "../../models/status";
 import CustomHTMLElement from "../customElement.js";
@@ -8,13 +9,15 @@ sheet.replaceSync(`
 :host {
 	display: flex;
 	justify-content: space-between;
-	margin-left: calc(var(--post-pfp-size) + 1rem);
-	margin-right: calc(var(--post-pfp-size) + 1rem);
+}
+
+:host(.extra-margin) {
+	margin-left: var(--post-pfp-size);
 }
 `);
 
 export default class InteractionsRow extends HTMLElement {
-	static async build(post: Status): Promise<CustomHTMLElement> {
+	static async build(post: Status, inludeSpaceForAvatarLine: boolean): Promise<CustomHTMLElement> {
 		return Promise.all([
 			InteractionItem.build(Icon.Reply, post.id, String(post.replies_count)),
 			InteractionItem.build(Icon.Boost, post.id, String(post.reblogs_count)),
@@ -22,7 +25,9 @@ export default class InteractionsRow extends HTMLElement {
 			InteractionItem.build(Icon.Favourite, post.id, String(post.favourites_count)),
 			InteractionItem.build(Icon.AddReaction, post.id),
 			InteractionItem.build(Icon.More, post.id),
-		]).then(InteractionsRow.createNew);
+		])
+			.then(InteractionsRow.createNew)
+			.then((row) => (!inludeSpaceForAvatarLine ? addClasses("extra-margin")(row) : row));
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
