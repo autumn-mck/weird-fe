@@ -7,13 +7,17 @@ sheet.replaceSync(`
 :host {
 	height: var(--post-pfp-size);
 	width: var(--post-pfp-size);
+	z-index: 1;
 }
 
 .avatar {
 	height: var(--post-pfp-size);
 	width: var(--post-pfp-size);
 	border-radius: 8px;
-	z-index: 1;
+}
+
+:host(.with-border) .avatar {
+	border: 4px solid var(--background-translucent);
 }
 `);
 

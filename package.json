@@ -4,7 +4,7 @@
 	"description": "",
 	"license": "GPL-3.0",
 	"scripts": {
-		"dev": "npx tsc -w & http-server",
+		"dev": "npx tsc -w & http-server -p 8081",
 		"build": "npx tsc",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},

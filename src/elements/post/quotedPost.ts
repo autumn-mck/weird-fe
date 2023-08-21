@@ -6,12 +6,12 @@ import Post from "./post.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
-	margin-top: 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
 }
 
 .post {
-	border: 1px solid var(--border);
-	border-radius: 8px;
+
 }
 `);
 

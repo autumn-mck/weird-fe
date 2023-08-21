@@ -3,10 +3,21 @@ import { aCreateElement, formatInEmojis, parseHTML, relativeTime } from "../../u
 import DisplayName from "./displayName.js";
 import CustomHTMLElement from "../customElement.js";
 import * as consts from "../../consts.js";
+import Avatar from "./avatar.js";
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
-	display: none;
+	animation: 0.2s fadeIn;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    filter: opacity(0%);
+  }
+  100% {
+    filter: opacity(100%);
+  }
 }
 
 a {
@@ -14,23 +25,25 @@ a {
 }
 
 .profile-preview {
-	margin-top: 1rem;
+	margin-top: 0.5rem;
 	background: var(--background);
 	border-radius: 8px;
 	border: 1px solid var(--border);
 	box-shadow: 0 0 8px var(--shadow);
 	overflow: hidden;
+	--post-pfp-size:var(--pfp-size-large)
 }
 
 .preview-header {
-	height: 10rem;
+	height: 6rem;
 	width: 100%;
 	object-fit: cover;
 }
 
-.preview-avatar {
-	height: var(--post-pfp-size);
-	width: var(--post-pfp-size);
+x-avatar {
+	position: absolute;
+	top: calc(6rem - var(--post-pfp-size) / 2);
+	left: 1rem;
 }
 
 .profile-preview-content {
@@ -45,7 +58,7 @@ export default class ProfilePreview extends CustomHTMLElement {
         return Promise.all([
             aCreateElement("img", "preview-header").then(setImgSrc(account.header)),
             Promise.all([
-                aCreateElement("img", "preview-avatar").then(setImgSrc(account.avatar)),
+                Avatar.build(account.avatar).then(addClasses("with-border")),
                 Promise.all([
                     DisplayName.build(account.display_name, account.emojis),
                     formatInEmojis(account.note, account.emojis)

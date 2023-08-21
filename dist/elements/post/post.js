@@ -22,6 +22,12 @@ sheet.replaceSync(`
 	border-radius: 8px;
 }
 
+:host(.quoted-post) {
+	margin: 0;
+	padding: 0.5rem;
+	width: 100%;
+}
+
 :host(:hover) {
 	--post-interaction: var(--text);
 	background: var(--background-post-hover);
