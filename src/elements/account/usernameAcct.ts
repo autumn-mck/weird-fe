@@ -32,6 +32,11 @@ sheet.replaceSync(`
 	margin-left: 0.5rem;
 	width: 16px;
 	height: 16px;
+	transition: transform 0.1s ease-in-out;
+}
+
+.favicon:hover {
+	transform: scale(2);
 }
 `);
 
