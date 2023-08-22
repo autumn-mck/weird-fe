@@ -59,7 +59,7 @@ export default class PostTextContent extends CustomHTMLElement {
 	}
 
 	private static interceptUrlMentions(node: Node, mentions: StatusMention[]) {
-		if (!(node instanceof HTMLAnchorElement)) return;
+		if (!(node instanceof HTMLAnchorElement) || node.className !== "u-url mention") return;
 
 		const mention = mentions.find((mention) => mention.url === node.href);
 		if (!mention) return;
