@@ -79,6 +79,8 @@ async function doStuffForUrl() {
 
 	perfLastTime = performance.now();
 
+	fetchIconsInAdvance().then(perfMessage("fetchIconsInAdvance"));
+
 	switch (path[1]) {
 		case consts.accountsPath: {
 			const accountId = path[2]!;
@@ -116,6 +118,10 @@ async function doStuffForUrl() {
 			break;
 		}
 	}
+}
+
+async function fetchIconsInAdvance() {
+	Object.values(Icon).map(getIcon);
 }
 
 function scrollToIfReply(status: Status) {
