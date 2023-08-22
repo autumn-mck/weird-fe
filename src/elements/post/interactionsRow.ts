@@ -16,7 +16,7 @@ sheet.replaceSync(`
 }
 `);
 
-export default class InteractionsRow extends HTMLElement {
+export default class InteractionsRow extends CustomHTMLElement {
 	static async build(post: Status, inludeSpaceForAvatarLine: boolean): Promise<CustomHTMLElement> {
 		return Promise.all([
 			InteractionItem.build(Icon.Reply, post.id, String(post.replies_count)),
@@ -31,6 +31,6 @@ export default class InteractionsRow extends HTMLElement {
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
-		return new InteractionItem(sheet, elements);
+		return new InteractionsRow(sheet, elements);
 	}
 }
