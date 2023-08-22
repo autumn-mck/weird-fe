@@ -66,12 +66,22 @@ export default class PostTextContent extends CustomHTMLElement {
 
 		node.title = mention.acct;
 
-		node.addEventListener("click", (e) => {
-			e.preventDefault();
-			history.pushState(null, "", `/${consts.accountsPath}/${mention.id}`);
-			window.dispatchEvent(new Event("popstate"));
-			console.log("clicked mention", mention);
-		});
+		node.dataset["accountId"] = mention.id;
+
+		node.addEventListener("click", this.redirectToAccountPageOnClick);
+	}
+
+	private static redirectToAccountPageOnClick(e: MouseEvent) {
+		e.preventDefault();
+
+		let targetElement;
+		if (e.target instanceof HTMLSpanElement) targetElement = e.target.parentElement;
+		else targetElement = e.target as HTMLAnchorElement;
+
+		if (!targetElement) return;
+
+		history.pushState(null, "", `/${consts.accountsPath}/${targetElement.dataset["accountId"]}`);
+		window.dispatchEvent(new Event("popstate"));
 	}
 
 	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {
