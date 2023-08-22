@@ -74,4 +74,10 @@ export function setLabelHtmlFor(htmlFor) {
         return label;
     };
 }
+export function addEventListener(type, listener) {
+    return function (element) {
+        element.addEventListener(type, listener);
+        return element;
+    };
+}
 //# sourceMappingURL=curryingUtils.js.map

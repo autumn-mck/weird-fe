@@ -1,4 +1,4 @@
-import { aCreateElement } from "../../utils.js";
+import { aCreateElement, pathToAccount } from "../../utils.js";
 import { putChildrenInCurryContainer, setAnchorHref, setImgSrc, setInnerText, setTitle } from "../../curryingUtils.js";
 import * as consts from "../../consts.js";
 import CustomHTMLElement from "../customElement.js";
@@ -40,7 +40,7 @@ export default class UsernameAcct extends CustomHTMLElement {
             instance = consts.userSelectedInstance;
         return Promise.all([
             aCreateElement("a", "acct")
-                .then(setAnchorHref(`/${consts.accountsPath}/${account.id}`))
+                .then(setAnchorHref(pathToAccount(account.id)))
                 .then((acct) => {
                 Promise.all([
                     aCreateElement("span", "username").then(setInnerText("@" + username)),

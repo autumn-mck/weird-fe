@@ -85,3 +85,10 @@ export function setLabelHtmlFor(htmlFor: string) {
 		return label;
 	};
 }
+
+export function addEventListener(type: string, listener: (e: Event) => void) {
+	return function (element: HTMLElement) {
+		element.addEventListener(type, listener);
+		return element;
+	};
+}

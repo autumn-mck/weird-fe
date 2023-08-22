@@ -1,4 +1,4 @@
-import { formatInEmojis, parseHTML } from "../../utils.js";
+import { formatInEmojis, parseHTML, pathToAccount } from "../../utils.js";
 import CustomHTMLElement from "../customElement.js";
 import * as consts from "../../consts.js";
 const sheet = new CSSStyleSheet();
@@ -69,7 +69,7 @@ export default class PostTextContent extends CustomHTMLElement {
             targetElement = e.target;
         if (!targetElement)
             return;
-        history.pushState(null, "", `/${consts.accountsPath}/${targetElement.dataset["accountId"]}`);
+        history.pushState(null, "", pathToAccount(targetElement.dataset["accountId"]));
         window.dispatchEvent(new Event("popstate"));
     }
     static createNew(elements) {

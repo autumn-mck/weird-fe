@@ -1,3 +1,5 @@
+import * as consts from "./consts.js";
+
 export function relativeTime(date: Date) {
 	const formatter = new Intl.RelativeTimeFormat("en", {
 		numeric: "always",
@@ -109,4 +111,8 @@ export function parseSVG(svg: string) {
 
 export async function chunkArray(array: any[], chunkSize: number) {
 	return array.map((_item, index) => (index % chunkSize === 0 ? array.slice(index, index + chunkSize) : null)).filter(Boolean);
+}
+
+export function pathToAccount(accountId: string) {
+	return `/${consts.accountsPath}/${accountId}`;
 }

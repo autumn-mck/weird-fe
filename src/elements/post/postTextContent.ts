@@ -1,5 +1,5 @@
 import { CustomEmoji } from "../../models/customEmoji";
-import { formatInEmojis, parseHTML } from "../../utils.js";
+import { formatInEmojis, parseHTML, pathToAccount } from "../../utils.js";
 import CustomHTMLElement from "../customElement.js";
 import * as consts from "../../consts.js";
 import { StatusMention } from "../../models/status";
@@ -80,7 +80,7 @@ export default class PostTextContent extends CustomHTMLElement {
 
 		if (!targetElement) return;
 
-		history.pushState(null, "", `/${consts.accountsPath}/${targetElement.dataset["accountId"]}`);
+		history.pushState(null, "", pathToAccount(targetElement.dataset["accountId"]!));
 		window.dispatchEvent(new Event("popstate"));
 	}
 
