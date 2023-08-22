@@ -37,7 +37,7 @@ profile-preview {
 	width: 50ch;
 }
 
-:host(.preview-visible) profile-preview {
+.preview-visible {
 	display: block;
 }
 `);
@@ -47,20 +47,19 @@ export default class AvatarWithPreview extends CustomHTMLElement {
 		return Promise.all([
 			Avatar.build(account.avatar)
 				.then(putChildInNewCurryContainer("link", "a"))
-				.then(setAnchorHref(pathToAccount(account.id))),
+				.then(setAnchorHref(pathToAccount(account.id)))
+				.then(addEventListener("click", AvatarWithPreview.toggleProfilePreview)),
 
 			ProfilePreview.build(account),
 			includeSpaceForAvatarLine ? aCreateElement("div", "avatar-line") : "",
-		])
-			.then(AvatarWithPreview.createNew)
-			.then(addEventListener("click", AvatarWithPreview.toggleProfilePreview));
+		]).then(AvatarWithPreview.createNew);
 	}
 
 	private static toggleProfilePreview(e: Event) {
 		e.preventDefault();
 
-		let targetElement = e.target as AvatarWithPreview;
-		targetElement.classList.toggle("preview-visible");
+		let profilePreview = (e.target as Avatar).parentNode?.nextSibling as ProfilePreview;
+		profilePreview.classList.toggle("preview-visible");
 	}
 
 	protected static createNew(elements: (HTMLElement | string)[]): AvatarWithPreview {
