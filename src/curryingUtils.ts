@@ -22,9 +22,9 @@ export function putChildInNewCurryContainer(containerClass: string, elementType 
 	};
 }
 
-export function putChildrenInNewCurryContainer(containerClass: string) {
+export function putChildrenInNewCurryContainer(containerClass: string, elementType = "div") {
 	return function (children: (Node | string)[]) {
-		const container: HTMLElement = createElement("div", containerClass);
+		const container: HTMLElement = createElement(elementType, containerClass);
 		container.append(...children);
 		return container;
 	};

@@ -19,9 +19,9 @@ export function putChildInNewCurryContainer(containerClass, elementType = "div")
         return container;
     };
 }
-export function putChildrenInNewCurryContainer(containerClass) {
+export function putChildrenInNewCurryContainer(containerClass, elementType = "div") {
     return function (children) {
-        const container = createElement("div", containerClass);
+        const container = createElement(elementType, containerClass);
         container.append(...children);
         return container;
     };

@@ -10,7 +10,6 @@ const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
 	display: flex;
-	align-items: center;
 }
 
 a {
@@ -43,6 +42,10 @@ a {
 .post-visibility {
 	fill: var(--subtext);
 }
+
+.times {
+	text-align: right;
+}
 `);
 export default class PosterInfo extends CustomHTMLElement {
     static async build(post, shouldIncludeAvatar) {
@@ -56,8 +59,13 @@ export default class PosterInfo extends CustomHTMLElement {
     }
     static async constructRightCol(post) {
         return Promise.all([
-            aCreateElement("a", "post-time")
-                .then(setInnerText(relativeTime(new Date(post.created_at))))
+            Promise.all([
+                aCreateElement("span", "post-time").then(setInnerText(relativeTime(new Date(post.created_at)))),
+                post.edited_at
+                    ? aCreateElement("span", "edit-time").then(setInnerText(`\n(edited ${relativeTime(new Date(post.edited_at))})`))
+                    : "",
+            ])
+                .then(putChildrenInNewCurryContainer("times", "a"))
                 .then(setAnchorHref(`/${consts.statusesPath}/${post.id}`)),
             getIconForVisibility(post.visibility).then(addClasses("post-visibility")).then(setTitle(post.visibility)),
         ]).then(putChildrenInNewCurryContainer("right-column"));
