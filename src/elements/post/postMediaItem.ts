@@ -1,12 +1,13 @@
-import { addClasses, setImgSrc } from "../../curryingUtils.js";
-import { MediaAttatchment } from "../../models/mediaAttatchment.js";
-import CustomHTMLElement from "../customElement.js";
+import { addClasses, setSrc } from "../../domUtils";
+import { MediaAttatchment } from "../../models/mediaAttatchment";
+import CustomHTMLElement from "../customElement";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
 :host {
 	border-radius: 8px;
 	border: 1px solid var(--border);
+	transition: border 0.2s ease-in-out;
 	max-width: 100%;
 	height: 18rem;
 	overflow: hidden;
@@ -16,7 +17,11 @@ sheet.replaceSync(`
 	width: auto;
 }
 
-.post-media-item {
+:host(:hover) {
+	border-color: var(--border-hover);
+}
+
+.media {
 	width: auto;
 	height: 100%;
 	max-width: 100%;
@@ -31,53 +36,67 @@ sheet.replaceSync(`
 `);
 
 export default class PostMediaItem extends CustomHTMLElement {
-	static async build(attachment: MediaAttatchment, isSensitive: boolean): Promise<CustomHTMLElement> {
-		return PostMediaItem.constructMediaDomItem(attachment)
-			.then(PostMediaItem.enableMediaControlsIfNeeded(attachment.type))
-			.then(PostMediaItem.markSensitiveIfNeeded(isSensitive))
-			.then(setImgSrc(attachment.url))
-			.then(addClasses("post-media-item"))
-			.then(PostMediaItem.createNew);
+	private element: HTMLElement | undefined;
+
+	private src: string | undefined;
+	private isSensitive = false;
+
+	constructor() {
+		super(sheet);
 	}
 
-	private static markSensitiveIfNeeded(isSensitive: boolean) {
-		return function (mediaItem: HTMLElement) {
-			if (isSensitive) mediaItem.className += " sensitive";
-			return mediaItem;
-		};
-	}
+	public setData(attachment: MediaAttatchment, isSensitive: boolean) {
+		if (this.src !== attachment.url) {
+			this.element = PostMediaItem.constructMediaDomItem(attachment);
+			// todo loop gif etc?
+			this.shadowRoot?.replaceChildren(this.element);
+		}
 
-	private static async constructMediaDomItem(attachment: MediaAttatchment) {
-		switch (attachment.type) {
-			case "image":
-				return document.createElement("img");
-			case "gifv":
-			case "video":
-				return document.createElement("video");
-			case "audio":
-				return document.createElement("audio");
-			default:
-				console.log(attachment);
-				throw new Error("Unknown media type: " + attachment.type);
+		if (this.isSensitive !== isSensitive) {
+			this.isSensitive = isSensitive;
+			this.element?.classList.toggle("sensitive");
 		}
 	}
 
-	private static enableMediaControlsIfNeeded(attachmentType: string) {
-		return function (mediaItem: HTMLElement) {
-			switch (attachmentType) {
-				case "video":
-				case "gifv":
-				case "audio":
-					mediaItem.setAttribute("controls", "");
-					return mediaItem;
+	private static constructMediaDomItem(attachment: MediaAttatchment) {
+		let element;
+		switch (attachment.type) {
+			case "image":
+				element = document.createElement("img");
+				break;
+			case "gifv":
+			case "video":
+				element = document.createElement("video");
+				break;
+			case "audio":
+				element = document.createElement("audio");
+				break;
 
-				default:
-					return mediaItem;
-			}
-		};
+			default:
+				console.log(attachment);
+				// todo don't just error
+				throw new Error("Unknown media type: " + attachment.type);
+		}
+
+		if (PostMediaItem.shouldEnableMediaControls(attachment.type)) {
+			(element as HTMLMediaElement).controls = true;
+		}
+
+		setSrc(element, attachment.url);
+		addClasses(element, "media");
+
+		return element;
 	}
 
-	protected static createNew(element: HTMLElement | string): CustomHTMLElement {
-		return new PostMediaItem(sheet, [element]);
+	private static shouldEnableMediaControls(attachmentType: string) {
+		switch (attachmentType) {
+			case "video":
+			case "gifv":
+			case "audio":
+				return true;
+
+			default:
+				return false;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { createElement } from "./utils.js";
+import { createElement } from "./utils";
 
 export function putChildrenInCurryContainer(container: HTMLElement) {
 	return function (children: (HTMLElement | string)[]) {
@@ -44,51 +44,9 @@ export function addClasses(classes: string) {
 	};
 }
 
-export function setTitle(title: string) {
-	return function (element: HTMLElement) {
-		element.title = title;
-		return element;
-	};
-}
-
-export function setId(id: string) {
-	return function (element: HTMLElement) {
-		element.id = id;
-		return element;
-	};
-}
-
-export function setImgSrc(src: string) {
-	return function (img: HTMLElement) {
-		(img as HTMLImageElement).src = src;
-		return img;
-	};
-}
-
 export function setAnchorHref(href: string) {
 	return function (a: HTMLElement) {
 		(a as HTMLAnchorElement).href = href;
 		return a;
-	};
-}
-
-export function setInputType(type: string) {
-	return function (input: HTMLElement) {
-		(input as HTMLInputElement).type = type;
-		return input;
-	};
-}
-
-export function setLabelHtmlFor(htmlFor: string) {
-	return function (label: HTMLElement) {
-		(label as HTMLLabelElement).htmlFor = htmlFor;
-		return label;
-	};
-}
-
-export function addEventListener(type: string, listener: (e: Event) => void) {
-	return function (element: HTMLElement) {
-		element.addEventListener(type, listener);
-		return element;
 	};
 }

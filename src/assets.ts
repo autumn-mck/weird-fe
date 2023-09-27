@@ -1,25 +1,35 @@
-import { clone, fetchAsync, parseSVG } from "./utils.js";
-import { IconSet } from "./models/iconSet.js";
-import { Icon } from "./models/icons.js";
-import { Visibility } from "./models/visibility.js";
-import { putChildInNewCurryContainer } from "./curryingUtils.js";
+import { clone, fetchAsync, parseSVG } from "./utils";
+import { IconSet } from "./models/iconSet";
+import { Icon } from "./models/icons";
+import { Visibility } from "./models/visibility";
+import { putChildInNewCurryContainer } from "./curryingUtils";
 
-const icons: { [key: string]: Promise<HTMLElement> } = {};
+const icons: { [key: string]: HTMLElement } = {};
 
-export async function getIcon(icon: Icon): Promise<HTMLElement> {
+export function getIcon(icon: Icon): HTMLElement {
+	// todo why does this function not do the cloning????
+	return icons[icon]!;
+}
+
+export async function fetchIcon(icon: Icon): Promise<HTMLElement> {
 	const iconSet = IconSet.MaterialSymbols;
 	if (!icons[icon]) {
-		icons[icon] = fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then(parseSVG).then(putChildInNewCurryContainer("svg"));
+		icons[icon] = await fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then(parseSVG).then(putChildInNewCurryContainer("svg"));
 	}
 
 	return icons[icon]!;
 }
 
-export async function getIconForVisibility(visibility: Visibility): Promise<HTMLElement> {
-	return getIconEnumForVisibility(visibility).then(getIcon).then(clone);
+export function getIconClone(iconType: Icon) {
+	return clone(getIcon(iconType));
 }
 
-async function getIconEnumForVisibility(visibility: Visibility) {
+export function getIconForVisibility(visibility: Visibility) {
+	const icon = getIconEnumForVisibility(visibility);
+	return clone(getIcon(icon));
+}
+
+function getIconEnumForVisibility(visibility: Visibility) {
 	switch (visibility) {
 		case Visibility.Public:
 			return Icon.VisibilityPublic;

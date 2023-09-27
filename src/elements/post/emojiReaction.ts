@@ -1,7 +1,7 @@
-import { addClasses, setImgSrc, setInnerText, setTitle } from "../../curryingUtils.js";
-import { aCreateElement } from "../../utils.js";
-import CustomHTMLElement from "../customElement.js";
-import * as consts from "../../consts.js";
+import { createElement } from "../../utils";
+import CustomHTMLElement from "../customElement";
+import * as consts from "../../consts";
+import { newElement, setInnerText, setSrc, setTitle } from "../../domUtils";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -30,29 +30,58 @@ ${consts.emojiCSS}
 }
 `);
 
+enum reactionType {
+	emojiReaction,
+	customReaction,
+}
+
 export default class EmojiReaction extends CustomHTMLElement {
-	static async build(emojiReaction: any): Promise<CustomHTMLElement> {
-		return Promise.all([
-			EmojiReaction.createEmojiElement(emojiReaction).then(addClasses("emoji")),
-			EmojiReaction.buildReactionCount(emojiReaction.count),
-		]).then(EmojiReaction.createNew);
+	protected static override baseToClone: EmojiReaction;
+	public static newClone() {
+		if (!this.baseToClone) this.baseToClone = new this();
+		return this.baseToClone.cloneNode(true) as EmojiReaction;
 	}
 
-	private static buildReactionCount(count: number): Promise<HTMLElement> {
-		return aCreateElement("span", "emoji-reaction-count").then(setInnerText(String(count)));
+	constructor() {
+		let elements = {
+			emoji: newElement({ element: "span", className: "emoji" }),
+			count: newElement({ element: "span", className: "count" }),
+		};
+		super(sheet, elements);
 	}
 
-	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
-		return new EmojiReaction(sheet, elements);
-	}
-
-	private static async createEmojiElement(emojiReaction: any) {
-		if (emojiReaction.url) {
-			return aCreateElement("img", "emoji-reaction-img")
-				.then(setImgSrc(emojiReaction.url))
-				.then(setTitle(":" + emojiReaction.name + ":"));
+	public setData(emojiReaction: any) {
+		let newReactionType = EmojiReaction.getReactionType(emojiReaction);
+		if (this.values["reactionType"] !== newReactionType) {
+			this.values["reactionType"] = newReactionType;
+			(this.elements["emoji"]! as HTMLElement).replaceChildren(EmojiReaction.createEmojiElement(emojiReaction));
+		} else if (newReactionType === reactionType.customReaction) {
+			setSrc(this.elements["emoji"]! as HTMLImageElement, emojiReaction.url);
 		} else {
-			return aCreateElement("span", "emoji-reaction-span").then(setInnerText(emojiReaction.name));
+			setInnerText(this.elements["emoji"]! as HTMLSpanElement, emojiReaction.name);
+		}
+
+		this.update("count", emojiReaction.count, setInnerText);
+	}
+
+	private static getReactionType(emojiReaction: any): reactionType {
+		if (emojiReaction.url) {
+			return reactionType.customReaction;
+		} else {
+			return reactionType.emojiReaction;
+		}
+	}
+
+	private static createEmojiElement(emojiReaction: any) {
+		if (emojiReaction.url) {
+			let img = createElement("img") as HTMLImageElement;
+			setSrc(img, emojiReaction.url);
+			setTitle(img, `:${emojiReaction.name}:`);
+			return img;
+		} else {
+			let span = createElement("span") as HTMLSpanElement;
+			setInnerText(span, emojiReaction.name);
+			return span;
 		}
 	}
 }

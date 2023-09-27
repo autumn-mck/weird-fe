@@ -1,7 +1,7 @@
-import { Account } from "./account.js";
-import { CustomEmoji } from "./customEmoji.js";
-import { MediaAttatchment } from "./mediaAttatchment.js";
-import { Visibility } from "./visibility.js";
+import { Account } from "./account";
+import { CustomEmoji } from "./customEmoji";
+import { MediaAttatchment } from "./mediaAttatchment";
+import { Visibility } from "./visibility";
 
 export class Status {
 	id!: string;

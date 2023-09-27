@@ -1,9 +1,9 @@
 import { Account } from "../../models/account";
-import ProfilePreview from "../account/profilePreview.js";
-import Avatar from "../account/avatar.js";
-import { aCreateElement, pathToAccount } from "../../utils.js";
-import CustomHTMLElement from "../customElement.js";
-import { putChildInNewCurryContainer, setAnchorHref, addEventListener } from "../../curryingUtils.js";
+import ProfilePreview from "../account/profilePreview";
+import AccountAvatar from "../account/accountAvatar";
+import { pathToAccount } from "../../utils";
+import CustomHTMLElement from "../customElement";
+import { addEventListener, newElement, setAnchorHref } from "../../domUtils";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -21,11 +21,15 @@ sheet.replaceSync(`
 }
 
 .avatar-line {
-	display: flex;
+	display: none;
 	background: var(--border);
 	width: 4px;
 	flex-grow: 1;
 	margin-bottom: -1.5rem;
+}
+
+.avatar-line.visible {
+	display: flex;
 }
 
 profile-preview {
@@ -43,26 +47,44 @@ profile-preview {
 `);
 
 export default class AvatarWithPreview extends CustomHTMLElement {
-	static async build(account: Account, includeSpaceForAvatarLine = false): Promise<CustomHTMLElement> {
-		return Promise.all([
-			Avatar.build(account.avatar)
-				.then(putChildInNewCurryContainer("link", "a"))
-				.then(setAnchorHref(pathToAccount(account.id)))
-				.then(addEventListener("click", AvatarWithPreview.toggleProfilePreview)),
-
-			ProfilePreview.build(account),
-			includeSpaceForAvatarLine ? aCreateElement("div", "avatar-line") : "",
-		]).then(AvatarWithPreview.createNew);
+	protected static override baseToClone: AvatarWithPreview;
+	public static newClone() {
+		if (!this.baseToClone) this.baseToClone = new this();
+		return this.baseToClone.cloneNode(true) as AvatarWithPreview;
 	}
 
-	private static toggleProfilePreview(e: Event) {
-		e.preventDefault();
+	constructor() {
+		let elements = {
+			avatar: AccountAvatar.newClone(),
+			anchor: newElement({ element: "a", className: "link" }),
+			profilePreview: ProfilePreview.newClone(),
+			avatarLine: newElement({ element: "div", className: "avatar-line" }),
+		};
 
-		let profilePreview = (e.target as Avatar).parentNode?.nextSibling as ProfilePreview;
-		profilePreview.classList.toggle("preview-visible");
+		elements.anchor.appendChild(elements.avatar);
+
+		let layout = [elements.anchor, elements.profilePreview, elements.avatarLine];
+
+		super(sheet, elements, layout);
+
+		addEventListener(elements.anchor, "click", AvatarWithPreview.toggleProfilePreview(this));
 	}
 
-	protected static createNew(elements: (HTMLElement | string)[]): AvatarWithPreview {
-		return new AvatarWithPreview(sheet, elements);
+	public setData(account: Account, includeSpaceForAvatarLine = false) {
+		this.set("avatar", account.avatar);
+		this.update("anchor", account.id, AvatarWithPreview.setAnchorToAccount);
+		this.set("profilePreview", account);
+		this.toggleClassOnElement("avatarLine", "visible", includeSpaceForAvatarLine);
+	}
+
+	private static setAnchorToAccount(anchor: HTMLElement, accountId: string) {
+		setAnchorHref(anchor, pathToAccount(accountId));
+	}
+
+	private static toggleProfilePreview(elem: AvatarWithPreview) {
+		return function (e: Event) {
+			e.preventDefault();
+			(elem.elements["profilePreview"]! as HTMLElement).classList.toggle("preview-visible");
+		};
 	}
 }

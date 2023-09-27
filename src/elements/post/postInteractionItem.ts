@@ -1,15 +1,7 @@
-import { getIcon } from "../../assets.js";
-import {
-	addClasses,
-	putChildInNewCurryContainer,
-	setId,
-	setInnerText,
-	setInputType,
-	setLabelHtmlFor,
-} from "../../curryingUtils.js";
-import { aCreateElement, clone } from "../../utils.js";
-import { Icon } from "../../models/icons.js";
-import CustomHTMLElement from "../customElement.js";
+import { getIconClone } from "../../assets";
+import { Icon } from "../../models/icons";
+import CustomHTMLElement from "../customElement";
+import { newElement, setInnerText } from "../../domUtils";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -67,36 +59,49 @@ sheet.replaceSync(`
 .hidden-checkbox:checked + .spinny-icon {
 	transform: rotate(360deg);
 }
+
+.display-none {
+	display: none;
+}
 `);
 
-export default class InteractionItem extends CustomHTMLElement {
-	static async build(icon: Icon, postId: string, text?: string): Promise<CustomHTMLElement> {
-		return Promise.all([
-			aCreateElement("input", "hidden-checkbox").then(setInputType("checkbox")).then(setId(postId)),
+export default class PostInteractionItem extends CustomHTMLElement {
+	constructor(icon: Icon) {
+		let elements = {
+			hiddenCheckbox: newElement({
+				element: "input",
+				type: "checkbox",
+				className: "hidden-checkbox",
+				id: "checkbox",
+			}),
 
-			getIcon(icon)
-				.then(clone)
-				.then(putChildInNewCurryContainer(`icon icon-${icon}`, "label"))
-				.then(setLabelHtmlFor(postId))
-				.then(addClasses(InteractionItem.shouldBeSpinny(icon) ? "spinny-icon" : "")),
+			iconLabel: newElement({
+				element: "label",
+				className: `icon icon-${icon} ${PostInteractionItem.addClassIfSpinny(icon)}`,
+				htmlFor: "checkbox",
+				children: [getIconClone(icon)],
+			}),
 
-			text ? aCreateElement("span", "interaction-text").then(setInnerText(text)) : "",
-		]).then(InteractionItem.createNew);
+			interactionCount: newElement({ element: "span", className: "interaction-text  display-none" }),
+		};
+
+		super(sheet, elements);
 	}
 
-	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
-		return new InteractionItem(sheet, elements);
+	public setData(count: number) {
+		this.update("interactionCount", count, setInnerText);
+		this.toggleClassOnElement("interactionCount", "display-none", count === undefined);
 	}
 
-	private static shouldBeSpinny(icon: Icon) {
+	private static addClassIfSpinny(icon: Icon) {
 		switch (icon) {
 			case Icon.Reply:
 			case Icon.Boost:
 			case Icon.Favourite:
 			case Icon.AddReaction:
-				return true;
+				return "spinny-icon";
 			default:
-				return false;
+				return "";
 		}
 	}
 }

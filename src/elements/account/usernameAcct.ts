@@ -1,8 +1,9 @@
-import { aCreateElement, pathToAccount } from "../../utils.js";
-import { putChildrenInCurryContainer, setAnchorHref, setImgSrc, setInnerText, setTitle } from "../../curryingUtils.js";
+import { createElement, pathToAccount } from "../../utils";
+import { setAnchorHref, putChildrenInContainer, setInnerText, setSrc, setTitle } from "../../domUtils";
 import { Account } from "../../models/account";
-import * as consts from "../../consts.js";
-import CustomHTMLElement from "../customElement.js";
+import * as consts from "../../consts";
+import CustomHTMLElement from "../customElement";
+import { isAkkoma } from "../../userInstanceInfo";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -41,43 +42,54 @@ sheet.replaceSync(`
 `);
 
 export default class UsernameAcct extends CustomHTMLElement {
-	static async build(account: Account): Promise<CustomHTMLElement> {
+	protected static override baseToClone: UsernameAcct;
+	public static newClone() {
+		if (!this.baseToClone) this.baseToClone = new this();
+		return this.baseToClone.cloneNode(true) as UsernameAcct;
+	}
+
+	constructor() {
+		let elements = {
+			acct: createElement("a", "acct"),
+			username: createElement("span", "username"),
+			instance: createElement("span", "instance"),
+			favicon: isAkkoma ? (createElement("img", "favicon") as HTMLImageElement) : "",
+		};
+
+		putChildrenInContainer(elements.acct, elements.username, elements.instance);
+		let layout = [elements.acct, elements.favicon];
+
+		super(sheet, elements, layout);
+	}
+
+	public setData(account: Account) {
 		let [username, instance] = account.acct.split("@");
 
 		// assuming that the only case where instance wouldn't be defined here is if the account is on the user's own instance
 		if (!instance) instance = consts.userSelectedInstance;
 
-		return Promise.all([
-			aCreateElement("a", "acct")
-				.then(setAnchorHref(pathToAccount(account.id)))
-				.then((acct) => {
-					Promise.all([
-						aCreateElement("span", "username").then(setInnerText("@" + username)),
-						aCreateElement("span", "instance").then(setInnerText("@" + instance)),
-					]).then(putChildrenInCurryContainer(acct));
-					return acct;
-				}),
-			account.akkoma ? UsernameAcct.constructInstanceFavicon(account.akkoma.instance) : "",
-		]).then(UsernameAcct.createNew);
+		this.update("username", `@${username}`, setInnerText);
+		this.update("instance", `@${instance}`, setInnerText);
+		this.update("acct", account.id, UsernameAcct.setAcctHref);
+
+		this.setFavicon(account.akkoma.instance);
 	}
 
-	private static constructInstanceFavicon(instance: any | undefined) {
-		if (!instance || !instance.favicon) return "";
-
-		let title = instance.name;
-		if (
-			instance.nodeinfo &&
-			instance.nodeinfo.software &&
-			instance.nodeinfo.software.name &&
-			instance.nodeinfo.software.version
-		) {
-			title += ` (${instance.nodeinfo.software.name} ${instance.nodeinfo.software.version})`;
-		}
-
-		return aCreateElement("img", "favicon").then(setImgSrc(instance.favicon)).then(setTitle(title));
+	private static setAcctHref(acct: HTMLElement, accountId: string) {
+		setAnchorHref(acct, pathToAccount(accountId));
 	}
 
-	protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
-		return new UsernameAcct(sheet, elements);
+	private setFavicon(instance: any) {
+		if (!isAkkoma) return;
+		if (!instance || !instance.favicon) return;
+
+		this.update("favicon", instance.favicon, setSrc);
+
+		let title;
+		if (instance.nodeinfo?.software?.version)
+			title = `${instance.name} (${instance.nodeinfo.software.name} ${instance.nodeinfo.software.version})`;
+		else title = instance.name;
+
+		this.update("favicon", title, setTitle);
 	}
 }

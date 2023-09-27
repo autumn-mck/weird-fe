@@ -1,8 +1,7 @@
-import { putChildrenInNewCurryContainer } from "../../curryingUtils.js";
-import { MediaAttatchment } from "../../models/mediaAttatchment.js";
-import { chunkArray } from "../../utils.js";
-import CustomHTMLElement from "../customElement.js";
-import PostMediaItem from "./postMediaItem.js";
+import { MediaAttatchment } from "../../models/mediaAttatchment";
+import { chunkArray } from "../../utils";
+import CustomHTMLElement from "../customElement";
+import MediaRow from "./postMediaRow";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -12,27 +11,29 @@ sheet.replaceSync(`
 	gap: 0.5rem;
 	width: 100%;
 }
-
-.row {
-	display: flex;
-	justify-content: center;
-	gap: 0.5rem;
-	width: auto;
-	max-width: 100%;
-}
 `);
 
 export default class PostMedia extends CustomHTMLElement {
-	static async build(attachments: MediaAttatchment[], isSensitive: boolean): Promise<CustomHTMLElement> {
-		const maxItemsInRow = 3;
+	private static maxItemsInRow = 3;
 
-		return Promise.all(attachments.map((attatchment) => PostMediaItem.build(attatchment, isSensitive)))
-			.then((mediaItems) => chunkArray(mediaItems, maxItemsInRow) as unknown as HTMLElement[][])
-			.then((mediaRows) => Promise.all(mediaRows.map(putChildrenInNewCurryContainer("row"))))
-			.then(PostMedia.createNew);
+	private rows: MediaRow[] = [];
+
+	constructor() {
+		super(sheet);
 	}
 
-	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {
-		return new PostMedia(sheet, elements);
+	public setData(attachments: MediaAttatchment[], isSensitive: boolean) {
+		// todo ???
+		let chunked = chunkArray(attachments, PostMedia.maxItemsInRow);
+		chunked.forEach((chunk, index) => {
+			let row = this.rows[index];
+			if (!row) {
+				row = new MediaRow();
+				this.rows.push(row);
+				this.appendElements(row);
+			}
+
+			row.setData(chunk, isSensitive);
+		});
 	}
 }

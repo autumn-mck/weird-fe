@@ -20,3 +20,12 @@ export const emojiCSS = `
 	transform: scale(2);
 }
 `;
+
+export const postCSS = `
+	width: calc(100% - 1rem);
+	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+	margin: 0.5rem 0.5rem 0 0.5rem;
+	background: transparent;
+	transition: background 0.2s ease-in-out;
+	border-radius: 8px;
+`;

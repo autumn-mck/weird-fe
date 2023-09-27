@@ -1,44 +1,28 @@
-import * as consts from "./consts.js";
+import * as consts from "./consts";
 
 export function relativeTime(date: Date) {
-	const formatter = new Intl.RelativeTimeFormat("en", {
-		numeric: "always",
-		style: "long",
-	});
-
 	const now = Date.now();
+	const time = date.getTime();
 
-	// todo handle future dates? because times can be out of sync or other instances can deliberately return future dates
+	if (time < now) return `${toRelativeString(time, now)} ago`;
+	else return `${toRelativeString(time, now)} in the future`;
+}
 
-	// display as eg. "2 hours ago", or "5 minutes ago", depending on which scale works best
-	// why do something overly complicated when this works well enough
-	// seconds
-	if (date.getTime() > now - 1000 * 60) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000), "second");
-	}
-	// minutes
-	else if (date.getTime() > now - 1000 * 60 * 60) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60), "minute");
-	}
-	// hours
-	else if (date.getTime() > now - 1000 * 60 * 60 * 24) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60), "hour");
-	}
-	// days
-	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 7) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24), "day");
-	}
-	// weeks
-	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 30) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 7), "week");
-	}
-	// months
-	else if (date.getTime() > now - 1000 * 60 * 60 * 24 * 365) {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 30), "month");
-	}
-	// else just assume years
-	else {
-		return formatter.format(Math.round((date.getTime() - Date.now()) / 1000 / 60 / 60 / 24 / 365), "year");
+function toRelativeString(time: number, now: number) {
+	if (time > now - 1000 * 60) {
+		return `${Math.round((now - time) / 1000)}s`;
+	} else if (time > now - 1000 * 60 * 60) {
+		return `${Math.round((now - time) / 1000 / 60)}m`;
+	} else if (time > now - 1000 * 60 * 60 * 24) {
+		return `${Math.round((now - time) / 1000 / 60 / 60)}h`;
+	} else if (time > now - 1000 * 60 * 60 * 24 * 7) {
+		return `${Math.round((now - time) / 1000 / 60 / 60 / 24)}d`;
+	} else if (time > now - 1000 * 60 * 60 * 24 * 30) {
+		return `${Math.round((now - time) / 1000 / 60 / 60 / 24 / 7)}w`;
+	} else if (time > now - 1000 * 60 * 60 * 24 * 365) {
+		return `${Math.round((now - time) / 1000 / 60 / 60 / 24 / 30)}mo`;
+	} else {
+		return `${Math.round((now - time) / 1000 / 60 / 60 / 24 / 365)}y`;
 	}
 }
 
@@ -65,7 +49,7 @@ export function escapeHTML(string: string) {
 	return string.replace(/[&"'<>]/g, (c) => lookup[c]);
 }
 
-export async function formatInEmojis(string: string, emojis: any) {
+export function formatInEmojis(string: string, emojis: any) {
 	// i would have assumed i'd need to check to make sure emojis aren't inserted into preformatted elements or whatever,
 	// but akkoma-fe seems to just do it, and since that's easier i'll just do that too
 	for (const emoji of emojis) {
@@ -73,12 +57,12 @@ export async function formatInEmojis(string: string, emojis: any) {
 		const emojiImg = `<img src="${emoji.url}" alt="${emojiHtml}" title=":${emojiHtml}:" class="emoji" />`;
 		string = string.replaceAll(`:${emojiHtml}:`, emojiImg);
 	}
-	return string;
+	return parseHTML(string);
 }
 
-export function createElement(elementType: string, classes: string) {
+export function createElement(elementType: string, classes = "") {
 	const element = document.createElement(elementType);
-	element.className = classes;
+	if (classes) element.className = classes;
 
 	return element;
 }
@@ -109,8 +93,10 @@ export function parseSVG(svg: string) {
 	return parser.parseFromString(svg, "image/svg+xml").firstChild as Node;
 }
 
-export async function chunkArray(array: any[], chunkSize: number) {
-	return array.map((_item, index) => (index % chunkSize === 0 ? array.slice(index, index + chunkSize) : null)).filter(Boolean);
+export function chunkArray<T>(array: T[], chunkSize: number) {
+	return array
+		.map((_item, index) => (index % chunkSize === 0 ? array.slice(index, index + chunkSize) : null))
+		.filter(Boolean) as T[][];
 }
 
 export function pathToAccount(accountId: string) {

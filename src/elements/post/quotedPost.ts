@@ -1,7 +1,6 @@
-import { addClasses } from "../../curryingUtils.js";
-import { Status } from "../../models/status.js";
-import CustomHTMLElement from "../customElement.js";
-import Post from "./post.js";
+import { Status } from "../../models/status";
+import CustomHTMLElement from "../customElement";
+import PostBoostedBy from "./postBoostedBy";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -17,10 +16,9 @@ sheet.replaceSync(`
 
 export default class QuotedPost extends CustomHTMLElement {
 	static async build(post: Status): Promise<CustomHTMLElement> {
-		return Post.build(post, false, true).then(addClasses("quoted-post")).then(QuotedPost.createNew);
+		//return Post.build(post, false, true).then(addClasses("quoted-post")).then(QuotedPost.createNew);
+		return PostBoostedBy.newClone();
 	}
 
-	protected static createNew(element: HTMLElement | string): CustomHTMLElement {
-		return new QuotedPost(sheet, [element]);
-	}
+	public setData() {}
 }

@@ -1,7 +1,7 @@
-import { getIcon } from "./assets.js";
-import { Icon } from "./models/icons.js";
-import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff.js";
-import { aCreateElement, clone, putChildrenInNewContainer } from "./utils.js";
+import { fetchIcon, getIcon } from "./assets";
+import { Icon } from "./models/icons";
+import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff";
+import { aCreateElement, clone, putChildrenInNewContainer } from "./utils";
 import {
 	addClasses,
 	putChildInCurryContainer,
@@ -9,28 +9,16 @@ import {
 	putChildrenInNewCurryContainer,
 	setAnchorHref,
 	setInnerText,
-} from "./curryingUtils.js";
+} from "./curryingUtils";
 
 import { Status, StatusTreeNode } from "./models/status";
 import { Context } from "./models/context";
 
-import * as consts from "./consts.js";
-import InteractionItem from "./elements/post/postInteractionItem.js";
-import BoostedBy from "./elements/post/boostedBy.js";
-import UsernameAcct from "./elements/account/usernameAcct.js";
-import InteractionsRow from "./elements/post/interactionsRow.js";
-import ProfilePreview from "./elements/account/profilePreview.js";
-import Avatar from "./elements/account/avatar.js";
-import AvatarWithPreview from "./elements/post/avatarWithPreview.js";
-import PosterInfo from "./elements/post/posterInfo.js";
-import DisplayName from "./elements/account/displayName.js";
-import PostMediaItem from "./elements/post/postMediaItem.js";
-import EmojiReaction from "./elements/post/emojiReaction.js";
-import PostTextContent from "./elements/post/postTextContent.js";
-import QuotedPost from "./elements/post/quotedPost.js";
-import EmojiReactionsRow from "./elements/post/emojiReactionsRow.js";
-import PostMedia from "./elements/post/postMedia.js";
-import Post from "./elements/post/post.js";
+import * as consts from "./consts";
+import Post from "./elements/post/post";
+import StandardPost from "./elements/post/standardPost";
+import { defineCustomElements } from "./defineCustomElements";
+import { newElement } from "./domUtils";
 
 const timelineDiv = document.getElementById("timeline-content")!;
 const loadingPostsDiv = document.getElementById("loading-posts")!;
@@ -50,26 +38,6 @@ async function main() {
 	});
 
 	doStuffForUrl();
-}
-
-function defineCustomElements() {
-	customElements.define("x-avatar", Avatar);
-	customElements.define("display-name", DisplayName);
-	customElements.define("profile-preview", ProfilePreview);
-	customElements.define("username-acct", UsernameAcct);
-
-	customElements.define("avatar-with-preview", AvatarWithPreview);
-	customElements.define("boosted-by", BoostedBy);
-	customElements.define("emoji-reaction", EmojiReaction);
-	customElements.define("emoji-reactions-row", EmojiReactionsRow);
-	customElements.define("post-interactions-row", InteractionsRow);
-	customElements.define("post-text-content", PostTextContent);
-	customElements.define("x-post", Post);
-	customElements.define("poster-info", PosterInfo);
-	customElements.define("post-interaction-item", InteractionItem);
-	customElements.define("post-media", PostMedia);
-	customElements.define("post-media-item", PostMediaItem);
-	customElements.define("quoted-post", QuotedPost);
 }
 
 async function doStuffForUrl() {
@@ -121,7 +89,7 @@ async function doStuffForUrl() {
 }
 
 async function fetchIconsInAdvance() {
-	Object.values(Icon).map(getIcon);
+	Object.values(Icon).map(fetchIcon);
 }
 
 function scrollToIfReply(status: Status) {
@@ -167,7 +135,8 @@ async function renderPostGroup(posts: Status[]): Promise<HTMLElement> {
 }
 
 async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
-	const postDiv = Post.build(tree, tree.children && tree.children.length > 0);
+	const postDiv = StandardPost.newClone();
+	postDiv.setData(tree, tree.children && tree.children.length > 0, false);
 
 	if (!tree.children || tree.children.length === 0) {
 		return [await postDiv];
@@ -195,13 +164,17 @@ async function constructReplyTopLine(post: Status) {
 	// if mention not found, assume they're replying to themselves
 	if (!replyTo) replyTo = post.account;
 
-	return Promise.all([
-		aCreateElement("div", "avatar-line-top"),
-		getIcon(Icon.Reply).then(clone).then(addClasses("post-replies-top-icon")),
-		aCreateElement("a", "post-replies-top-text")
-			.then(setAnchorHref(`/${consts.statusesPath}/${post.in_reply_to_id}`))
-			.then(setInnerText("Reply to " + replyTo!.acct)),
-	]).then(putChildrenInNewCurryContainer("post-replies-top"));
+	let line = newElement({ element: "div", className: "avatar-line-top" });
+	let icon = clone(getIcon(Icon.Reply));
+	addClasses("post-replies-top-icon")(icon);
+	let text = newElement({
+		element: "a",
+		className: "post-replies-top-text",
+		href: `/${consts.statusesPath}/${post.in_reply_to_id}`,
+		innerText: "Reply to " + replyTo.acct,
+	});
+
+	return newElement({ element: "div", className: "post-replies-top", children: [line, icon, text] });
 }
 
 function buildPostTree(statuses: Status[]): StatusTreeNode[] {

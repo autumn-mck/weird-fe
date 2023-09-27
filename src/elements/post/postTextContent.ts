@@ -1,7 +1,7 @@
 import { CustomEmoji } from "../../models/customEmoji";
-import { formatInEmojis, parseHTML, pathToAccount } from "../../utils.js";
-import CustomHTMLElement from "../customElement.js";
-import * as consts from "../../consts.js";
+import { formatInEmojis, pathToAccount } from "../../utils";
+import CustomHTMLElement from "../customElement";
+import * as consts from "../../consts";
 import { StatusMention } from "../../models/status";
 
 const sheet = new CSSStyleSheet();
@@ -39,17 +39,22 @@ ${consts.emojiCSS}
 `);
 
 export default class PostTextContent extends CustomHTMLElement {
-	static async build(content: string, emojis: CustomEmoji[], mentions: StatusMention[]): Promise<CustomHTMLElement> {
-		return formatInEmojis(content, emojis)
-			.then(parseHTML)
-			.then((elements) => PostTextContent.addOnClickListenersToMentions(elements, mentions))
-			.then(PostTextContent.createNew);
+	constructor() {
+		super(sheet);
+	}
+
+	public setData(content: string, emojis: CustomEmoji[], mentions: StatusMention[]) {
+		this.replaceAll("content", content, PostTextContent.parseContent, emojis, mentions);
+	}
+
+	private static parseContent(content: string, emojis: CustomEmoji[], mentions: StatusMention[]): ChildNode[] {
+		let parsedNodes = formatInEmojis(content, emojis);
+		PostTextContent.addOnClickListenersToMentions(parsedNodes, mentions);
+		return parsedNodes;
 	}
 
 	private static addOnClickListenersToMentions(elements: ChildNode[], mentions: StatusMention[]) {
 		elements.forEach((element) => PostTextContent.walk(element, mentions));
-
-		return elements;
 	}
 
 	private static walk(node: Node, mentions: StatusMention[]) {
@@ -82,9 +87,5 @@ export default class PostTextContent extends CustomHTMLElement {
 
 		history.pushState(null, "", pathToAccount(targetElement.dataset["accountId"]!));
 		window.dispatchEvent(new Event("popstate"));
-	}
-
-	protected static createNew(elements: (Node | string)[]): CustomHTMLElement {
-		return new PostTextContent(sheet, elements);
 	}
 }

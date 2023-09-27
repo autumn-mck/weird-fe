@@ -1,10 +1,9 @@
-import { addClasses, putChildrenInNewCurryContainer, setImgSrc, setInnerText } from "../../curryingUtils.js";
-import { aCreateElement, formatInEmojis, parseHTML, relativeTime } from "../../utils.js";
 import { Account } from "../../models/account";
-import DisplayName from "./displayName.js";
-import CustomHTMLElement from "../customElement.js";
-import * as consts from "../../consts.js";
-import Avatar from "./avatar.js";
+import AccountDisplayName from "./accountDisplayName";
+import CustomHTMLElement from "../customElement";
+import AccountAvatar from "./accountAvatar";
+import { newContainerFor, newElement, setInnerTextAsRelativeTime, setSrc } from "../../domUtils";
+import AccountBio from "./accountBio";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -26,7 +25,7 @@ a {
 	color: var(--accent);
 }
 
-.profile-preview {
+.preview {
 	margin-top: 0.5rem;
 	background: var(--background);
 	border-radius: 8px;
@@ -36,7 +35,7 @@ a {
 	--post-pfp-size:var(--pfp-size-large)
 }
 
-.preview-header {
+.header {
 	height: 6rem;
 	width: 100%;
 	object-fit: cover;
@@ -48,37 +47,39 @@ x-avatar {
 	left: 1rem;
 }
 
-.profile-preview-content {
+.content {
 	padding: 1rem;
 }
-
-${consts.emojiCSS}
 `);
 
 export default class ProfilePreview extends CustomHTMLElement {
-	static async build(account: Account): Promise<CustomHTMLElement> {
-		const accountCreatedAt = relativeTime(new Date(account.created_at));
-
-		return Promise.all([
-			aCreateElement("img", "preview-header").then(setImgSrc(account.header)),
-
-			Promise.all([
-				Avatar.build(account.avatar).then(addClasses("with-border")),
-
-				Promise.all([
-					DisplayName.build(account.display_name, account.emojis),
-					formatInEmojis(account.note, account.emojis)
-						.then(parseHTML)
-						.then(putChildrenInNewCurryContainer("profile-preview-bio")),
-					aCreateElement("p").then(setInnerText(accountCreatedAt)).then(addClasses("profile-preview-created-at")),
-				]).then(putChildrenInNewCurryContainer("profile-preview-text")),
-			]).then(putChildrenInNewCurryContainer("profile-preview-content")),
-		])
-			.then(putChildrenInNewCurryContainer("profile-preview"))
-			.then(ProfilePreview.createNew);
+	protected static override baseToClone: ProfilePreview;
+	public static newClone() {
+		if (!this.baseToClone) this.baseToClone = new this();
+		return this.baseToClone.cloneNode(true) as ProfilePreview;
 	}
 
-	protected static createNew(element: HTMLElement | string): CustomHTMLElement {
-		return new ProfilePreview(sheet, [element]);
+	constructor() {
+		let elements = {
+			header: newElement({ element: "img", className: "header" }),
+			avatar: AccountAvatar.newClone().addClasses("with-border"),
+			displayName: AccountDisplayName.newClone(),
+			bio: AccountBio.newClone(),
+			createdAt: newElement({ element: "p", className: "created-at" }),
+		};
+
+		let textContent = newContainerFor("div", "text-content", elements.displayName, elements.bio, elements.createdAt);
+		let content = newContainerFor("div", "content", elements.avatar, textContent);
+		let layout = [newContainerFor("div", "preview", elements.header, content)];
+
+		super(sheet, elements, layout);
+	}
+
+	public setData(account: Account) {
+		this.update("header", account.header, setSrc);
+		this.set("avatar", account.avatar);
+		this.set("displayName", account.display_name, account.emojis);
+		this.set("bio", account.note, account.emojis);
+		this.update("createdAt", account.created_at, setInnerTextAsRelativeTime);
 	}
 }
