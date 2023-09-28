@@ -1,12 +1,12 @@
 import { getIconForVisibility } from "../../assets";
-import { relativeTime } from "../../utils";
+import { asReadableDate, relativeTime } from "../../utils";
 import UsernameAcct from "../account/usernameAcct";
 import { Status } from "../../models/status";
 import AvatarWithPreview from "./avatarWithPreview";
 import * as consts from "../../consts";
 import AccountDisplayName from "../account/accountDisplayName";
 import CustomHTMLElement from "../customElement";
-import { addClasses, newElement, setAnchorHref, setInnerText, setInnerTextAsRelativeTime, setTitle } from "../../domUtils";
+import { addClasses, newElement, setAnchorHref, setInnerText, setTitle } from "../../domUtils";
 import { Visibility } from "../../models/visibility";
 
 const sheet = new CSSStyleSheet();
@@ -94,8 +94,7 @@ export default class PostInfo extends CustomHTMLElement {
 		this.set("displayName", post.account.display_name, post.account.emojis);
 		this.set("usernameAcct", post.account);
 
-		this.update("createdAt", post.created_at, setInnerTextAsRelativeTime);
-
+		this.update("createdAt", post.created_at, PostInfo.setCreatedAt);
 		this.update("editedAt", post.edited_at, PostInfo.setEditedAt);
 
 		this.update("times", post.id, PostInfo.setTimesHref);
@@ -110,8 +109,16 @@ export default class PostInfo extends CustomHTMLElement {
 		return [icon];
 	}
 
+	private static setCreatedAt(createdAtSpan: HTMLElement, createdAt: string) {
+		const date = new Date(createdAt);
+		setInnerText(createdAtSpan, relativeTime(date));
+		setTitle(createdAtSpan, asReadableDate(date));
+	}
+
 	private static setEditedAt(editedAtSpan: HTMLElement, editedAt: string) {
-		setInnerText(editedAtSpan, ` (edited ${relativeTime(new Date(editedAt))})`);
+		const date = new Date(editedAt);
+		setInnerText(editedAtSpan, ` (edited ${relativeTime(date)})`);
+		setTitle(editedAtSpan, asReadableDate(date));
 	}
 
 	private static setTimesHref(times: HTMLElement, statusId: string) {

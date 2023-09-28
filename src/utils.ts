@@ -5,7 +5,7 @@ export function relativeTime(date: Date) {
 	const time = date.getTime();
 
 	if (time < now) return `${toRelativeString(time, now)} ago`;
-	else return `${toRelativeString(time, now)} in the future`;
+	else return `in ${toRelativeString(time, now)}`;
 }
 
 function toRelativeString(time: number, now: number) {
@@ -24,6 +24,10 @@ function toRelativeString(time: number, now: number) {
 	} else {
 		return `${Math.round((now - time) / 1000 / 60 / 60 / 24 / 365)}y`;
 	}
+}
+
+export function asReadableDate(date: Date) {
+	return date.toLocaleString();
 }
 
 export async function fetchJsonAsync(url: string) {

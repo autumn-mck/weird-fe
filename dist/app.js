@@ -35,7 +35,7 @@ function relativeTime(date) {
   if (time < now)
     return `${toRelativeString(time, now)} ago`;
   else
-    return `${toRelativeString(time, now)} in the future`;
+    return `in ${toRelativeString(time, now)}`;
 }
 var toRelativeString = function(time, now) {
   if (time > now - 60000) {
@@ -54,6 +54,9 @@ var toRelativeString = function(time, now) {
     return `${Math.round((now - time) / 1000 / 60 / 60 / 24 / 365)}y`;
   }
 };
+function asReadableDate(date) {
+  return date.toLocaleString();
+}
 async function fetchJsonAsync(url) {
   const response = await fetch(url);
   const data = await response.json();
@@ -1295,7 +1298,7 @@ class PostInfo extends CustomHTMLElement {
     this.toggleClassOnElement("avatar", "display-none", !shouldIncludeAvatar);
     this.set("displayName", post.account.display_name, post.account.emojis);
     this.set("usernameAcct", post.account);
-    this.update("createdAt", post.created_at, setInnerTextAsRelativeTime);
+    this.update("createdAt", post.created_at, PostInfo.setCreatedAt);
     this.update("editedAt", post.edited_at, PostInfo.setEditedAt);
     this.update("times", post.id, PostInfo.setTimesHref);
     this.replaceChildrenOfElement("visibility", post.visibility, PostInfo.newPostVisibilityIcon);
@@ -1306,8 +1309,15 @@ class PostInfo extends CustomHTMLElement {
     setTitle(icon, visibility2);
     return [icon];
   }
+  static setCreatedAt(createdAtSpan, createdAt) {
+    const date = new Date(createdAt);
+    setInnerText(createdAtSpan, relativeTime(date));
+    setTitle(createdAtSpan, asReadableDate(date));
+  }
   static setEditedAt(editedAtSpan, editedAt) {
-    setInnerText(editedAtSpan, ` (edited ${relativeTime(new Date(editedAt))})`);
+    const date = new Date(editedAt);
+    setInnerText(editedAtSpan, ` (edited ${relativeTime(date)})`);
+    setTitle(editedAtSpan, asReadableDate(date));
   }
   static setTimesHref(times, statusId) {
     setAnchorHref(times, `/${statusesPath}/${statusId}`);
