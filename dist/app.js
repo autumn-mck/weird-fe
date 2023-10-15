@@ -1324,9 +1324,50 @@ class PostInfo extends CustomHTMLElement {
   }
 }
 
-// src/elements/post/standardPost.ts
+// src/elements/post/postContentWarning.ts
 var sheet17 = new CSSStyleSheet;
 sheet17.replaceSync(`
+span {
+	overflow-wrap: anywhere;
+	hyphens: auto;
+}
+
+button {
+	background: none;
+	border: var(--accent) 1px solid;
+	border-radius: 8px;
+	color: var(--text);
+	cursor: pointer;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+${emojiCSS}
+`);
+
+class PostContentWarning extends CustomHTMLElement {
+  constructor() {
+    let elements = {
+      content: newElement({ element: "span" }),
+      showContent: newElement({ element: "button", innerText: "Show content" })
+    };
+    let layout = [elements.content, " ", elements.showContent];
+    super(sheet17, elements, layout);
+  }
+  setData(content, emojis, parent) {
+    this.replaceChildrenOfElement("content", content, formatInEmojis, emojis);
+    this.update("showContent", parent, PostContentWarning.setOnClick);
+  }
+  static setOnClick(button, parent) {
+    button.onclick = () => {
+      parent.classList.toggle("content-hidden");
+    };
+  }
+}
+
+// src/elements/post/standardPost.ts
+var sheet18 = new CSSStyleSheet;
+sheet18.replaceSync(`
 :host {
 	${postCSS}
 	display: flex;
@@ -1380,6 +1421,14 @@ sheet17.replaceSync(`
 .display-none {
 	display: none;
 }
+
+:host(.content-hidden) .post-inner-body {
+	display: none;
+}
+
+:host(.content-hidden) .quoted-post {
+	display: none;
+}
 `);
 
 class StandardPost extends CustomHTMLElement {
@@ -1393,7 +1442,7 @@ class StandardPost extends CustomHTMLElement {
     let elements = {
       avatar: AvatarWithPreview.newClone().addClasses("display-none"),
       posterInfo: PostInfo.newClone(),
-      spoilerText: newElement({ element: "div", className: "spoiler-text" }),
+      spoilerText: new PostContentWarning,
       content: new PostTextContent,
       media: new PostMedia,
       quote: "",
@@ -1407,7 +1456,7 @@ class StandardPost extends CustomHTMLElement {
       children: [elements.posterInfo, elements.spoilerText, innerBody, elements.emojiReactions, elements.interactionsRow]
     });
     let layout = [elements.avatar, body];
-    super(sheet17, elements, layout);
+    super(sheet18, elements, layout);
   }
   setData(post, includeSpaceForAvatarLine, isQuoted) {
     this.toggleClassOnElement("avatar", "display-none", !includeSpaceForAvatarLine);
@@ -1415,6 +1464,9 @@ class StandardPost extends CustomHTMLElement {
       this.set("avatar", post.account, true);
     this.set("posterInfo", post, !includeSpaceForAvatarLine);
     this.toggleClassOnElement("spoilerText", "display-none", !post.spoiler_text);
+    this.set("spoilerText", post.spoiler_text, post.emojis, this);
+    if (post.spoiler_text)
+      this.classList.add("content-hidden");
     this.toggleClassOnElement("content", "display-none", !post.content);
     this.set("content", post.content, post.emojis, post.mentions);
     this.toggleClassOnElement("media", "display-none", !post.media_attachments.length);
@@ -1436,8 +1488,8 @@ class StandardPost extends CustomHTMLElement {
 }
 
 // src/elements/post/boost.ts
-var sheet18 = new CSSStyleSheet;
-sheet18.replaceSync(`
+var sheet19 = new CSSStyleSheet;
+sheet19.replaceSync(`
 :host {
 	width: 100%;
 	display: flex;
@@ -1463,7 +1515,7 @@ class Boost extends CustomHTMLElement {
       boostedBy: new PostBoostedBy,
       post: new StandardPost().addClasses("boosted-post")
     };
-    super(sheet18, elements);
+    super(sheet19, elements);
   }
   setData(post) {
     if (!post.reblog)
@@ -1474,8 +1526,8 @@ class Boost extends CustomHTMLElement {
 }
 
 // src/elements/post/post.ts
-var sheet19 = new CSSStyleSheet;
-sheet19.replaceSync(`
+var sheet20 = new CSSStyleSheet;
+sheet20.replaceSync(`
 :host {
 	width: calc(100% - 1rem);
 	/* todo root post should have top split 50/50 */
@@ -1526,28 +1578,16 @@ sheet19.replaceSync(`
 }
 `);
 
-class Post extends CustomHTMLElement {
-  constructor() {
-    super(...arguments);
-  }
+class Post {
   static async build(post, inludeSpaceForAvatarLine = false, isQuoted = false) {
     if (post.reblog) {
-      let boost2 = new Boost;
-      boost2.setData(post);
-      return boost2;
+      return this.constructBoost(post);
     } else {
-      let standardPost3 = new StandardPost;
-      standardPost3.setData(post, inludeSpaceForAvatarLine, isQuoted);
-      return standardPost3;
+      return this.constructPost(inludeSpaceForAvatarLine, post, isQuoted);
     }
-    let element = post.reblog ? Post.constructBoost(post) : Post.constructPost(inludeSpaceForAvatarLine, post, isQuoted);
-    element.id = post.id;
-    return element;
   }
   static fillMissingData(post) {
     return post;
-  }
-  setData() {
   }
   static constructBoost(post) {
     let boost2 = Boost.newClone();
@@ -1562,8 +1602,8 @@ class Post extends CustomHTMLElement {
 }
 
 // src/elements/post/quotedPost.ts
-var sheet20 = new CSSStyleSheet;
-sheet20.replaceSync(`
+var sheet21 = new CSSStyleSheet;
+sheet21.replaceSync(`
 :host {
 	border: 1px solid var(--border);
 	border-radius: 8px;
@@ -1587,7 +1627,7 @@ class QuotedPost extends CustomHTMLElement {
 
 // src/defineCustomElements.ts
 function defineCustomElements() {
-  customElements.define("x-avatar", AccountAvatar);
+  customElements.define("account-avatar", AccountAvatar);
   customElements.define("account-bio", AccountBio);
   customElements.define("display-name", AccountDisplayName);
   customElements.define("profile-preview", ProfilePreview);
@@ -1600,8 +1640,8 @@ function defineCustomElements() {
   customElements.define("post-interactions-row", PostInteractionsRow);
   customElements.define("media-row", MediaRow);
   customElements.define("post-text-content", PostTextContent);
-  customElements.define("x-post", Post);
-  customElements.define("poster-info", PostInfo);
+  customElements.define("post-content-warning", PostContentWarning);
+  customElements.define("post-info", PostInfo);
   customElements.define("post-interaction-item", PostInteractionItem);
   customElements.define("post-media", PostMedia);
   customElements.define("post-media-item", PostMediaItem);
@@ -1663,18 +1703,18 @@ var renderTimeline = function(statuses) {
   timelineDiv.innerHTML = "";
   return Promise.all(statuses.map(fetchPostsUpwards)).then(perfMessage("fetchPostsUpwards")).then((posts) => Promise.all(posts.map(renderPostGroup))).then(perfMessage("renderPostGroup")).then(putChildrenInCurryContainer(timelineDiv));
 };
-async function fetchPostsUpwards(post3, heightAbove = 1) {
-  if (post3.in_reply_to_id && heightAbove > 0) {
-    return fetchStatusById(post3.in_reply_to_id).then((fetchedPost) => fetchPostsUpwards(fetchedPost, heightAbove - 1)).then((posts) => [...posts, post3]);
+async function fetchPostsUpwards(post2, heightAbove = 1) {
+  if (post2.in_reply_to_id && heightAbove > 0) {
+    return fetchStatusById(post2.in_reply_to_id).then((fetchedPost) => fetchPostsUpwards(fetchedPost, heightAbove - 1)).then((posts) => [...posts, post2]);
   } else
-    return [post3];
+    return [post2];
 }
 async function renderPostGroup(posts) {
   const postContainer = aCreateElement("div", "post-container");
   if (posts[0].in_reply_to_id) {
     constructReplyTopLine(posts[0]).then(putChildInCurryContainer(await postContainer));
   }
-  return Promise.all(posts.map((post3, index, { length }) => Post.build(post3, index !== length - 1))).then(putChildrenInCurryContainer(await postContainer));
+  return Promise.all(posts.map((post2, index, { length }) => Post.build(post2, index !== length - 1))).then(putChildrenInCurryContainer(await postContainer));
 }
 async function renderPostTree(tree) {
   const postDiv = StandardPost.newClone();
@@ -1692,17 +1732,17 @@ async function renderPostTree(tree) {
     return Promise.all([aCreateElement("div", "post-child-line-connector"), aCreateElement("div", "post-child-line")]).then(putChildrenInNewCurryContainer("post-child-line-container")).then((lineContainer) => putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer"));
   }
 }
-async function constructReplyTopLine(post3) {
-  let replyTo = post3.mentions.find((mention) => mention.id === post3.in_reply_to_account_id);
+async function constructReplyTopLine(post2) {
+  let replyTo = post2.mentions.find((mention) => mention.id === post2.in_reply_to_account_id);
   if (!replyTo)
-    replyTo = post3.account;
+    replyTo = post2.account;
   let line = newElement({ element: "div", className: "avatar-line-top" });
   let icon = clone(getIcon(Icon.Reply));
   addClasses("post-replies-top-icon")(icon);
   let text = newElement({
     element: "a",
     className: "post-replies-top-text",
-    href: `/${statusesPath}/${post3.in_reply_to_id}`,
+    href: `/${statusesPath}/${post2.in_reply_to_id}`,
     innerText: "Reply to " + replyTo.acct
   });
   return newElement({ element: "div", className: "post-replies-top", children: [line, icon, text] });
@@ -1723,7 +1763,7 @@ var buildPostTree = function(statuses) {
   return tree;
 };
 var perfMessage = function(message) {
-  return async function(value = undefined) {
+  return async function(value) {
     await value;
     console.log(message + " took " + (performance.now() - perfLastTime) + "ms");
     perfLastTime = performance.now();

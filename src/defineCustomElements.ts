@@ -13,14 +13,14 @@ import PostTextContent from "./elements/post/postTextContent";
 import QuotedPost from "./elements/post/quotedPost";
 import EmojiReactions from "./elements/post/emojiReactions";
 import PostMedia from "./elements/post/postMedia";
-import Post from "./elements/post/post";
 import StandardPost from "./elements/post/standardPost";
 import Boost from "./elements/post/boost";
 import MediaRow from "./elements/post/postMediaRow";
 import AccountBio from "./elements/account/accountBio";
+import { PostContentWarning } from "./elements/post/postContentWarning";
 
 export function defineCustomElements() {
-	customElements.define("x-avatar", AccountAvatar);
+	customElements.define("account-avatar", AccountAvatar);
 	customElements.define("account-bio", AccountBio);
 	customElements.define("display-name", AccountDisplayName);
 	customElements.define("profile-preview", ProfilePreview);
@@ -34,8 +34,8 @@ export function defineCustomElements() {
 	customElements.define("post-interactions-row", PostInteractionsRow);
 	customElements.define("media-row", MediaRow);
 	customElements.define("post-text-content", PostTextContent);
-	customElements.define("x-post", Post);
-	customElements.define("poster-info", PostInfo);
+	customElements.define("post-content-warning", PostContentWarning);
+	customElements.define("post-info", PostInfo);
 	customElements.define("post-interaction-item", PostInteractionItem);
 	customElements.define("post-media", PostMedia);
 	customElements.define("post-media-item", PostMediaItem);

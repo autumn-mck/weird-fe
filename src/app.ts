@@ -194,7 +194,7 @@ function buildPostTree(statuses: Status[]): StatusTreeNode[] {
 }
 
 function perfMessage(message: string) {
-	return async function (value: any = undefined) {
+	return async function <T>(value: T) {
 		await value;
 		console.log(message + " took " + (performance.now() - perfLastTime) + "ms");
 		perfLastTime = performance.now();

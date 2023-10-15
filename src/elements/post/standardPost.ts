@@ -8,6 +8,7 @@ import PostMedia from "./postMedia";
 import PostTextContent from "./postTextContent";
 import PostInfo from "./postInfo";
 import * as consts from "../../consts";
+import { PostContentWarning } from "./postContentWarning";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -64,6 +65,14 @@ sheet.replaceSync(`
 .display-none {
 	display: none;
 }
+
+:host(.content-hidden) .post-inner-body {
+	display: none;
+}
+
+:host(.content-hidden) .quoted-post {
+	display: none;
+}
 `);
 
 export default class StandardPost extends CustomHTMLElement {
@@ -79,7 +88,7 @@ export default class StandardPost extends CustomHTMLElement {
 		let elements = {
 			avatar: AvatarWithPreview.newClone().addClasses("display-none"),
 			posterInfo: PostInfo.newClone(),
-			spoilerText: newElement({ element: "div", className: "spoiler-text" }),
+			spoilerText: new PostContentWarning(),
 			content: new PostTextContent(),
 			media: new PostMedia(),
 			quote: "",
@@ -104,6 +113,8 @@ export default class StandardPost extends CustomHTMLElement {
 		if (includeSpaceForAvatarLine) this.set("avatar", post.account, true);
 		this.set("posterInfo", post, !includeSpaceForAvatarLine);
 		this.toggleClassOnElement("spoilerText", "display-none", !post.spoiler_text);
+		this.set("spoilerText", post.spoiler_text, post.emojis, this);
+		if (post.spoiler_text) this.classList.add("content-hidden");
 
 		this.toggleClassOnElement("content", "display-none", !post.content);
 		this.set("content", post.content, post.emojis, post.mentions);

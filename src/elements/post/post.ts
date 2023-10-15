@@ -55,31 +55,19 @@ sheet.replaceSync(`
 }
 `);
 
-export default class Post extends CustomHTMLElement {
+export default class Post {
 	static async build(post: Status, inludeSpaceForAvatarLine = false, isQuoted = false) {
 		if (post.reblog) {
-			let boost = new Boost();
-			boost.setData(post);
-			return boost;
+			return this.constructBoost(post);
 		} else {
-			let standardPost = new StandardPost();
-			standardPost.setData(post, inludeSpaceForAvatarLine, isQuoted);
-			return standardPost;
+			return this.constructPost(inludeSpaceForAvatarLine, post, isQuoted);
 		}
-
-		let element = post.reblog ? Post.constructBoost(post) : Post.constructPost(inludeSpaceForAvatarLine, post, isQuoted);
-		element.id = post.id;
-		return element;
-		// .then(Post.createNew)
-		// .then(setId(post.id));
 	}
 
 	private static fillMissingData(post: Status): Status {
 		// todo, and not in this class
 		return post;
 	}
-
-	public setData() {}
 
 	private static constructBoost(post: Status) {
 		let boost = Boost.newClone();
@@ -92,40 +80,4 @@ export default class Post extends CustomHTMLElement {
 		newPost.setData(post, inludeSpaceForAvatarLine, isQuoted);
 		return newPost;
 	}
-
-	// private static async constructStandardPostBody(post: Status, inludeSpaceForAvatarLine: boolean, isQuoted: boolean) {
-	// 	return Promise.all([
-	// 		PosterInfo.build(post, !inludeSpaceForAvatarLine),
-	// 		post.spoiler_text ? aCreateElement("p", "post-spoiler-text").then(setInnerText(post.spoiler_text)) : "",
-	// 		Post.constructInnerBody(post),
-	// 		Post.shouldDisplayEmojiReactionRow(isQuoted, post.emoji_reactions) ? EmojiReactionsRow.build(post.emoji_reactions!) : "",
-	// 		!isQuoted ? InteractionsRow.build(post, inludeSpaceForAvatarLine) : "",
-	// 	])
-	// 		.then(putChildrenInNewCurryContainer("post-body"))
-	// 		.then(Post.markSpoilerIfNeeded(post.spoiler_text));
-	// }
-
-	// private static markSpoilerIfNeeded(postSpoilerText: string) {
-	// 	return function (postBody: HTMLElement) {
-	// 		if (postSpoilerText) postBody.className += " post-spoiler";
-	// 		return postBody;
-	// 	};
-	// }
-
-	// private static shouldDisplayEmojiReactionRow(isQuoted: boolean, emojiReactions: any[] | undefined) {
-	// 	return !isQuoted && emojiReactions && emojiReactions.length > 0;
-	// }
-
-	// private static constructInnerBody(post: Status): Promise<HTMLElement> {
-	// 	return Promise.all([
-	// 		PostTextContent.build(post.content, post.emojis, post.mentions),
-	// 		post.media_attachments && post.media_attachments.length > 0 ? PostMedia.build(post.media_attachments, post.sensitive) : "",
-	// 		post.poll ? "TODO: poll" : "",
-	// 		post.quote ? QuotedPost.build(post.quote) : "",
-	// 	]).then(putChildrenInNewCurryContainer("post-inner-body"));
-	// }
-
-	// protected static createNew(elements: (HTMLElement | string)[]): CustomHTMLElement {
-	// 	return new Post(sheet, elements);
-	// }
 }
