@@ -1340,6 +1340,17 @@ button {
 	cursor: pointer;
 	font-size: 1rem;
 	font-weight: bold;
+  line-height: 20px;
+  transition: transform .1s;
+}
+
+button:hover {
+  background: var(--button-background-hover);
+}
+
+button:active {
+  transform: scale(.96);
+	background: var(--button-background-active);
 }
 
 ${emojiCSS}
@@ -1361,6 +1372,7 @@ class PostContentWarning extends CustomHTMLElement {
   static setOnClick(button, parent) {
     button.onclick = () => {
       parent.classList.toggle("content-hidden");
+      button.innerText = parent.classList.contains("content-hidden") ? "Show content" : "Hide content";
     };
   }
 }

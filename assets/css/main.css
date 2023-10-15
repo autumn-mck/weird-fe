@@ -23,6 +23,9 @@
 	--left-col-width: 30ch;
 
 	--header-border-radius: 12px;
+
+	--button-background-hover: #1e2030;
+	--button-background-active: #181926;
 }
 
 html {

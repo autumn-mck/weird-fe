@@ -20,6 +20,17 @@ button {
 	cursor: pointer;
 	font-size: 1rem;
 	font-weight: bold;
+  line-height: 20px;
+  transition: transform .1s;
+}
+
+button:hover {
+  background: var(--button-background-hover);
+}
+
+button:active {
+  transform: scale(.96);
+	background: var(--button-background-active);
 }
 
 ${consts.emojiCSS}
@@ -45,6 +56,7 @@ export class PostContentWarning extends CustomHTMLElement {
 	private static setOnClick(button: HTMLElement, parent: StandardPost) {
 		button.onclick = () => {
 			parent.classList.toggle("content-hidden");
+			button.innerText = parent.classList.contains("content-hidden") ? "Show content" : "Hide content";
 		};
 	}
 }
