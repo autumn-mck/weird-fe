@@ -67,6 +67,7 @@ async function doStuffForUrl() {
 			// todo handle quotes
 
 			// /statuses/AYb499YWRvchIjmLiq is a good test
+			// /statuses/AammWAgAOKljJYADEu currently breaks
 			renderPostTree(postTrees[0]!)
 				.then(perfMessage("renderPostTree"))
 				.then(putChildrenInCurryContainer(timelineDiv))

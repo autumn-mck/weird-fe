@@ -109,6 +109,8 @@ export default class StandardPost extends CustomHTMLElement {
 	}
 
 	public setData(post: Status, includeSpaceForAvatarLine: boolean, isQuoted: boolean) {
+		this.id = post.id;
+
 		this.toggleClassOnElement("avatar", "display-none", !includeSpaceForAvatarLine);
 		if (includeSpaceForAvatarLine) this.set("avatar", post.account, true);
 		this.set("posterInfo", post, !includeSpaceForAvatarLine);

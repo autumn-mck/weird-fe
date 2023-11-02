@@ -37,6 +37,7 @@ export default class Boost extends CustomHTMLElement {
 
 	public setData(post: Status) {
 		if (!post.reblog) throw new Error("Post is not boosted");
+		this.id = post.id;
 
 		this.set("boostedBy", post);
 		this.set("post", post.reblog);

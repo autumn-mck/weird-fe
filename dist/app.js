@@ -1471,6 +1471,7 @@ class StandardPost extends CustomHTMLElement {
     super(sheet18, elements, layout);
   }
   setData(post, includeSpaceForAvatarLine, isQuoted) {
+    this.id = post.id;
     this.toggleClassOnElement("avatar", "display-none", !includeSpaceForAvatarLine);
     if (includeSpaceForAvatarLine)
       this.set("avatar", post.account, true);
@@ -1532,6 +1533,7 @@ class Boost extends CustomHTMLElement {
   setData(post) {
     if (!post.reblog)
       throw new Error("Post is not boosted");
+    this.id = post.id;
     this.set("boostedBy", post);
     this.set("post", post.reblog);
   }
