@@ -1639,8 +1639,76 @@ class QuotedPost extends CustomHTMLElement {
   }
 }
 
+// node_modules/autosize/dist/autosize.esm.js
+var t = function(t2) {
+  var o = e.get(t2);
+  o && o.destroy();
+};
+var o = function(t2) {
+  var o2 = e.get(t2);
+  o2 && o2.update();
+};
+var e = new Map;
+var r = null;
+typeof window == "undefined" ? ((r = function(e2) {
+  return e2;
+}).destroy = function(e2) {
+  return e2;
+}, r.update = function(e2) {
+  return e2;
+}) : ((r = function(t2, o2) {
+  return t2 && Array.prototype.forEach.call(t2.length ? t2 : [t2], function(t3) {
+    return function(t4) {
+      if (t4 && t4.nodeName && t4.nodeName === "TEXTAREA" && !e.has(t4)) {
+        var o3, r2 = null, n = window.getComputedStyle(t4), i = (o3 = t4.value, function() {
+          a({ testForHeightReduction: o3 === "" || !t4.value.startsWith(o3), restoreTextAlign: null }), o3 = t4.value;
+        }), l = function(o4) {
+          t4.removeEventListener("autosize:destroy", l), t4.removeEventListener("autosize:update", s), t4.removeEventListener("input", i), window.removeEventListener("resize", s), Object.keys(o4).forEach(function(e2) {
+            return t4.style[e2] = o4[e2];
+          }), e.delete(t4);
+        }.bind(t4, { height: t4.style.height, resize: t4.style.resize, textAlign: t4.style.textAlign, overflowY: t4.style.overflowY, overflowX: t4.style.overflowX, wordWrap: t4.style.wordWrap });
+        t4.addEventListener("autosize:destroy", l), t4.addEventListener("autosize:update", s), t4.addEventListener("input", i), window.addEventListener("resize", s), t4.style.overflowX = "hidden", t4.style.wordWrap = "break-word", e.set(t4, { destroy: l, update: s }), s();
+      }
+      function a(e2) {
+        var o4, i2, l2 = e2.restoreTextAlign, s2 = l2 === undefined ? null : l2, d = e2.testForHeightReduction, u = d === undefined || d, c = n.overflowY;
+        if (t4.scrollHeight !== 0 && (n.resize === "vertical" ? t4.style.resize = "none" : n.resize === "both" && (t4.style.resize = "horizontal"), u && (o4 = function(e3) {
+          for (var t5 = [];e3 && e3.parentNode && e3.parentNode instanceof Element; )
+            e3.parentNode.scrollTop && t5.push([e3.parentNode, e3.parentNode.scrollTop]), e3 = e3.parentNode;
+          return function() {
+            return t5.forEach(function(e4) {
+              var t6 = e4[0], o5 = e4[1];
+              t6.style.scrollBehavior = "auto", t6.scrollTop = o5, t6.style.scrollBehavior = null;
+            });
+          };
+        }(t4), t4.style.height = ""), i2 = n.boxSizing === "content-box" ? t4.scrollHeight - (parseFloat(n.paddingTop) + parseFloat(n.paddingBottom)) : t4.scrollHeight + parseFloat(n.borderTopWidth) + parseFloat(n.borderBottomWidth), n.maxHeight !== "none" && i2 > parseFloat(n.maxHeight) ? (n.overflowY === "hidden" && (t4.style.overflow = "scroll"), i2 = parseFloat(n.maxHeight)) : n.overflowY !== "hidden" && (t4.style.overflow = "hidden"), t4.style.height = i2 + "px", s2 && (t4.style.textAlign = s2), o4 && o4(), r2 !== i2 && (t4.dispatchEvent(new Event("autosize:resized", { bubbles: true })), r2 = i2), c !== n.overflow && !s2)) {
+          var v = n.textAlign;
+          n.overflow === "hidden" && (t4.style.textAlign = v === "start" ? "end" : "start"), a({ restoreTextAlign: v, testForHeightReduction: true });
+        }
+      }
+      function s() {
+        a({ testForHeightReduction: true, restoreTextAlign: null });
+      }
+    }(t3);
+  }), t2;
+}).destroy = function(e2) {
+  return e2 && Array.prototype.forEach.call(e2.length ? e2 : [e2], t), e2;
+}, r.update = function(e2) {
+  return e2 && Array.prototype.forEach.call(e2.length ? e2 : [e2], o), e2;
+});
+var n = r;
+var autosize_esm_default = n;
+
+// src/elements/autoSizeTextArea.ts
+class AutoSize extends HTMLTextAreaElement {
+  constructor() {
+    super();
+    autosize_esm_default(this);
+  }
+}
+
 // src/defineCustomElements.ts
 function defineCustomElements() {
+  customElements.define("auto-size", AutoSize, { extends: "textarea" });
   customElements.define("account-avatar", AccountAvatar);
   customElements.define("account-bio", AccountBio);
   customElements.define("display-name", AccountDisplayName);

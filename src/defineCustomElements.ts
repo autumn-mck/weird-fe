@@ -18,8 +18,11 @@ import Boost from "./elements/post/boost";
 import MediaRow from "./elements/post/postMediaRow";
 import AccountBio from "./elements/account/accountBio";
 import { PostContentWarning } from "./elements/post/postContentWarning";
+import AutoSize from "./elements/autoSizeTextArea";
 
 export function defineCustomElements() {
+	customElements.define("auto-size", AutoSize, { extends: "textarea" });
+
 	customElements.define("account-avatar", AccountAvatar);
 	customElements.define("account-bio", AccountBio);
 	customElements.define("display-name", AccountDisplayName);
