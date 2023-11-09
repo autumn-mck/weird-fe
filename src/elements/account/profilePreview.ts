@@ -68,7 +68,13 @@ export default class ProfilePreview extends CustomHTMLElement {
 			createdAt: newElement({ element: "p", className: "created-at" }),
 		};
 
-		let textContent = newContainerFor("div", "text-content", elements.displayName, elements.bio, elements.createdAt);
+		let textContent = newContainerFor(
+			"div",
+			"text-content",
+			elements.displayName,
+			elements.bio,
+			elements.createdAt
+		);
 		let content = newContainerFor("div", "content", elements.avatar, textContent);
 		let layout = [newContainerFor("div", "preview", elements.header, content)];
 

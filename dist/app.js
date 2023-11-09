@@ -1219,7 +1219,11 @@ class PostBoostedBy extends CustomHTMLElement {
       displayName: new AccountDisplayName,
       boostedTime: newElement({ element: "span", className: "boosted-time" })
     };
-    let textSpan = newElement({ element: "span", className: "boosted-by", innerText: "Boosted by " });
+    let textSpan = newElement({
+      element: "span",
+      className: "boosted-by",
+      innerText: "Boosted by "
+    });
     let layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
     super(sheet2, elements, layout);
   }
@@ -1648,7 +1652,10 @@ class PostInteractionItem extends CustomHTMLElement {
         htmlFor: "checkbox",
         children: [newElement({ element: "custom-icon", icon })]
       }),
-      interactionCount: newElement({ element: "span", className: "interaction-text  display-none" })
+      interactionCount: newElement({
+        element: "span",
+        className: "interaction-text  display-none"
+      })
     };
     super(sheet9, elements);
   }
@@ -2096,7 +2103,11 @@ class PostInfo extends CustomHTMLElement {
       className: "right-column",
       children: [elements.times, elements.visibility]
     });
-    let textInfo = newElement({ element: "div", className: "poster-text-info", children: [leftCol, rightCol] });
+    let textInfo = newElement({
+      element: "div",
+      className: "poster-text-info",
+      children: [leftCol, rightCol]
+    });
     let layout = [elements.avatar, textInfo];
     super(sheet16, elements, layout);
   }
@@ -2112,7 +2123,10 @@ class PostInfo extends CustomHTMLElement {
     this.replaceChildrenOfElement("visibility", post.visibility, PostInfo.newPostVisibilityIcon);
   }
   static newPostVisibilityIcon(visibility2) {
-    const icon = newElement({ element: "custom-icon", icon: getIconEnumForVisibility(visibility2) });
+    const icon = newElement({
+      element: "custom-icon",
+      icon: getIconEnumForVisibility(visibility2)
+    });
     addClasses2(icon, "post-visibility");
     setTitle(icon, visibility2);
     return [icon];
@@ -2269,11 +2283,21 @@ class StandardPost extends CustomHTMLElement {
       emojiReactions: EmojiReactions.newClone(),
       interactionsRow: PostInteractionsRow.newClone()
     };
-    let innerBody = newElement({ element: "div", className: "post-inner-body", children: [elements.content, elements.media] });
+    let innerBody = newElement({
+      element: "div",
+      className: "post-inner-body",
+      children: [elements.content, elements.media]
+    });
     let body = newElement({
       element: "div",
       className: "post-body",
-      children: [elements.posterInfo, elements.spoilerText, innerBody, elements.emojiReactions, elements.interactionsRow]
+      children: [
+        elements.posterInfo,
+        elements.spoilerText,
+        innerBody,
+        elements.emojiReactions,
+        elements.interactionsRow
+      ]
     });
     let layout = [elements.avatar, body];
     super(sheet18, elements, layout);
@@ -2551,7 +2575,11 @@ class LanguageSelector extends CustomHTMLElement {
     };
     for (let code of import_iso_639_1.default.getAllCodes()) {
       let name = import_iso_639_1.default.getNativeName(code);
-      let option = newElement({ element: "option", value: code, innerText: `${code} - ${name}` });
+      let option = newElement({
+        element: "option",
+        value: code,
+        innerText: `${code} - ${name}`
+      });
       elements.select.append(option);
     }
     super(sheet23, elements);
@@ -2573,7 +2601,10 @@ class PostFormatSelector extends CustomHTMLElement {
     };
     const options = ["Text", "Markdown", "MFM", "HTML", "BBCode"];
     options.forEach((option) => {
-      const optionElement = newElement({ element: "option", textContent: option });
+      const optionElement = newElement({
+        element: "option",
+        textContent: option
+      });
       elements.select.appendChild(optionElement);
     });
     super(sheet24, elements);
@@ -2690,7 +2721,10 @@ async function renderPostTree(tree) {
     });
   }
   async function putChildrenInContainerWithLine(childrenDiv) {
-    return Promise.all([aCreateElement("div", "post-child-line-connector"), aCreateElement("div", "post-child-line")]).then(putChildrenInNewCurryContainer("post-child-line-container")).then((lineContainer) => putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer"));
+    return Promise.all([
+      aCreateElement("div", "post-child-line-connector"),
+      aCreateElement("div", "post-child-line")
+    ]).then(putChildrenInNewCurryContainer("post-child-line-container")).then((lineContainer) => putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer"));
   }
 }
 async function constructReplyTopLine(post2) {
@@ -2706,7 +2740,11 @@ async function constructReplyTopLine(post2) {
     href: `/${statusesPath}/${post2.in_reply_to_id}`,
     innerText: "Reply to " + replyTo.acct
   });
-  return newElement({ element: "div", className: "post-replies-top", children: [line, icon, text] });
+  return newElement({
+    element: "div",
+    className: "post-replies-top",
+    children: [line, icon, text]
+  });
 }
 var buildPostTree = function(statuses) {
   const tree = [];

@@ -16,7 +16,10 @@ export default class PostFormatSelector extends CustomHTMLElement {
 		const options = ["Text", "Markdown", "MFM", "HTML", "BBCode"];
 
 		options.forEach((option) => {
-			const optionElement = newElement({ element: "option", textContent: option });
+			const optionElement = newElement({
+				element: "option",
+				textContent: option,
+			});
 			elements.select.appendChild(optionElement);
 		});
 

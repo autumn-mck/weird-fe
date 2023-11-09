@@ -80,7 +80,11 @@ export default class PostInfo extends CustomHTMLElement {
 			className: "right-column",
 			children: [elements.times, elements.visibility],
 		});
-		let textInfo = newElement({ element: "div", className: "poster-text-info", children: [leftCol, rightCol] });
+		let textInfo = newElement({
+			element: "div",
+			className: "poster-text-info",
+			children: [leftCol, rightCol],
+		});
 
 		let layout = [elements.avatar, textInfo];
 
@@ -103,7 +107,10 @@ export default class PostInfo extends CustomHTMLElement {
 	}
 
 	private static newPostVisibilityIcon(visibility: Visibility) {
-		const icon = newElement({ element: "custom-icon", icon: getIconEnumForVisibility(visibility) });
+		const icon = newElement({
+			element: "custom-icon",
+			icon: getIconEnumForVisibility(visibility),
+		});
 		addClasses(icon, "post-visibility");
 		setTitle(icon, visibility);
 		return [icon];

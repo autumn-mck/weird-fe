@@ -62,7 +62,9 @@ async function doStuffForUrl() {
 			const statusId = path[2]!;
 
 			const [status, context] = await fetchStatusAndContext(statusId).then(perfMessage("fetchStatusAndContext"));
-			const postTrees = await putStatusInContext(status, context).then(buildPostTree).then(perfMessage("buildPostTree"));
+			const postTrees = await putStatusInContext(status, context)
+				.then(buildPostTree)
+				.then(perfMessage("buildPostTree"));
 			// todo handle quotes
 
 			// /statuses/AYb499YWRvchIjmLiq is a good test
@@ -153,9 +155,14 @@ async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 	}
 
 	async function putChildrenInContainerWithLine(childrenDiv: HTMLElement) {
-		return Promise.all([aCreateElement("div", "post-child-line-connector"), aCreateElement("div", "post-child-line")])
+		return Promise.all([
+			aCreateElement("div", "post-child-line-connector"),
+			aCreateElement("div", "post-child-line"),
+		])
 			.then(putChildrenInNewCurryContainer("post-child-line-container"))
-			.then((lineContainer) => putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer"));
+			.then((lineContainer) =>
+				putChildrenInNewContainer([lineContainer, childrenDiv], "post-child-container-outer")
+			);
 	}
 }
 
@@ -174,14 +181,20 @@ async function constructReplyTopLine(post: Status) {
 		innerText: "Reply to " + replyTo.acct,
 	});
 
-	return newElement({ element: "div", className: "post-replies-top", children: [line, icon, text] });
+	return newElement({
+		element: "div",
+		className: "post-replies-top",
+		children: [line, icon, text],
+	});
 }
 
 function buildPostTree(statuses: Status[]): StatusTreeNode[] {
 	const tree = [] as StatusTreeNode[];
 	for (let i = 0; i < statuses.length; i++) {
 		if (statuses[i]!.in_reply_to_id) {
-			const parent = statuses.filter((status) => status.id === statuses[i]!.in_reply_to_id).pop() as StatusTreeNode;
+			const parent = statuses
+				.filter((status) => status.id === statuses[i]!.in_reply_to_id)
+				.pop() as StatusTreeNode;
 			if (!parent.children) {
 				parent.children = [];
 			}

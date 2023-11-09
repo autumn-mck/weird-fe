@@ -96,11 +96,21 @@ export default class StandardPost extends CustomHTMLElement {
 			interactionsRow: PostInteractionsRow.newClone(),
 		};
 
-		let innerBody = newElement({ element: "div", className: "post-inner-body", children: [elements.content, elements.media] });
+		let innerBody = newElement({
+			element: "div",
+			className: "post-inner-body",
+			children: [elements.content, elements.media],
+		});
 		let body = newElement({
 			element: "div",
 			className: "post-body",
-			children: [elements.posterInfo, elements.spoilerText, innerBody, elements.emojiReactions, elements.interactionsRow],
+			children: [
+				elements.posterInfo,
+				elements.spoilerText,
+				innerBody,
+				elements.emojiReactions,
+				elements.interactionsRow,
+			],
 		});
 
 		let layout = [elements.avatar, body];
@@ -128,7 +138,10 @@ export default class StandardPost extends CustomHTMLElement {
 			if (!this.elements["quote"]) {
 				let quote = StandardPost.newClone().addClasses("quoted-post");
 				this.elements["quote"] = quote;
-				(this.elements["emojiReactions"] as Node).parentNode!.insertBefore(quote, this.elements["emojiReactions"] as Node);
+				(this.elements["emojiReactions"] as Node).parentNode!.insertBefore(
+					quote,
+					this.elements["emojiReactions"] as Node
+				);
 			}
 			(this.elements["quote"] as CustomHTMLElement).setData(post.quote, false, true);
 		}

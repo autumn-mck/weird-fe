@@ -14,7 +14,9 @@ export function getIcon(icon: Icon): HTMLElement {
 export async function fetchIcon(icon: Icon): Promise<HTMLElement> {
 	const iconSet = IconSet.MaterialSymbols;
 	if (!icons[icon]) {
-		icons[icon] = await fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`).then(parseSVG).then(putChildInNewCurryContainer("svg"));
+		icons[icon] = await fetchAsync(`/assets/svgs/${iconSet}/${icon}.svg`)
+			.then(parseSVG)
+			.then(putChildInNewCurryContainer("svg"));
 	}
 
 	return icons[icon]!;

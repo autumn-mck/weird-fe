@@ -21,7 +21,11 @@ export default class LanguageSelector extends CustomHTMLElement {
 
 		for (let code of ISO6391.getAllCodes()) {
 			let name = ISO6391.getNativeName(code);
-			let option = newElement({ element: "option", value: code, innerText: `${code} - ${name}` });
+			let option = newElement({
+				element: "option",
+				value: code,
+				innerText: `${code} - ${name}`,
+			});
 			elements.select.append(option);
 		}
 

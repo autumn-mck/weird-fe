@@ -78,10 +78,13 @@ export default class PostInteractionItem extends CustomHTMLElement {
 				element: "label",
 				className: `icon icon-${icon} ${PostInteractionItem.addClassIfSpinny(icon)}`,
 				htmlFor: "checkbox",
-				children: [ newElement({element: "custom-icon", "icon": icon}) ],
+				children: [newElement({ element: "custom-icon", icon: icon })],
 			}),
 
-			interactionCount: newElement({ element: "span", className: "interaction-text  display-none" }),
+			interactionCount: newElement({
+				element: "span",
+				className: "interaction-text  display-none",
+			}),
 		};
 
 		super(sheet, elements);

@@ -49,7 +49,11 @@ export default class PostBoostedBy extends CustomHTMLElement {
 			boostedTime: newElement({ element: "span", className: "boosted-time" }),
 		};
 
-		let textSpan = newElement({ element: "span", className: "boosted-by", innerText: "Boosted by " });
+		let textSpan = newElement({
+			element: "span",
+			className: "boosted-by",
+			innerText: "Boosted by ",
+		});
 
 		let layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
 
