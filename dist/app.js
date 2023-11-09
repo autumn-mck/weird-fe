@@ -2447,30 +2447,6 @@ class Post {
   }
 }
 
-// src/elements/post/quotedPost.ts
-var sheet21 = new CSSStyleSheet;
-sheet21.replaceSync(`
-:host {
-	border: 1px solid var(--border);
-	border-radius: 8px;
-}
-
-.post {
-
-}
-`);
-
-class QuotedPost extends CustomHTMLElement {
-  constructor() {
-    super(...arguments);
-  }
-  static async build(post) {
-    return PostBoostedBy.newClone();
-  }
-  setData() {
-  }
-}
-
 // node_modules/autosize/dist/autosize.esm.js
 var t = function(t2) {
   var o = e.get(t2);
@@ -2539,15 +2515,15 @@ class AutoSize extends HTMLTextAreaElement {
 }
 
 // src/elements/customIcon.ts
-var sheet22 = new CSSStyleSheet;
-sheet22.replaceSync(`
+var sheet21 = new CSSStyleSheet;
+sheet21.replaceSync(`
 
 `);
 
 class CustomIcon extends CustomHTMLElement {
   static observedAttributes = ["icon"];
   constructor() {
-    super(sheet22);
+    super(sheet21);
   }
   setData(...data) {
   }
@@ -2558,8 +2534,8 @@ class CustomIcon extends CustomHTMLElement {
 
 // src/newPost/languageSelector.ts
 var import_iso_639_1 = __toESM(require_src(), 1);
-var sheet23 = new CSSStyleSheet;
-sheet23.replaceSync(`
+var sheet22 = new CSSStyleSheet;
+sheet22.replaceSync(`
 select {
 	font-family: monospace;
 	width: 6ch;
@@ -2582,15 +2558,15 @@ class LanguageSelector extends CustomHTMLElement {
       });
       elements.select.append(option);
     }
-    super(sheet23, elements);
+    super(sheet22, elements);
   }
   setData(...data) {
   }
 }
 
 // src/newPost/postFormatSelector.ts
-var sheet24 = new CSSStyleSheet;
-sheet24.replaceSync(`
+var sheet23 = new CSSStyleSheet;
+sheet23.replaceSync(`
 ${selectCss}
 `);
 
@@ -2607,7 +2583,7 @@ class PostFormatSelector extends CustomHTMLElement {
       });
       elements.select.appendChild(optionElement);
     });
-    super(sheet24, elements);
+    super(sheet23, elements);
   }
   setData(...data) {
   }
@@ -2637,7 +2613,6 @@ function defineCustomElements() {
   customElements.define("post-interaction-item", PostInteractionItem);
   customElements.define("post-media", PostMedia);
   customElements.define("post-media-item", PostMediaItem);
-  customElements.define("quoted-post", QuotedPost);
   customElements.define("standard-post", StandardPost);
 }
 

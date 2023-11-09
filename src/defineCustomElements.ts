@@ -10,7 +10,6 @@ import AccountDisplayName from "./elements/account/accountDisplayName";
 import PostMediaItem from "./elements/post/postMediaItem";
 import EmojiReaction from "./elements/post/emojiReaction";
 import PostTextContent from "./elements/post/postTextContent";
-import QuotedPost from "./elements/post/quotedPost";
 import EmojiReactions from "./elements/post/emojiReactions";
 import PostMedia from "./elements/post/postMedia";
 import StandardPost from "./elements/post/standardPost";
@@ -49,6 +48,5 @@ export function defineCustomElements() {
 	customElements.define("post-interaction-item", PostInteractionItem);
 	customElements.define("post-media", PostMedia);
 	customElements.define("post-media-item", PostMediaItem);
-	customElements.define("quoted-post", QuotedPost);
 	customElements.define("standard-post", StandardPost);
 }
