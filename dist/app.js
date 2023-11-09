@@ -1,3 +1,804 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __toESM = (mod, isNodeMode, target) => {
+  target = mod != null ? __create(__getProtoOf(mod)) : {};
+  const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
+  for (let key of __getOwnPropNames(mod))
+    if (!__hasOwnProp.call(to, key))
+      __defProp(to, key, {
+        get: () => mod[key],
+        enumerable: true
+      });
+  return to;
+};
+var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
+
+// node_modules/iso-639-1/src/data.js
+var require_data = __commonJS((exports, module) => {
+  var LANGUAGES_LIST = {
+    aa: {
+      name: "Afar",
+      nativeName: "Afaraf"
+    },
+    ab: {
+      name: "Abkhaz",
+      nativeName: "\u0430\u04A7\u0441\u0443\u0430 \u0431\u044B\u0437\u0448\u04D9\u0430"
+    },
+    ae: {
+      name: "Avestan",
+      nativeName: "avesta"
+    },
+    af: {
+      name: "Afrikaans",
+      nativeName: "Afrikaans"
+    },
+    ak: {
+      name: "Akan",
+      nativeName: "Akan"
+    },
+    am: {
+      name: "Amharic",
+      nativeName: "\u12A0\u121B\u122D\u129B"
+    },
+    an: {
+      name: "Aragonese",
+      nativeName: "aragon\xE9s"
+    },
+    ar: {
+      name: "Arabic",
+      nativeName: "\u0627\u064E\u0644\u0652\u0639\u064E\u0631\u064E\u0628\u0650\u064A\u064E\u0651\u0629\u064F"
+    },
+    as: {
+      name: "Assamese",
+      nativeName: "\u0985\u09B8\u09AE\u09C0\u09AF\u09BC\u09BE"
+    },
+    av: {
+      name: "Avaric",
+      nativeName: "\u0430\u0432\u0430\u0440 \u043C\u0430\u0446\u04C0"
+    },
+    ay: {
+      name: "Aymara",
+      nativeName: "aymar aru"
+    },
+    az: {
+      name: "Azerbaijani",
+      nativeName: "az\u0259rbaycan dili"
+    },
+    ba: {
+      name: "Bashkir",
+      nativeName: "\u0431\u0430\u0448\u04A1\u043E\u0440\u0442 \u0442\u0435\u043B\u0435"
+    },
+    be: {
+      name: "Belarusian",
+      nativeName: "\u0431\u0435\u043B\u0430\u0440\u0443\u0441\u043A\u0430\u044F \u043C\u043E\u0432\u0430"
+    },
+    bg: {
+      name: "Bulgarian",
+      nativeName: "\u0431\u044A\u043B\u0433\u0430\u0440\u0441\u043A\u0438 \u0435\u0437\u0438\u043A"
+    },
+    bi: {
+      name: "Bislama",
+      nativeName: "Bislama"
+    },
+    bm: {
+      name: "Bambara",
+      nativeName: "bamanankan"
+    },
+    bn: {
+      name: "Bengali",
+      nativeName: "\u09AC\u09BE\u0982\u09B2\u09BE"
+    },
+    bo: {
+      name: "Tibetan",
+      nativeName: "\u0F56\u0F7C\u0F51\u0F0B\u0F61\u0F72\u0F42"
+    },
+    br: {
+      name: "Breton",
+      nativeName: "brezhoneg"
+    },
+    bs: {
+      name: "Bosnian",
+      nativeName: "bosanski jezik"
+    },
+    ca: {
+      name: "Catalan",
+      nativeName: "Catal\xE0"
+    },
+    ce: {
+      name: "Chechen",
+      nativeName: "\u043D\u043E\u0445\u0447\u0438\u0439\u043D \u043C\u043E\u0442\u0442"
+    },
+    ch: {
+      name: "Chamorro",
+      nativeName: "Chamoru"
+    },
+    co: {
+      name: "Corsican",
+      nativeName: "corsu"
+    },
+    cr: {
+      name: "Cree",
+      nativeName: "\u14C0\u1426\u1403\u152D\u140D\u140F\u1423"
+    },
+    cs: {
+      name: "Czech",
+      nativeName: "\u010De\u0161tina"
+    },
+    cu: {
+      name: "Old Church Slavonic",
+      nativeName: "\u0469\u0437\u044B\u043A\u044A \u0441\u043B\u043E\u0432\u0463\u043D\u044C\u0441\u043A\u044A"
+    },
+    cv: {
+      name: "Chuvash",
+      nativeName: "\u0447\u04D1\u0432\u0430\u0448 \u0447\u04D7\u043B\u0445\u0438"
+    },
+    cy: {
+      name: "Welsh",
+      nativeName: "Cymraeg"
+    },
+    da: {
+      name: "Danish",
+      nativeName: "dansk"
+    },
+    de: {
+      name: "German",
+      nativeName: "Deutsch"
+    },
+    dv: {
+      name: "Divehi",
+      nativeName: "\u078B\u07A8\u0788\u07AC\u0780\u07A8"
+    },
+    dz: {
+      name: "Dzongkha",
+      nativeName: "\u0F62\u0FAB\u0F7C\u0F44\u0F0B\u0F41"
+    },
+    ee: {
+      name: "Ewe",
+      nativeName: "E\u028Begbe"
+    },
+    el: {
+      name: "Greek",
+      nativeName: "\u0395\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03AC"
+    },
+    en: {
+      name: "English",
+      nativeName: "English"
+    },
+    eo: {
+      name: "Esperanto",
+      nativeName: "Esperanto"
+    },
+    es: {
+      name: "Spanish",
+      nativeName: "Espa\xF1ol"
+    },
+    et: {
+      name: "Estonian",
+      nativeName: "eesti"
+    },
+    eu: {
+      name: "Basque",
+      nativeName: "euskara"
+    },
+    fa: {
+      name: "Persian",
+      nativeName: "\u0641\u0627\u0631\u0633\u06CC"
+    },
+    ff: {
+      name: "Fula",
+      nativeName: "Fulfulde"
+    },
+    fi: {
+      name: "Finnish",
+      nativeName: "suomi"
+    },
+    fj: {
+      name: "Fijian",
+      nativeName: "vosa Vakaviti"
+    },
+    fo: {
+      name: "Faroese",
+      nativeName: "f\xF8royskt"
+    },
+    fr: {
+      name: "French",
+      nativeName: "Fran\xE7ais"
+    },
+    fy: {
+      name: "Western Frisian",
+      nativeName: "Frysk"
+    },
+    ga: {
+      name: "Irish",
+      nativeName: "Gaeilge"
+    },
+    gd: {
+      name: "Scottish Gaelic",
+      nativeName: "G\xE0idhlig"
+    },
+    gl: {
+      name: "Galician",
+      nativeName: "galego"
+    },
+    gn: {
+      name: "Guaran\xED",
+      nativeName: "Ava\xF1e'\u1EBD"
+    },
+    gu: {
+      name: "Gujarati",
+      nativeName: "\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0"
+    },
+    gv: {
+      name: "Manx",
+      nativeName: "Gaelg"
+    },
+    ha: {
+      name: "Hausa",
+      nativeName: "\u0647\u064E\u0648\u064F\u0633\u064E"
+    },
+    he: {
+      name: "Hebrew",
+      nativeName: "\u05E2\u05D1\u05E8\u05D9\u05EA"
+    },
+    hi: {
+      name: "Hindi",
+      nativeName: "\u0939\u093F\u0928\u094D\u0926\u0940"
+    },
+    ho: {
+      name: "Hiri Motu",
+      nativeName: "Hiri Motu"
+    },
+    hr: {
+      name: "Croatian",
+      nativeName: "Hrvatski"
+    },
+    ht: {
+      name: "Haitian",
+      nativeName: "Krey\xF2l ayisyen"
+    },
+    hu: {
+      name: "Hungarian",
+      nativeName: "magyar"
+    },
+    hy: {
+      name: "Armenian",
+      nativeName: "\u0540\u0561\u0575\u0565\u0580\u0565\u0576"
+    },
+    hz: {
+      name: "Herero",
+      nativeName: "Otjiherero"
+    },
+    ia: {
+      name: "Interlingua",
+      nativeName: "Interlingua"
+    },
+    id: {
+      name: "Indonesian",
+      nativeName: "Bahasa Indonesia"
+    },
+    ie: {
+      name: "Interlingue",
+      nativeName: "Interlingue"
+    },
+    ig: {
+      name: "Igbo",
+      nativeName: "As\u1EE5s\u1EE5 Igbo"
+    },
+    ii: {
+      name: "Nuosu",
+      nativeName: "\uA188\uA320\uA4BF Nuosuhxop"
+    },
+    ik: {
+      name: "Inupiaq",
+      nativeName: "I\xF1upiaq"
+    },
+    io: {
+      name: "Ido",
+      nativeName: "Ido"
+    },
+    is: {
+      name: "Icelandic",
+      nativeName: "\xCDslenska"
+    },
+    it: {
+      name: "Italian",
+      nativeName: "Italiano"
+    },
+    iu: {
+      name: "Inuktitut",
+      nativeName: "\u1403\u14C4\u1483\u144E\u1450\u1466"
+    },
+    ja: {
+      name: "Japanese",
+      nativeName: "\u65E5\u672C\u8A9E"
+    },
+    jv: {
+      name: "Javanese",
+      nativeName: "basa Jawa"
+    },
+    ka: {
+      name: "Georgian",
+      nativeName: "\u10E5\u10D0\u10E0\u10D7\u10E3\u10DA\u10D8"
+    },
+    kg: {
+      name: "Kongo",
+      nativeName: "Kikongo"
+    },
+    ki: {
+      name: "Kikuyu",
+      nativeName: "G\u0129k\u0169y\u0169"
+    },
+    kj: {
+      name: "Kwanyama",
+      nativeName: "Kuanyama"
+    },
+    kk: {
+      name: "Kazakh",
+      nativeName: "\u049B\u0430\u0437\u0430\u049B \u0442\u0456\u043B\u0456"
+    },
+    kl: {
+      name: "Kalaallisut",
+      nativeName: "kalaallisut"
+    },
+    km: {
+      name: "Khmer",
+      nativeName: "\u1781\u17C1\u1798\u179A\u1797\u17B6\u179F\u17B6"
+    },
+    kn: {
+      name: "Kannada",
+      nativeName: "\u0C95\u0CA8\u0CCD\u0CA8\u0CA1"
+    },
+    ko: {
+      name: "Korean",
+      nativeName: "\uD55C\uAD6D\uC5B4"
+    },
+    kr: {
+      name: "Kanuri",
+      nativeName: "Kanuri"
+    },
+    ks: {
+      name: "Kashmiri",
+      nativeName: "\u0915\u0936\u094D\u092E\u0940\u0930\u0940"
+    },
+    ku: {
+      name: "Kurdish",
+      nativeName: "Kurd\xEE"
+    },
+    kv: {
+      name: "Komi",
+      nativeName: "\u043A\u043E\u043C\u0438 \u043A\u044B\u0432"
+    },
+    kw: {
+      name: "Cornish",
+      nativeName: "Kernewek"
+    },
+    ky: {
+      name: "Kyrgyz",
+      nativeName: "\u041A\u044B\u0440\u0433\u044B\u0437\u0447\u0430"
+    },
+    la: {
+      name: "Latin",
+      nativeName: "latine"
+    },
+    lb: {
+      name: "Luxembourgish",
+      nativeName: "L\xEBtzebuergesch"
+    },
+    lg: {
+      name: "Ganda",
+      nativeName: "Luganda"
+    },
+    li: {
+      name: "Limburgish",
+      nativeName: "Limburgs"
+    },
+    ln: {
+      name: "Lingala",
+      nativeName: "Ling\xE1la"
+    },
+    lo: {
+      name: "Lao",
+      nativeName: "\u0E9E\u0EB2\u0EAA\u0EB2\u0EA5\u0EB2\u0EA7"
+    },
+    lt: {
+      name: "Lithuanian",
+      nativeName: "lietuvi\u0173 kalba"
+    },
+    lu: {
+      name: "Luba-Katanga",
+      nativeName: "Kiluba"
+    },
+    lv: {
+      name: "Latvian",
+      nativeName: "latvie\u0161u valoda"
+    },
+    mg: {
+      name: "Malagasy",
+      nativeName: "fiteny malagasy"
+    },
+    mh: {
+      name: "Marshallese",
+      nativeName: "Kajin M\u0327aje\u013C"
+    },
+    mi: {
+      name: "M\u0101ori",
+      nativeName: "te reo M\u0101ori"
+    },
+    mk: {
+      name: "Macedonian",
+      nativeName: "\u043C\u0430\u043A\u0435\u0434\u043E\u043D\u0441\u043A\u0438 \u0458\u0430\u0437\u0438\u043A"
+    },
+    ml: {
+      name: "Malayalam",
+      nativeName: "\u0D2E\u0D32\u0D2F\u0D3E\u0D33\u0D02"
+    },
+    mn: {
+      name: "Mongolian",
+      nativeName: "\u041C\u043E\u043D\u0433\u043E\u043B \u0445\u044D\u043B"
+    },
+    mr: {
+      name: "Marathi",
+      nativeName: "\u092E\u0930\u093E\u0920\u0940"
+    },
+    ms: {
+      name: "Malay",
+      nativeName: "Bahasa Melayu"
+    },
+    mt: {
+      name: "Maltese",
+      nativeName: "Malti"
+    },
+    my: {
+      name: "Burmese",
+      nativeName: "\u1017\u1019\u102C\u1005\u102C"
+    },
+    na: {
+      name: "Nauru",
+      nativeName: "Dorerin Naoero"
+    },
+    nb: {
+      name: "Norwegian Bokm\xE5l",
+      nativeName: "Norsk bokm\xE5l"
+    },
+    nd: {
+      name: "Northern Ndebele",
+      nativeName: "isiNdebele"
+    },
+    ne: {
+      name: "Nepali",
+      nativeName: "\u0928\u0947\u092A\u093E\u0932\u0940"
+    },
+    ng: {
+      name: "Ndonga",
+      nativeName: "Owambo"
+    },
+    nl: {
+      name: "Dutch",
+      nativeName: "Nederlands"
+    },
+    nn: {
+      name: "Norwegian Nynorsk",
+      nativeName: "Norsk nynorsk"
+    },
+    no: {
+      name: "Norwegian",
+      nativeName: "Norsk"
+    },
+    nr: {
+      name: "Southern Ndebele",
+      nativeName: "isiNdebele"
+    },
+    nv: {
+      name: "Navajo",
+      nativeName: "Din\xE9 bizaad"
+    },
+    ny: {
+      name: "Chichewa",
+      nativeName: "chiChe\u0175a"
+    },
+    oc: {
+      name: "Occitan",
+      nativeName: "occitan"
+    },
+    oj: {
+      name: "Ojibwe",
+      nativeName: "\u140A\u14C2\u1511\u14C8\u142F\u14A7\u140E\u14D0"
+    },
+    om: {
+      name: "Oromo",
+      nativeName: "Afaan Oromoo"
+    },
+    or: {
+      name: "Oriya",
+      nativeName: "\u0B13\u0B21\u0B3C\u0B3F\u0B06"
+    },
+    os: {
+      name: "Ossetian",
+      nativeName: "\u0438\u0440\u043E\u043D \xE6\u0432\u0437\u0430\u0433"
+    },
+    pa: {
+      name: "Panjabi",
+      nativeName: "\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40"
+    },
+    pi: {
+      name: "P\u0101li",
+      nativeName: "\u092A\u093E\u0934\u093F"
+    },
+    pl: {
+      name: "Polish",
+      nativeName: "Polski"
+    },
+    ps: {
+      name: "Pashto",
+      nativeName: "\u067E\u069A\u062A\u0648"
+    },
+    pt: {
+      name: "Portuguese",
+      nativeName: "Portugu\xEAs"
+    },
+    qu: {
+      name: "Quechua",
+      nativeName: "Runa Simi"
+    },
+    rm: {
+      name: "Romansh",
+      nativeName: "rumantsch grischun"
+    },
+    rn: {
+      name: "Kirundi",
+      nativeName: "Ikirundi"
+    },
+    ro: {
+      name: "Romanian",
+      nativeName: "Rom\xE2n\u0103"
+    },
+    ru: {
+      name: "Russian",
+      nativeName: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439"
+    },
+    rw: {
+      name: "Kinyarwanda",
+      nativeName: "Ikinyarwanda"
+    },
+    sa: {
+      name: "Sanskrit",
+      nativeName: "\u0938\u0902\u0938\u094D\u0915\u0943\u0924\u092E\u094D"
+    },
+    sc: {
+      name: "Sardinian",
+      nativeName: "sardu"
+    },
+    sd: {
+      name: "Sindhi",
+      nativeName: "\u0938\u093F\u0928\u094D\u0927\u0940"
+    },
+    se: {
+      name: "Northern Sami",
+      nativeName: "Davvis\xE1megiella"
+    },
+    sg: {
+      name: "Sango",
+      nativeName: "y\xE2ng\xE2 t\xEE s\xE4ng\xF6"
+    },
+    si: {
+      name: "Sinhala",
+      nativeName: "\u0DC3\u0DD2\u0D82\u0DC4\u0DBD"
+    },
+    sk: {
+      name: "Slovak",
+      nativeName: "sloven\u010Dina"
+    },
+    sl: {
+      name: "Slovenian",
+      nativeName: "sloven\u0161\u010Dina"
+    },
+    sm: {
+      name: "Samoan",
+      nativeName: "gagana fa'a Samoa"
+    },
+    sn: {
+      name: "Shona",
+      nativeName: "chiShona"
+    },
+    so: {
+      name: "Somali",
+      nativeName: "Soomaaliga"
+    },
+    sq: {
+      name: "Albanian",
+      nativeName: "Shqip"
+    },
+    sr: {
+      name: "Serbian",
+      nativeName: "\u0441\u0440\u043F\u0441\u043A\u0438 \u0458\u0435\u0437\u0438\u043A"
+    },
+    ss: {
+      name: "Swati",
+      nativeName: "SiSwati"
+    },
+    st: {
+      name: "Southern Sotho",
+      nativeName: "Sesotho"
+    },
+    su: {
+      name: "Sundanese",
+      nativeName: "Basa Sunda"
+    },
+    sv: {
+      name: "Swedish",
+      nativeName: "Svenska"
+    },
+    sw: {
+      name: "Swahili",
+      nativeName: "Kiswahili"
+    },
+    ta: {
+      name: "Tamil",
+      nativeName: "\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD"
+    },
+    te: {
+      name: "Telugu",
+      nativeName: "\u0C24\u0C46\u0C32\u0C41\u0C17\u0C41"
+    },
+    tg: {
+      name: "Tajik",
+      nativeName: "\u0442\u043E\u04B7\u0438\u043A\u04E3"
+    },
+    th: {
+      name: "Thai",
+      nativeName: "\u0E44\u0E17\u0E22"
+    },
+    ti: {
+      name: "Tigrinya",
+      nativeName: "\u1275\u130D\u122D\u129B"
+    },
+    tk: {
+      name: "Turkmen",
+      nativeName: "T\xFCrkmen\xE7e"
+    },
+    tl: {
+      name: "Tagalog",
+      nativeName: "Wikang Tagalog"
+    },
+    tn: {
+      name: "Tswana",
+      nativeName: "Setswana"
+    },
+    to: {
+      name: "Tonga",
+      nativeName: "faka Tonga"
+    },
+    tr: {
+      name: "Turkish",
+      nativeName: "T\xFCrk\xE7e"
+    },
+    ts: {
+      name: "Tsonga",
+      nativeName: "Xitsonga"
+    },
+    tt: {
+      name: "Tatar",
+      nativeName: "\u0442\u0430\u0442\u0430\u0440 \u0442\u0435\u043B\u0435"
+    },
+    tw: {
+      name: "Twi",
+      nativeName: "Twi"
+    },
+    ty: {
+      name: "Tahitian",
+      nativeName: "Reo Tahiti"
+    },
+    ug: {
+      name: "Uyghur",
+      nativeName: "\u0626\u06C7\u064A\u063A\u06C7\u0631\u0686\u06D5\u200E"
+    },
+    uk: {
+      name: "Ukrainian",
+      nativeName: "\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430"
+    },
+    ur: {
+      name: "Urdu",
+      nativeName: "\u0627\u0631\u062F\u0648"
+    },
+    uz: {
+      name: "Uzbek",
+      nativeName: "\u040E\u0437\u0431\u0435\u043A"
+    },
+    ve: {
+      name: "Venda",
+      nativeName: "Tshiven\u1E13a"
+    },
+    vi: {
+      name: "Vietnamese",
+      nativeName: "Ti\u1EBFng Vi\u1EC7t"
+    },
+    vo: {
+      name: "Volap\xFCk",
+      nativeName: "Volap\xFCk"
+    },
+    wa: {
+      name: "Walloon",
+      nativeName: "walon"
+    },
+    wo: {
+      name: "Wolof",
+      nativeName: "Wollof"
+    },
+    xh: {
+      name: "Xhosa",
+      nativeName: "isiXhosa"
+    },
+    yi: {
+      name: "Yiddish",
+      nativeName: "\u05D9\u05D9\u05B4\u05D3\u05D9\u05E9"
+    },
+    yo: {
+      name: "Yoruba",
+      nativeName: "Yor\xF9b\xE1"
+    },
+    za: {
+      name: "Zhuang",
+      nativeName: "Sa\u026F cue\u014B\u0185"
+    },
+    zh: {
+      name: "Chinese",
+      nativeName: "\u4E2D\u6587"
+    },
+    zu: {
+      name: "Zulu",
+      nativeName: "isiZulu"
+    }
+  };
+  module.exports = LANGUAGES_LIST;
+});
+
+// node_modules/iso-639-1/src/index.js
+var require_src = __commonJS((exports, module) => {
+  var LANGUAGES_LIST = require_data();
+  var LANGUAGES = {};
+  var LANGUAGES_BY_NAME = {};
+  var LANGUAGE_CODES = [];
+  var LANGUAGE_NAMES = [];
+  var LANGUAGE_NATIVE_NAMES = [];
+  for (const code in LANGUAGES_LIST) {
+    const { name, nativeName } = LANGUAGES_LIST[code];
+    LANGUAGES[code] = LANGUAGES_BY_NAME[name.toLowerCase()] = LANGUAGES_BY_NAME[nativeName.toLowerCase()] = { code, name, nativeName };
+    LANGUAGE_CODES.push(code);
+    LANGUAGE_NAMES.push(name);
+    LANGUAGE_NATIVE_NAMES.push(nativeName);
+  }
+  module.exports = class ISO6391 {
+    static getLanguages(codes = []) {
+      return codes.map((code) => ISO6391.validate(code) ? Object.assign({}, LANGUAGES[code]) : { code, name: "", nativeName: "" });
+    }
+    static getName(code) {
+      return ISO6391.validate(code) ? LANGUAGES_LIST[code].name : "";
+    }
+    static getAllNames() {
+      return LANGUAGE_NAMES.slice();
+    }
+    static getNativeName(code) {
+      return ISO6391.validate(code) ? LANGUAGES_LIST[code].nativeName : "";
+    }
+    static getAllNativeNames() {
+      return LANGUAGE_NATIVE_NAMES.slice();
+    }
+    static getCode(name) {
+      name = name.toLowerCase();
+      return LANGUAGES_BY_NAME.hasOwnProperty(name) ? LANGUAGES_BY_NAME[name].code : "";
+    }
+    static getAllCodes() {
+      return LANGUAGE_CODES.slice();
+    }
+    static validate(code) {
+      return LANGUAGES_LIST.hasOwnProperty(code);
+    }
+  };
+});
+
 // src/consts.ts
 var userSelectedInstance = "0w0.is";
 var userSelectedInstanceUrl = "https://" + userSelectedInstance;
@@ -26,6 +827,21 @@ var postCSS = `
 	background: transparent;
 	transition: background 0.2s ease-in-out;
 	border-radius: 8px;
+`;
+var selectCss = `
+select {
+	color: var(--text);
+	background: var(--background);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 0.25rem;
+	transition: border 0.2s ease-in-out;
+	height: 100%;
+}
+
+select:hover {
+	border-color: var(--accent);
+}
 `;
 
 // src/utils.ts
@@ -100,9 +916,6 @@ function putChildrenInNewContainer(children, containerClass) {
   const childrenContainer = createElement("div", containerClass);
   childrenContainer.append(...children);
   return childrenContainer;
-}
-function clone(element) {
-  return element.cloneNode(true);
 }
 function parseHTML(html) {
   return Array.from(parser.parseFromString(`${html}`, "text/html").body.childNodes);
@@ -188,9 +1001,6 @@ function addClasses(classes) {
 }
 
 // src/assets.ts
-function getIcon(icon) {
-  return icons2[icon];
-}
 async function fetchIcon(icon) {
   const iconSet2 = IconSet.MaterialSymbols;
   if (!icons2[icon]) {
@@ -198,14 +1008,7 @@ async function fetchIcon(icon) {
   }
   return icons2[icon];
 }
-function getIconClone(iconType) {
-  return clone(getIcon(iconType));
-}
-function getIconForVisibility(visibility2) {
-  const icon = getIconEnumForVisibility(visibility2);
-  return clone(getIcon(icon));
-}
-var getIconEnumForVisibility = function(visibility2) {
+function getIconEnumForVisibility(visibility2) {
   switch (visibility2) {
     case Visibility.Public:
       return Icon.VisibilityPublic;
@@ -220,7 +1023,7 @@ var getIconEnumForVisibility = function(visibility2) {
     default:
       throw new Error("Unknown visibility: " + visibility2);
   }
-};
+}
 var icons2 = {};
 
 // src/fetchStuff.ts
@@ -245,7 +1048,8 @@ class CustomHTMLElement extends HTMLElement {
   static baseToClone;
   elements = {};
   values = {};
-  constructor(css, elements = {}, layout = undefined) {
+  static observedAttributes;
+  constructor(css = new CSSStyleSheet, elements = {}, layout = undefined) {
     super();
     this.elements = elements;
     const shadow = this.attachShadow({ mode: "open" });
@@ -328,11 +1132,15 @@ function newElement(elementData) {
   for (const key in elementData) {
     if (key === "element")
       continue;
-    if (key === "children") {
-      element.append(...elementData[key]);
+    if (key === "children" && elementData["children"]) {
+      element.append(...elementData["children"]);
       continue;
     }
-    element[key] = elementData[key];
+    if (element instanceof CustomHTMLElement && element.constructor.observedAttributes?.includes(key)) {
+      element.setAttribute(key, elementData[key]);
+    } else {
+      element[key] = elementData[key];
+    }
   }
   return element;
 }
@@ -420,7 +1228,7 @@ class PostBoostedBy extends CustomHTMLElement {
     this.update("boostedTime", post.created_at, setInnerTextAsRelativeTime);
   }
   static getIcon() {
-    let icon = getIconClone(Icon.Boost);
+    let icon = newElement({ element: "custom-icon", icon: Icon.Boost });
     addClasses2(icon, "boosted-by-ico");
     return icon;
   }
@@ -838,7 +1646,7 @@ class PostInteractionItem extends CustomHTMLElement {
         element: "label",
         className: `icon icon-${icon} ${PostInteractionItem.addClassIfSpinny(icon)}`,
         htmlFor: "checkbox",
-        children: [getIconClone(icon)]
+        children: [newElement({ element: "custom-icon", icon })]
       }),
       interactionCount: newElement({ element: "span", className: "interaction-text  display-none" })
     };
@@ -1304,7 +2112,7 @@ class PostInfo extends CustomHTMLElement {
     this.replaceChildrenOfElement("visibility", post.visibility, PostInfo.newPostVisibilityIcon);
   }
   static newPostVisibilityIcon(visibility2) {
-    const icon = getIconForVisibility(visibility2);
+    const icon = newElement({ element: "custom-icon", icon: getIconEnumForVisibility(visibility2) });
     addClasses2(icon, "post-visibility");
     setTitle(icon, visibility2);
     return [icon];
@@ -1698,7 +2506,7 @@ typeof window == "undefined" ? ((r = function(e2) {
 var n = r;
 var autosize_esm_default = n;
 
-// src/elements/autoSizeTextArea.ts
+// src/newPost/autoSizeTextArea.ts
 class AutoSize extends HTMLTextAreaElement {
   constructor() {
     super();
@@ -1706,9 +2514,80 @@ class AutoSize extends HTMLTextAreaElement {
   }
 }
 
+// src/elements/customIcon.ts
+var sheet22 = new CSSStyleSheet;
+sheet22.replaceSync(`
+
+`);
+
+class CustomIcon extends CustomHTMLElement {
+  static observedAttributes = ["icon"];
+  constructor() {
+    super(sheet22);
+  }
+  setData(...data) {
+  }
+  async attributeChangedCallback(name, oldValue, newValue) {
+    this.shadowRoot?.append(await fetchIcon(newValue).then((icon) => icon.cloneNode(true)));
+  }
+}
+
+// src/newPost/languageSelector.ts
+var import_iso_639_1 = __toESM(require_src(), 1);
+var sheet23 = new CSSStyleSheet;
+sheet23.replaceSync(`
+select {
+	font-family: monospace;
+	width: 6ch;
+}
+
+${selectCss}
+`);
+
+class LanguageSelector extends CustomHTMLElement {
+  constructor() {
+    let elements = {
+      select: newElement({ element: "select" })
+    };
+    for (let code of import_iso_639_1.default.getAllCodes()) {
+      let name = import_iso_639_1.default.getNativeName(code);
+      let option = newElement({ element: "option", value: code, innerText: `${code} - ${name}` });
+      elements.select.append(option);
+    }
+    super(sheet23, elements);
+  }
+  setData(...data) {
+  }
+}
+
+// src/newPost/postFormatSelector.ts
+var sheet24 = new CSSStyleSheet;
+sheet24.replaceSync(`
+${selectCss}
+`);
+
+class PostFormatSelector extends CustomHTMLElement {
+  constructor() {
+    let elements = {
+      select: newElement({ element: "select" })
+    };
+    const options = ["Text", "Markdown", "MFM", "HTML", "BBCode"];
+    options.forEach((option) => {
+      const optionElement = newElement({ element: "option", textContent: option });
+      elements.select.appendChild(optionElement);
+    });
+    super(sheet24, elements);
+  }
+  setData(...data) {
+  }
+}
+
 // src/defineCustomElements.ts
 function defineCustomElements() {
   customElements.define("auto-size", AutoSize, { extends: "textarea" });
+  customElements.define("language-selector", LanguageSelector);
+  customElements.define("post-format-selector", PostFormatSelector);
+  customElements.define("custom-icon", CustomIcon);
   customElements.define("account-avatar", AccountAvatar);
   customElements.define("account-bio", AccountBio);
   customElements.define("display-name", AccountDisplayName);
@@ -1819,7 +2698,7 @@ async function constructReplyTopLine(post2) {
   if (!replyTo)
     replyTo = post2.account;
   let line = newElement({ element: "div", className: "avatar-line-top" });
-  let icon = clone(getIcon(Icon.Reply));
+  let icon = newElement({ element: "custom-icon", icon: Icon.Reply });
   addClasses("post-replies-top-icon")(icon);
   let text = newElement({
     element: "a",

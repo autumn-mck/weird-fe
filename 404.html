@@ -16,7 +16,24 @@
 			<div id="left-col-container">
 				<div id="left-col">
 					<p>hello</p>
-					<textarea id="post-body" placeholder="awawawawawawa" is="auto-size"></textarea>
+					<form id="new-post">
+						<div>
+							<input id="post-content-warning" type="text" placeholder="Content warning (optional)" />
+							<textarea id="post-body" placeholder="awawawawawawa" is="auto-size"></textarea>
+						</div>
+						<div id="post-properties">
+							<div id="post-visibilities">
+								<custom-icon icon="visibility-direct"></custom-icon>
+								<custom-icon icon="visibility-followers"></custom-icon>
+								<custom-icon icon="visibility-unlisted"></custom-icon>
+								<custom-icon icon="visibility-public"></custom-icon>
+								<custom-icon icon="visibility-local"></custom-icon>
+							</div>
+							<post-format-selector></post-format-selector>
+							<language-selector></language-selector>
+						</div>
+						<button>Post</button>
+					</form>
 				</div>
 			</div>
 			<div id="timeline-container">

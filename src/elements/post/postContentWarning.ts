@@ -36,7 +36,7 @@ button:active {
 ${consts.emojiCSS}
 `);
 
-export class PostContentWarning extends CustomHTMLElement {
+export default class PostContentWarning extends CustomHTMLElement {
 	constructor() {
 		let elements = {
 			content: newElement({ element: "span" }),

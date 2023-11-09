@@ -17,11 +17,18 @@ import StandardPost from "./elements/post/standardPost";
 import Boost from "./elements/post/boost";
 import MediaRow from "./elements/post/postMediaRow";
 import AccountBio from "./elements/account/accountBio";
-import { PostContentWarning } from "./elements/post/postContentWarning";
-import AutoSize from "./elements/autoSizeTextArea";
+import PostContentWarning from "./elements/post/postContentWarning";
+import AutoSize from "./newPost/autoSizeTextArea";
+import CustomIcon from "./elements/customIcon";
+import LanguageSelector from "./newPost/languageSelector";
+import PostFormatSelector from "./newPost/postFormatSelector";
 
 export function defineCustomElements() {
 	customElements.define("auto-size", AutoSize, { extends: "textarea" });
+	customElements.define("language-selector", LanguageSelector);
+	customElements.define("post-format-selector", PostFormatSelector);
+
+	customElements.define("custom-icon", CustomIcon);
 
 	customElements.define("account-avatar", AccountAvatar);
 	customElements.define("account-bio", AccountBio);

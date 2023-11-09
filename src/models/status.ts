@@ -3,7 +3,7 @@ import { CustomEmoji } from "./customEmoji";
 import { MediaAttatchment } from "./mediaAttatchment";
 import { Visibility } from "./visibility";
 
-export class Status {
+export default class Status {
 	id!: string;
 	/** "URI of the status used for federation" */
 	uri!: string;

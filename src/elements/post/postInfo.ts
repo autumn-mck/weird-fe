@@ -1,7 +1,7 @@
-import { getIconForVisibility } from "../../assets";
+import { getIconEnumForVisibility } from "../../assets";
 import { asReadableDate, relativeTime } from "../../utils";
 import UsernameAcct from "../account/usernameAcct";
-import { Status } from "../../models/status";
+import Status from "../../models/status";
 import AvatarWithPreview from "./avatarWithPreview";
 import * as consts from "../../consts";
 import AccountDisplayName from "../account/accountDisplayName";
@@ -103,7 +103,7 @@ export default class PostInfo extends CustomHTMLElement {
 	}
 
 	private static newPostVisibilityIcon(visibility: Visibility) {
-		const icon = getIconForVisibility(visibility);
+		const icon = newElement({ element: "custom-icon", icon: getIconEnumForVisibility(visibility) });
 		addClasses(icon, "post-visibility");
 		setTitle(icon, visibility);
 		return [icon];

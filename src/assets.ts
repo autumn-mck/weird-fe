@@ -1,4 +1,4 @@
-import { clone, fetchAsync, parseSVG } from "./utils";
+import { fetchAsync, parseSVG } from "./utils";
 import { IconSet } from "./models/iconSet";
 import { Icon } from "./models/icons";
 import { Visibility } from "./models/visibility";
@@ -20,16 +20,7 @@ export async function fetchIcon(icon: Icon): Promise<HTMLElement> {
 	return icons[icon]!;
 }
 
-export function getIconClone(iconType: Icon) {
-	return clone(getIcon(iconType));
-}
-
-export function getIconForVisibility(visibility: Visibility) {
-	const icon = getIconEnumForVisibility(visibility);
-	return clone(getIcon(icon));
-}
-
-function getIconEnumForVisibility(visibility: Visibility) {
+export function getIconEnumForVisibility(visibility: Visibility) {
 	switch (visibility) {
 		case Visibility.Public:
 			return Icon.VisibilityPublic;

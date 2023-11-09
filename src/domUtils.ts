@@ -1,17 +1,32 @@
+import CustomHTMLElement from "./elements/customElement";
 import { createElement, relativeTime } from "./utils";
 
-export function newElement(elementData: any) {
+class ElementData {
+	element!: string;
+	children?: (HTMLElement | string)[];
+	className?: string;
+	[key: string]: any;
+}
+
+export function newElement(elementData: ElementData) {
 	const element = document.createElement(elementData.element);
 
 	for (const key in elementData) {
 		if (key === "element") continue;
 
-		if (key === "children") {
-			element.append(...elementData[key]);
+		if (key === "children" && elementData["children"]) {
+			element.append(...elementData["children"]);
 			continue;
 		}
 
-		element[key] = elementData[key];
+		if (
+			element instanceof CustomHTMLElement &&
+			(<typeof CustomHTMLElement>element.constructor).observedAttributes?.includes(key)
+		) {
+			element.setAttribute(key, elementData[key]);
+		} else {
+			(element as any)[key] = elementData[key];
+		}
 	}
 
 	return element;

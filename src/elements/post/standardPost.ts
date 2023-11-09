@@ -1,5 +1,5 @@
 import { newElement } from "../../domUtils";
-import { Status } from "../../models/status";
+import Status from "../../models/status";
 import CustomHTMLElement from "../customElement";
 import AvatarWithPreview from "./avatarWithPreview";
 import EmojiReactions from "./emojiReactions";
@@ -8,7 +8,7 @@ import PostMedia from "./postMedia";
 import PostTextContent from "./postTextContent";
 import PostInfo from "./postInfo";
 import * as consts from "../../consts";
-import { PostContentWarning } from "./postContentWarning";
+import PostContentWarning from "./postContentWarning";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`

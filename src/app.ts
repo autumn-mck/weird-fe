@@ -1,17 +1,16 @@
-import { fetchIcon, getIcon } from "./assets";
+import { fetchIcon } from "./assets";
 import { Icon } from "./models/icons";
 import { fetchFederatedTimeline, fetchStatusAndContext, fetchStatusById, fetchUserStatuses } from "./fetchStuff";
-import { aCreateElement, clone, putChildrenInNewContainer } from "./utils";
+import { aCreateElement, putChildrenInNewContainer } from "./utils";
 import {
 	addClasses,
 	putChildInCurryContainer,
 	putChildrenInCurryContainer,
 	putChildrenInNewCurryContainer,
-	setAnchorHref,
-	setInnerText,
 } from "./curryingUtils";
 
-import { Status, StatusTreeNode } from "./models/status";
+import Status from "./models/status";
+import { StatusTreeNode } from "./models/status";
 import { Context } from "./models/context";
 
 import * as consts from "./consts";
@@ -166,7 +165,7 @@ async function constructReplyTopLine(post: Status) {
 	if (!replyTo) replyTo = post.account;
 
 	let line = newElement({ element: "div", className: "avatar-line-top" });
-	let icon = clone(getIcon(Icon.Reply));
+	let icon = newElement({ element: "custom-icon", icon: Icon.Reply });
 	addClasses("post-replies-top-icon")(icon);
 	let text = newElement({
 		element: "a",

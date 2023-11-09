@@ -1,4 +1,3 @@
-import { getIconClone } from "../../assets";
 import { Icon } from "../../models/icons";
 import CustomHTMLElement from "../customElement";
 import { newElement, setInnerText } from "../../domUtils";
@@ -79,7 +78,7 @@ export default class PostInteractionItem extends CustomHTMLElement {
 				element: "label",
 				className: `icon icon-${icon} ${PostInteractionItem.addClassIfSpinny(icon)}`,
 				htmlFor: "checkbox",
-				children: [getIconClone(icon)],
+				children: [ newElement({element: "custom-icon", "icon": icon}) ],
 			}),
 
 			interactionCount: newElement({ element: "span", className: "interaction-text  display-none" }),

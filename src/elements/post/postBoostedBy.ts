@@ -1,5 +1,4 @@
-import { getIconClone } from "../../assets";
-import { Status } from "../../models/status";
+import Status from "../../models/status";
 import { Icon } from "../../models/icons";
 import AccountDisplayName from "../account/accountDisplayName";
 import CustomHTMLElement from "../customElement";
@@ -63,7 +62,7 @@ export default class PostBoostedBy extends CustomHTMLElement {
 	}
 
 	private static getIcon(): HTMLElement {
-		let icon = getIconClone(Icon.Boost) as unknown as HTMLElement;
+		let icon = newElement({ element: "custom-icon", icon: Icon.Boost });
 		addClasses(icon, "boosted-by-ico");
 		return icon;
 	}

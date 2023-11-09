@@ -4,6 +4,7 @@
 :root {
 	--background: #24273a;
 	--background-lighter: #363a4f;
+	--background-darker: #1e2030;
 	--background-translucent: #24273ac0;
 	--background-post-hover: #24273ae0;
 	--post-hover-overlay: #00000000;
@@ -21,7 +22,7 @@
 
 	--post-pfp-size: 48px;
 	--pfp-size-large: 80px;
-	--left-col-width: 30ch;
+	--left-col-width: 40ch;
 
 	--header-border-radius: 12px;
 
@@ -145,13 +146,53 @@ p {
 	padding: 0.5rem;
 }
 
-textarea {
+textarea,
+input {
 	background: var(--background-lighter);
 	color: var(--text);
 	border: 1px solid var(--border);
 	border-radius: 4px;
-	padding: 0.5rem;
+	padding: 0.25rem;
 	width: 100%;
+	font-size: 1rem;
+}
+
+input {
+	border-bottom: none;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+textarea {
 	resize: none;
+	margin: 0;
 	max-height: 30rem;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+}
+
+#new-post {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+#post-properties {
+	display: flex;
+	gap: 0.5rem;
+}
+
+#post-visibilities {
+	display: flex;
+	justify-content: space-between;
+	background: var(--background-darker);
+	padding: 0.25rem;
+	flex-grow: 1;
+}
+
+custom-icon {
+	height: 24px;
+	width: 24px;
+	display: inline-block;
+	fill: var(--subtext);
 }

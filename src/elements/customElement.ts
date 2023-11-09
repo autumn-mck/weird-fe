@@ -2,9 +2,10 @@ export default abstract class CustomHTMLElement extends HTMLElement {
 	protected static baseToClone: CustomHTMLElement | undefined;
 	protected elements: { [key: string]: HTMLElement | string } = {};
 	protected values: { [key: string]: any } = {};
+	static observedAttributes?: string[];
 
 	constructor(
-		css: CSSStyleSheet,
+		css: CSSStyleSheet = new CSSStyleSheet(),
 		elements: { [key: string]: HTMLElement | string } = {},
 		layout: (HTMLElement | string)[] | undefined = undefined
 	) {
@@ -17,11 +18,6 @@ export default abstract class CustomHTMLElement extends HTMLElement {
 
 		shadow.append(...(layout || Object.values(elements)));
 	}
-
-	// Typescript doesn't currently support static abstract methods
-	// so just kinda pretend they're there i guess, everything extending this class should follow this pattern
-	//static abstract build(...data: any[]): Promise<CustomHTMLElement>;
-	//protected static abstract createNew(...data: any[]): CustomHTMLElement;
 
 	public abstract setData(...data: any[]): void;
 

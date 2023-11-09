@@ -29,3 +29,19 @@ export const postCSS = `
 	transition: background 0.2s ease-in-out;
 	border-radius: 8px;
 `;
+
+export const selectCss = `
+select {
+	color: var(--text);
+	background: var(--background);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 0.25rem;
+	transition: border 0.2s ease-in-out;
+	height: 100%;
+}
+
+select:hover {
+	border-color: var(--accent);
+}
+`;

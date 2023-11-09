@@ -1,5 +1,4 @@
-import { Status } from "../../models/status";
-import CustomHTMLElement from "../customElement";
+import Status from "../../models/status";
 import Boost from "./boost";
 import StandardPost from "./standardPost";
 
