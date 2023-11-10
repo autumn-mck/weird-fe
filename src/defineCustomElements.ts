@@ -23,30 +23,37 @@ import LanguageSelector from "./newPost/languageSelector";
 import PostFormatSelector from "./newPost/postFormatSelector";
 
 export function defineCustomElements() {
-	customElements.define("auto-size", AutoSize, { extends: "textarea" });
-	customElements.define("language-selector", LanguageSelector);
-	customElements.define("post-format-selector", PostFormatSelector);
+	const elements = [
+		AutoSize,
+		LanguageSelector,
+		PostFormatSelector,
+		CustomIcon,
+		AccountAvatar,
+		AccountBio,
+		AccountDisplayName,
+		ProfilePreview,
+		UsernameAcct,
+		AvatarWithPreview,
+		Boost,
+		PostBoostedBy,
+		EmojiReaction,
+		EmojiReactions,
+		PostInteractionsRow,
+		MediaRow,
+		PostTextContent,
+		PostContentWarning,
+		PostInfo,
+		PostInteractionItem,
+		PostMedia,
+		PostMediaItem,
+		StandardPost,
+	];
 
-	customElements.define("custom-icon", CustomIcon);
-
-	customElements.define("account-avatar", AccountAvatar);
-	customElements.define("account-bio", AccountBio);
-	customElements.define("display-name", AccountDisplayName);
-	customElements.define("profile-preview", ProfilePreview);
-	customElements.define("username-acct", UsernameAcct);
-
-	customElements.define("avatar-with-preview", AvatarWithPreview);
-	customElements.define("boost-post", Boost);
-	customElements.define("boosted-by", PostBoostedBy);
-	customElements.define("emoji-reaction", EmojiReaction);
-	customElements.define("emoji-reactions-row", EmojiReactions);
-	customElements.define("post-interactions-row", PostInteractionsRow);
-	customElements.define("media-row", MediaRow);
-	customElements.define("post-text-content", PostTextContent);
-	customElements.define("post-content-warning", PostContentWarning);
-	customElements.define("post-info", PostInfo);
-	customElements.define("post-interaction-item", PostInteractionItem);
-	customElements.define("post-media", PostMedia);
-	customElements.define("post-media-item", PostMediaItem);
-	customElements.define("standard-post", StandardPost);
+	elements.forEach((element) => {
+		if ((element as any).extends) {
+			customElements.define(element.tagName, element, { extends: (element as any).extends });
+		} else {
+			customElements.define(element.tagName, element);
+		}
+	});
 }

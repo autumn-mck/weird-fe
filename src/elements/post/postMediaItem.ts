@@ -36,6 +36,7 @@ sheet.replaceSync(`
 `);
 
 export default class PostMediaItem extends CustomHTMLElement {
+	public static override tagName = "post-media-item";
 	private element: HTMLElement | undefined;
 
 	private src: string | undefined;

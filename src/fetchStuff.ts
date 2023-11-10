@@ -1,6 +1,6 @@
 import { fetchJsonAsync } from "./utils";
 import * as consts from "./consts";
-import { Status } from "./models/status";
+import Status from "./models/status";
 import { Context } from "./models/context";
 
 export async function fetchStatusById(id: string): Promise<Status> {

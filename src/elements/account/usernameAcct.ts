@@ -42,6 +42,7 @@ sheet.replaceSync(`
 `);
 
 export default class UsernameAcct extends CustomHTMLElement {
+	public static override tagName = "username-acct";
 	protected static override baseToClone: UsernameAcct;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

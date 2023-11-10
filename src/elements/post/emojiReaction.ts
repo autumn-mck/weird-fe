@@ -36,6 +36,7 @@ enum reactionType {
 }
 
 export default class EmojiReaction extends CustomHTMLElement {
+	public static override tagName = "emoji-reaction";
 	protected static override baseToClone: EmojiReaction;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

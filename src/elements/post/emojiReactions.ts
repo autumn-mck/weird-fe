@@ -14,6 +14,7 @@ sheet.replaceSync(`
 `);
 
 export default class EmojiReactions extends CustomHTMLElement {
+	public static override tagName = "emoji-reactions";
 	protected static override baseToClone: EmojiReactions;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

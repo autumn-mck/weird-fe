@@ -47,6 +47,7 @@ profile-preview {
 `);
 
 export default class AvatarWithPreview extends CustomHTMLElement {
+	public static override tagName = "avatar-with-preview";
 	protected static override baseToClone: AvatarWithPreview;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

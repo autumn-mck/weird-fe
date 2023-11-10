@@ -1,4 +1,5 @@
 export default abstract class CustomHTMLElement extends HTMLElement {
+	public static tagName: string;
 	protected static baseToClone: CustomHTMLElement | undefined;
 	protected elements: { [key: string]: HTMLElement | string } = {};
 	protected values: { [key: string]: any } = {};

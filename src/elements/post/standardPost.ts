@@ -76,6 +76,7 @@ sheet.replaceSync(`
 `);
 
 export default class StandardPost extends CustomHTMLElement {
+	public static override tagName = "standard-post";
 	protected static override baseToClone: StandardPost;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

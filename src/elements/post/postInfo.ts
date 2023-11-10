@@ -52,6 +52,7 @@ a {
 `);
 
 export default class PostInfo extends CustomHTMLElement {
+	public static override tagName = "post-info";
 	protected static override baseToClone: PostInfo;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

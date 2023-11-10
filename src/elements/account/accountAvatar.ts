@@ -21,6 +21,7 @@ sheet.replaceSync(`
 `);
 
 export default class AccountAvatar extends CustomHTMLElement {
+	public static override tagName = "account-avatar";
 	protected static override baseToClone: AccountAvatar;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

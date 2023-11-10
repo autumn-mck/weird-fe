@@ -1,4 +1,4 @@
-import { Status } from "./status";
+import Status from "./status";
 
 export class Context {
 	ancestors!: Status[];

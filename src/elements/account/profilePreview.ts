@@ -53,6 +53,7 @@ x-avatar {
 `);
 
 export default class ProfilePreview extends CustomHTMLElement {
+	public static override tagName = "profile-preview";
 	protected static override baseToClone: ProfilePreview;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

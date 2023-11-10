@@ -14,6 +14,7 @@ ${consts.selectCss}
 `);
 
 export default class LanguageSelector extends CustomHTMLElement {
+	public static override tagName = "language-selector";
 	constructor() {
 		let elements = {
 			select: newElement({ element: "select" }),

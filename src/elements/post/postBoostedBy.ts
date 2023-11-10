@@ -37,6 +37,7 @@ display-name {
 `);
 
 export default class PostBoostedBy extends CustomHTMLElement {
+	public static override tagName = "boosted-by";
 	protected static override baseToClone: PostBoostedBy;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

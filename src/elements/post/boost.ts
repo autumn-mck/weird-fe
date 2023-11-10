@@ -20,6 +20,7 @@ sheet.replaceSync(`
 `);
 
 export default class Boost extends CustomHTMLElement {
+	public static override tagName = "boost-post";
 	protected static override baseToClone: Boost;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

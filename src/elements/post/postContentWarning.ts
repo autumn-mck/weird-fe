@@ -37,6 +37,7 @@ ${consts.emojiCSS}
 `);
 
 export default class PostContentWarning extends CustomHTMLElement {
+	public static override tagName = "post-content-warning";
 	constructor() {
 		let elements = {
 			content: newElement({ element: "span" }),

@@ -1045,6 +1045,7 @@ async function fetchStatusAndContext(statusId) {
 
 // src/elements/customElement.ts
 class CustomHTMLElement extends HTMLElement {
+  static tagName;
   static baseToClone;
   elements = {};
   values = {};
@@ -1112,6 +1113,7 @@ ${emojiCSS}
 `);
 
 class AccountDisplayName extends CustomHTMLElement {
+  static tagName = "display-name";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1208,6 +1210,7 @@ display-name {
 `);
 
 class PostBoostedBy extends CustomHTMLElement {
+  static tagName = "boosted-by";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1259,6 +1262,7 @@ sheet3.replaceSync(`
 `);
 
 class AccountAvatar extends CustomHTMLElement {
+  static tagName = "account-avatar";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1284,6 +1288,7 @@ ${emojiCSS}
 `);
 
 class AccountBio extends CustomHTMLElement {
+  static tagName = "account-bio";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1347,6 +1352,7 @@ x-avatar {
 `);
 
 class ProfilePreview extends CustomHTMLElement {
+  static tagName = "profile-preview";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1418,6 +1424,7 @@ profile-preview {
 `);
 
 class AvatarWithPreview extends CustomHTMLElement {
+  static tagName = "avatar-with-preview";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1487,6 +1494,7 @@ var reactionType;
 })(reactionType || (reactionType = {}));
 
 class EmojiReaction extends CustomHTMLElement {
+  static tagName = "emoji-reaction";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1547,6 +1555,7 @@ sheet8.replaceSync(`
 `);
 
 class EmojiReactions extends CustomHTMLElement {
+  static tagName = "emoji-reactions";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1638,6 +1647,7 @@ sheet9.replaceSync(`
 `);
 
 class PostInteractionItem extends CustomHTMLElement {
+  static tagName = "post-interaction-item";
   constructor(icon) {
     let elements = {
       hiddenCheckbox: newElement({
@@ -1690,6 +1700,7 @@ sheet10.replaceSync(`
 `);
 
 class PostInteractionsRow extends CustomHTMLElement {
+  static tagName = "post-interactions-row";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1749,6 +1760,7 @@ sheet11.replaceSync(`
 `);
 
 class PostMediaItem extends CustomHTMLElement {
+  static tagName = "post-media-item";
   element;
   src;
   isSensitive = false;
@@ -1814,6 +1826,7 @@ sheet12.replaceSync(`
 `);
 
 class MediaRow extends CustomHTMLElement {
+  static tagName = "media-row";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -1849,6 +1862,7 @@ sheet13.replaceSync(`
 `);
 
 class PostMedia extends CustomHTMLElement {
+  static tagName = "post-media";
   static maxItemsInRow = 3;
   rows = [];
   constructor() {
@@ -1904,6 +1918,7 @@ ${emojiCSS}
 `);
 
 class PostTextContent extends CustomHTMLElement {
+  static tagName = "post-text-content";
   constructor() {
     super(sheet14);
   }
@@ -1988,6 +2003,7 @@ sheet15.replaceSync(`
 `);
 
 class UsernameAcct extends CustomHTMLElement {
+  static tagName = "username-acct";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -2076,6 +2092,7 @@ a {
 `);
 
 class PostInfo extends CustomHTMLElement {
+  static tagName = "post-info";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -2179,6 +2196,7 @@ ${emojiCSS}
 `);
 
 class PostContentWarning extends CustomHTMLElement {
+  static tagName = "post-content-warning";
   constructor() {
     let elements = {
       content: newElement({ element: "span" }),
@@ -2266,6 +2284,7 @@ sheet18.replaceSync(`
 `);
 
 class StandardPost extends CustomHTMLElement {
+  static tagName = "standard-post";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -2349,6 +2368,7 @@ sheet19.replaceSync(`
 `);
 
 class Boost extends CustomHTMLElement {
+  static tagName = "boost-post";
   static baseToClone;
   static newClone() {
     if (!this.baseToClone)
@@ -2508,6 +2528,8 @@ var autosize_esm_default = n;
 
 // src/newPost/autoSizeTextArea.ts
 class AutoSize extends HTMLTextAreaElement {
+  static tagName = "auto-size";
+  static extends = "textarea";
   constructor() {
     super();
     autosize_esm_default(this);
@@ -2521,6 +2543,7 @@ sheet21.replaceSync(`
 `);
 
 class CustomIcon extends CustomHTMLElement {
+  static tagName = "custom-icon";
   static observedAttributes = ["icon"];
   constructor() {
     super(sheet21);
@@ -2545,6 +2568,7 @@ ${selectCss}
 `);
 
 class LanguageSelector extends CustomHTMLElement {
+  static tagName = "language-selector";
   constructor() {
     let elements = {
       select: newElement({ element: "select" })
@@ -2571,6 +2595,7 @@ ${selectCss}
 `);
 
 class PostFormatSelector extends CustomHTMLElement {
+  static tagName = "post-format-selector";
   constructor() {
     let elements = {
       select: newElement({ element: "select" })
@@ -2589,31 +2614,40 @@ class PostFormatSelector extends CustomHTMLElement {
   }
 }
 
-// src/defineCustomElements.ts
+// src/defineCustomElements.1.ts
 function defineCustomElements() {
-  customElements.define("auto-size", AutoSize, { extends: "textarea" });
-  customElements.define("language-selector", LanguageSelector);
-  customElements.define("post-format-selector", PostFormatSelector);
-  customElements.define("custom-icon", CustomIcon);
-  customElements.define("account-avatar", AccountAvatar);
-  customElements.define("account-bio", AccountBio);
-  customElements.define("display-name", AccountDisplayName);
-  customElements.define("profile-preview", ProfilePreview);
-  customElements.define("username-acct", UsernameAcct);
-  customElements.define("avatar-with-preview", AvatarWithPreview);
-  customElements.define("boost-post", Boost);
-  customElements.define("boosted-by", PostBoostedBy);
-  customElements.define("emoji-reaction", EmojiReaction);
-  customElements.define("emoji-reactions-row", EmojiReactions);
-  customElements.define("post-interactions-row", PostInteractionsRow);
-  customElements.define("media-row", MediaRow);
-  customElements.define("post-text-content", PostTextContent);
-  customElements.define("post-content-warning", PostContentWarning);
-  customElements.define("post-info", PostInfo);
-  customElements.define("post-interaction-item", PostInteractionItem);
-  customElements.define("post-media", PostMedia);
-  customElements.define("post-media-item", PostMediaItem);
-  customElements.define("standard-post", StandardPost);
+  const elements = [
+    AutoSize,
+    LanguageSelector,
+    PostFormatSelector,
+    CustomIcon,
+    AccountAvatar,
+    AccountBio,
+    AccountDisplayName,
+    ProfilePreview,
+    UsernameAcct,
+    AvatarWithPreview,
+    Boost,
+    PostBoostedBy,
+    EmojiReaction,
+    EmojiReactions,
+    PostInteractionsRow,
+    MediaRow,
+    PostTextContent,
+    PostContentWarning,
+    PostInfo,
+    PostInteractionItem,
+    PostMedia,
+    PostMediaItem,
+    StandardPost
+  ];
+  elements.forEach((element) => {
+    if (element.extends) {
+      customElements.define(element.tagName, element, { extends: element.extends });
+    } else {
+      customElements.define(element.tagName, element);
+    }
+  });
 }
 
 // src/app.ts

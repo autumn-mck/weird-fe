@@ -8,6 +8,7 @@ sheet.replaceSync(`
 `);
 
 export default class CustomIcon extends CustomHTMLElement {
+	public static override tagName = "custom-icon";
 	public static override observedAttributes = ["icon"];
 
 	constructor() {

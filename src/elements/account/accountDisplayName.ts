@@ -15,6 +15,7 @@ ${consts.emojiCSS}
 `);
 
 export default class AccountDisplayName extends CustomHTMLElement {
+	public static override tagName = "display-name";
 	protected static override baseToClone: AccountDisplayName;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

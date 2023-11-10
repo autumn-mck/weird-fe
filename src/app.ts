@@ -16,7 +16,7 @@ import { Context } from "./models/context";
 import * as consts from "./consts";
 import Post from "./elements/post/post";
 import StandardPost from "./elements/post/standardPost";
-import { defineCustomElements } from "./defineCustomElements";
+import { defineCustomElements } from "./defineCustomElements.1";
 import { newElement } from "./domUtils";
 
 const timelineDiv = document.getElementById("timeline-content")!;

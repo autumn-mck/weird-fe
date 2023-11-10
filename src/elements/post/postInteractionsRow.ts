@@ -1,5 +1,5 @@
 import { Icon } from "../../models/icons";
-import { Status } from "../../models/status";
+import Status from "../../models/status";
 import CustomHTMLElement from "../customElement";
 import PostInteractionItem from "./postInteractionItem";
 
@@ -16,6 +16,7 @@ sheet.replaceSync(`
 `);
 
 export default class PostInteractionsRow extends CustomHTMLElement {
+	public static override tagName = "post-interactions-row";
 	protected static override baseToClone: PostInteractionsRow;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

@@ -9,6 +9,7 @@ ${consts.emojiCSS}
 `);
 
 export default class AccountBio extends CustomHTMLElement {
+	public static override tagName = "account-bio";
 	protected static override baseToClone: AccountBio;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

@@ -39,6 +39,7 @@ ${consts.emojiCSS}
 `);
 
 export default class PostTextContent extends CustomHTMLElement {
+	public static override tagName = "post-text-content";
 	constructor() {
 		super(sheet);
 	}

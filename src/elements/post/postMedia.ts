@@ -14,6 +14,7 @@ sheet.replaceSync(`
 `);
 
 export default class PostMedia extends CustomHTMLElement {
+	public static override tagName = "post-media";
 	private static maxItemsInRow = 3;
 
 	private rows: MediaRow[] = [];

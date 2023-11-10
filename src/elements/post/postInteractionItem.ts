@@ -65,6 +65,7 @@ sheet.replaceSync(`
 `);
 
 export default class PostInteractionItem extends CustomHTMLElement {
+	public static override tagName = "post-interaction-item";
 	constructor(icon: Icon) {
 		let elements = {
 			hiddenCheckbox: newElement({

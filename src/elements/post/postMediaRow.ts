@@ -14,6 +14,7 @@ sheet.replaceSync(`
 `);
 
 export default class MediaRow extends CustomHTMLElement {
+	public static override tagName = "media-row";
 	protected static override baseToClone: MediaRow;
 	public static newClone() {
 		if (!this.baseToClone) this.baseToClone = new this();

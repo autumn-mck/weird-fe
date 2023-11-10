@@ -8,6 +8,7 @@ ${consts.selectCss}
 `);
 
 export default class PostFormatSelector extends CustomHTMLElement {
+	public static override tagName = "post-format-selector";
 	constructor() {
 		let elements = {
 			select: newElement({ element: "select" }),
