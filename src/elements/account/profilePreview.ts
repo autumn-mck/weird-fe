@@ -61,7 +61,7 @@ export default class ProfilePreview extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			header: newElement({ element: "img", className: "header" }),
 			avatar: AccountAvatar.newClone().addClasses("with-border"),
 			displayName: AccountDisplayName.newClone(),
@@ -69,15 +69,15 @@ export default class ProfilePreview extends CustomHTMLElement {
 			createdAt: newElement({ element: "p", className: "created-at" }),
 		};
 
-		let textContent = newContainerFor(
+		const textContent = newContainerFor(
 			"div",
 			"text-content",
 			elements.displayName,
 			elements.bio,
 			elements.createdAt
 		);
-		let content = newContainerFor("div", "content", elements.avatar, textContent);
-		let layout = [newContainerFor("div", "preview", elements.header, content)];
+		const content = newContainerFor("div", "content", elements.avatar, textContent);
+		const layout = [newContainerFor("div", "preview", elements.header, content)];
 
 		super(sheet, elements, layout);
 	}

@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "bun build ./src/app.ts --outdir ./dist --watch & http-server -p 8081",
 		"build": "bun build ./src/app.ts --outdir ./dist",
+		"lint": "eslint .",
 		"prepare": "husky install"
 	},
 	"keywords": [],
@@ -20,9 +21,17 @@
 		"http-server": "^14.1.1",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.0.2",
+		"@typescript-eslint/eslint-plugin": "^6.10.0",
+		"@typescript-eslint/parser": "^6.10.0",
+		"eslint": "^8.53.0",
+		"eslint-config-prettier": "^9.0.0",
 		"prettier": "3.0.3"
 	},
 	"lint-staged": {
+		"*.ts": [
+			"eslint --fix",
+			"prettier --write"
+		],
 		"**/*": "prettier --write --ignore-unknown"
 	}
 }

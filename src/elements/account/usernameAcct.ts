@@ -50,7 +50,7 @@ export default class UsernameAcct extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			acct: createElement("a", "acct"),
 			username: createElement("span", "username"),
 			instance: createElement("span", "instance"),
@@ -58,7 +58,7 @@ export default class UsernameAcct extends CustomHTMLElement {
 		};
 
 		putChildrenInContainer(elements.acct, elements.username, elements.instance);
-		let layout = [elements.acct, elements.favicon];
+		const layout = [elements.acct, elements.favicon];
 
 		super(sheet, elements, layout);
 	}

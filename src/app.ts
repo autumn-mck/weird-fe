@@ -141,16 +141,16 @@ async function renderPostTree(tree: StatusTreeNode): Promise<HTMLElement[]> {
 	postDiv.setData(tree, tree.children && tree.children.length > 0, false);
 
 	if (!tree.children || tree.children.length === 0) {
-		return [await postDiv];
+		return [postDiv];
 	} else if (tree.children.length === 1) {
-		return [await postDiv, ...(await renderPostTree(tree.children[0]!))];
+		return [postDiv, ...(await renderPostTree(tree.children[0]!))];
 	} else {
 		return Promise.all(tree.children.map(renderPostTree))
 			.then((children) => children.map(putChildrenInNewCurryContainer("post-child-container")))
 			.then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine)))
 			.then(putChildrenInNewCurryContainer("post-children-container"))
 			.then(async (childrenContainer) => {
-				return [await postDiv, childrenContainer];
+				return [postDiv, childrenContainer];
 			});
 	}
 
@@ -171,10 +171,10 @@ async function constructReplyTopLine(post: Status) {
 	// if mention not found, assume they're replying to themselves
 	if (!replyTo) replyTo = post.account;
 
-	let line = newElement({ element: "div", className: "avatar-line-top" });
-	let icon = newElement({ element: "custom-icon", icon: Icon.Reply });
+	const line = newElement({ element: "div", className: "avatar-line-top" });
+	const icon = newElement({ element: "custom-icon", icon: Icon.Reply });
 	addClasses("post-replies-top-icon")(icon);
-	let text = newElement({
+	const text = newElement({
 		element: "a",
 		className: "post-replies-top-text",
 		href: `/${consts.statusesPath}/${post.in_reply_to_id}`,

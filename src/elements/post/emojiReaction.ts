@@ -2,6 +2,7 @@ import { createElement } from "../../utils";
 import CustomHTMLElement from "../customElement";
 import * as consts from "../../consts";
 import { newElement, setInnerText, setSrc, setTitle } from "../../domUtils";
+import { EmojiReaction as StatusEmojiReaction } from "../../models/status";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -44,20 +45,20 @@ export default class EmojiReaction extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			emoji: newElement({ element: "span", className: "emoji" }),
 			count: newElement({ element: "span", className: "count" }),
 		};
 		super(sheet, elements);
 	}
 
-	public setData(emojiReaction: any) {
-		let newReactionType = EmojiReaction.getReactionType(emojiReaction);
+	public setData(emojiReaction: StatusEmojiReaction) {
+		const newReactionType = EmojiReaction.getReactionType(emojiReaction);
 		if (this.values["reactionType"] !== newReactionType) {
 			this.values["reactionType"] = newReactionType;
 			(this.elements["emoji"]! as HTMLElement).replaceChildren(EmojiReaction.createEmojiElement(emojiReaction));
 		} else if (newReactionType === reactionType.customReaction) {
-			setSrc(this.elements["emoji"]! as HTMLImageElement, emojiReaction.url);
+			setSrc(this.elements["emoji"]! as HTMLImageElement, emojiReaction.url!);
 		} else {
 			setInnerText(this.elements["emoji"]! as HTMLSpanElement, emojiReaction.name);
 		}
@@ -65,7 +66,7 @@ export default class EmojiReaction extends CustomHTMLElement {
 		this.update("count", emojiReaction.count, setInnerText);
 	}
 
-	private static getReactionType(emojiReaction: any): reactionType {
+	private static getReactionType(emojiReaction: StatusEmojiReaction): reactionType {
 		if (emojiReaction.url) {
 			return reactionType.customReaction;
 		} else {
@@ -73,14 +74,14 @@ export default class EmojiReaction extends CustomHTMLElement {
 		}
 	}
 
-	private static createEmojiElement(emojiReaction: any) {
+	private static createEmojiElement(emojiReaction: StatusEmojiReaction) {
 		if (emojiReaction.url) {
-			let img = createElement("img") as HTMLImageElement;
+			const img = createElement("img") as HTMLImageElement;
 			setSrc(img, emojiReaction.url);
 			setTitle(img, `:${emojiReaction.name}:`);
 			return img;
 		} else {
-			let span = createElement("span") as HTMLSpanElement;
+			const span = createElement("span") as HTMLSpanElement;
 			setInnerText(span, emojiReaction.name);
 			return span;
 		}

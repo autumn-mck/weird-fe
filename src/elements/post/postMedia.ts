@@ -15,7 +15,7 @@ sheet.replaceSync(`
 
 export default class PostMedia extends CustomHTMLElement {
 	public static override tagName = "post-media";
-	private static maxItemsInRow = 3;
+	private static readonly maxItemsInRow = 3;
 
 	private rows: MediaRow[] = [];
 
@@ -25,7 +25,7 @@ export default class PostMedia extends CustomHTMLElement {
 
 	public setData(attachments: MediaAttatchment[], isSensitive: boolean) {
 		// todo ???
-		let chunked = chunkArray(attachments, PostMedia.maxItemsInRow);
+		const chunked = chunkArray(attachments, PostMedia.maxItemsInRow);
 		chunked.forEach((chunk, index) => {
 			let row = this.rows[index];
 			if (!row) {

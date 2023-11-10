@@ -6,7 +6,7 @@ export class MediaAttatchment {
 	preview_url!: string;
 	/** null when local */
 	remote_url!: string | null;
-	// akkoma docs says it doesn't include meta and blurhash as it doesn't process remote images, but it seems to for me? is this because i'm using media proxy?
+	// akkoma docs says it doesn't include meta and blurhash as it doesn't process remote images, but it seems to sometimes?
 	meta!: any;
 	description!: string;
 	blurhash!: string;

@@ -1073,7 +1073,7 @@ class CustomHTMLElement extends HTMLElement {
     if (this.values[element] === undefined && newValue === null)
       return;
     this.values[element] = newValue;
-    let maybeElement = this.elements[element];
+    const maybeElement = this.elements[element];
     if (maybeElement)
       update(maybeElement, newValue);
   }
@@ -1218,16 +1218,16 @@ class PostBoostedBy extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       displayName: new AccountDisplayName,
       boostedTime: newElement({ element: "span", className: "boosted-time" })
     };
-    let textSpan = newElement({
+    const textSpan = newElement({
       element: "span",
       className: "boosted-by",
       innerText: "Boosted by "
     });
-    let layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
+    const layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
     super(sheet2, elements, layout);
   }
   setData(post) {
@@ -1235,7 +1235,7 @@ class PostBoostedBy extends CustomHTMLElement {
     this.update("boostedTime", post.created_at, setInnerTextAsRelativeTime);
   }
   static getIcon() {
-    let icon = newElement({ element: "custom-icon", icon: Icon.Boost });
+    const icon = newElement({ element: "custom-icon", icon: Icon.Boost });
     addClasses2(icon, "boosted-by-ico");
     return icon;
   }
@@ -1270,7 +1270,7 @@ class AccountAvatar extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       avatar: newElement({ element: "img", className: "avatar" })
     };
     super(sheet3, elements);
@@ -1360,16 +1360,16 @@ class ProfilePreview extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       header: newElement({ element: "img", className: "header" }),
       avatar: AccountAvatar.newClone().addClasses("with-border"),
       displayName: AccountDisplayName.newClone(),
       bio: AccountBio.newClone(),
       createdAt: newElement({ element: "p", className: "created-at" })
     };
-    let textContent = newContainerFor("div", "text-content", elements.displayName, elements.bio, elements.createdAt);
-    let content = newContainerFor("div", "content", elements.avatar, textContent);
-    let layout = [newContainerFor("div", "preview", elements.header, content)];
+    const textContent = newContainerFor("div", "text-content", elements.displayName, elements.bio, elements.createdAt);
+    const content = newContainerFor("div", "content", elements.avatar, textContent);
+    const layout = [newContainerFor("div", "preview", elements.header, content)];
     super(sheet5, elements, layout);
   }
   setData(account) {
@@ -1432,14 +1432,14 @@ class AvatarWithPreview extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       avatar: AccountAvatar.newClone(),
       anchor: newElement({ element: "a", className: "link" }),
       profilePreview: ProfilePreview.newClone(),
       avatarLine: newElement({ element: "div", className: "avatar-line" })
     };
     elements.anchor.appendChild(elements.avatar);
-    let layout = [elements.anchor, elements.profilePreview, elements.avatarLine];
+    const layout = [elements.anchor, elements.profilePreview, elements.avatarLine];
     super(sheet6, elements, layout);
     addEventListener2(elements.anchor, "click", AvatarWithPreview.toggleProfilePreview(this));
   }
@@ -1502,14 +1502,14 @@ class EmojiReaction extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       emoji: newElement({ element: "span", className: "emoji" }),
       count: newElement({ element: "span", className: "count" })
     };
     super(sheet7, elements);
   }
   setData(emojiReaction) {
-    let newReactionType = EmojiReaction.getReactionType(emojiReaction);
+    const newReactionType = EmojiReaction.getReactionType(emojiReaction);
     if (this.values["reactionType"] !== newReactionType) {
       this.values["reactionType"] = newReactionType;
       this.elements["emoji"].replaceChildren(EmojiReaction.createEmojiElement(emojiReaction));
@@ -1529,12 +1529,12 @@ class EmojiReaction extends CustomHTMLElement {
   }
   static createEmojiElement(emojiReaction) {
     if (emojiReaction.url) {
-      let img = createElement("img");
+      const img = createElement("img");
       setSrc(img, emojiReaction.url);
       setTitle(img, `:${emojiReaction.name}:`);
       return img;
     } else {
-      let span = createElement("span");
+      const span = createElement("span");
       setInnerText(span, emojiReaction.name);
       return span;
     }
@@ -1574,7 +1574,7 @@ class EmojiReactions extends CustomHTMLElement {
       if (this.currentReactions[emojiReaction2.name]) {
         this.currentReactions[emojiReaction2.name].setData(emojiReaction2);
       } else {
-        let reaction = new EmojiReaction;
+        const reaction = new EmojiReaction;
         reaction.setData(emojiReaction2);
         this.currentReactions[emojiReaction2.name] = reaction;
         this.append(reaction);
@@ -1649,7 +1649,7 @@ sheet9.replaceSync(`
 class PostInteractionItem extends CustomHTMLElement {
   static tagName = "post-interaction-item";
   constructor(icon) {
-    let elements = {
+    const elements = {
       hiddenCheckbox: newElement({
         element: "input",
         type: "checkbox",
@@ -1708,7 +1708,7 @@ class PostInteractionsRow extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       [Icon.Reply]: new PostInteractionItem(Icon.Reply),
       [Icon.Boost]: new PostInteractionItem(Icon.Boost),
       [Icon.Quote]: new PostInteractionItem(Icon.Quote),
@@ -1869,7 +1869,7 @@ class PostMedia extends CustomHTMLElement {
     super(sheet13);
   }
   setData(attachments, isSensitive) {
-    let chunked = chunkArray(attachments, PostMedia.maxItemsInRow);
+    const chunked = chunkArray(attachments, PostMedia.maxItemsInRow);
     chunked.forEach((chunk, index) => {
       let row = this.rows[index];
       if (!row) {
@@ -1926,7 +1926,7 @@ class PostTextContent extends CustomHTMLElement {
     this.replaceAll("content", content, PostTextContent.parseContent, emojis, mentions);
   }
   static parseContent(content, emojis, mentions) {
-    let parsedNodes = formatInEmojis(content, emojis);
+    const parsedNodes = formatInEmojis(content, emojis);
     PostTextContent.addOnClickListenersToMentions(parsedNodes, mentions);
     return parsedNodes;
   }
@@ -2011,14 +2011,14 @@ class UsernameAcct extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       acct: createElement("a", "acct"),
       username: createElement("span", "username"),
       instance: createElement("span", "instance"),
       favicon: isAkkoma ? createElement("img", "favicon") : ""
     };
     putChildrenInContainer(elements.acct, elements.username, elements.instance);
-    let layout = [elements.acct, elements.favicon];
+    const layout = [elements.acct, elements.favicon];
     super(sheet15, elements, layout);
   }
   setData(account) {
@@ -2100,7 +2100,7 @@ class PostInfo extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       avatar: AvatarWithPreview.newClone().addClasses("display-none"),
       displayName: new AccountDisplayName,
       usernameAcct: new UsernameAcct,
@@ -2110,22 +2110,22 @@ class PostInfo extends CustomHTMLElement {
       times: newElement({ element: "a", className: "times" })
     };
     elements.times.append(elements.createdAt, elements.editedAt);
-    let leftCol = newElement({
+    const leftCol = newElement({
       element: "div",
       className: "left-column",
       children: [elements.displayName, elements.usernameAcct]
     });
-    let rightCol = newElement({
+    const rightCol = newElement({
       element: "div",
       className: "right-column",
       children: [elements.times, elements.visibility]
     });
-    let textInfo = newElement({
+    const textInfo = newElement({
       element: "div",
       className: "poster-text-info",
       children: [leftCol, rightCol]
     });
-    let layout = [elements.avatar, textInfo];
+    const layout = [elements.avatar, textInfo];
     super(sheet16, elements, layout);
   }
   setData(post, shouldIncludeAvatar) {
@@ -2198,11 +2198,11 @@ ${emojiCSS}
 class PostContentWarning extends CustomHTMLElement {
   static tagName = "post-content-warning";
   constructor() {
-    let elements = {
+    const elements = {
       content: newElement({ element: "span" }),
       showContent: newElement({ element: "button", innerText: "Show content" })
     };
-    let layout = [elements.content, " ", elements.showContent];
+    const layout = [elements.content, " ", elements.showContent];
     super(sheet17, elements, layout);
   }
   setData(content, emojis, parent) {
@@ -2292,7 +2292,7 @@ class StandardPost extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       avatar: AvatarWithPreview.newClone().addClasses("display-none"),
       posterInfo: PostInfo.newClone(),
       spoilerText: new PostContentWarning,
@@ -2302,12 +2302,12 @@ class StandardPost extends CustomHTMLElement {
       emojiReactions: EmojiReactions.newClone(),
       interactionsRow: PostInteractionsRow.newClone()
     };
-    let innerBody = newElement({
+    const innerBody = newElement({
       element: "div",
       className: "post-inner-body",
       children: [elements.content, elements.media]
     });
-    let body = newElement({
+    const body = newElement({
       element: "div",
       className: "post-body",
       children: [
@@ -2318,7 +2318,7 @@ class StandardPost extends CustomHTMLElement {
         elements.interactionsRow
       ]
     });
-    let layout = [elements.avatar, body];
+    const layout = [elements.avatar, body];
     super(sheet18, elements, layout);
   }
   setData(post, includeSpaceForAvatarLine, isQuoted) {
@@ -2337,7 +2337,7 @@ class StandardPost extends CustomHTMLElement {
     this.set("media", post.media_attachments, post.sensitive);
     if (post.quote) {
       if (!this.elements["quote"]) {
-        let quote = StandardPost.newClone().addClasses("quoted-post");
+        const quote = StandardPost.newClone().addClasses("quoted-post");
         this.elements["quote"] = quote;
         this.elements["emojiReactions"].parentNode.insertBefore(quote, this.elements["emojiReactions"]);
       }
@@ -2376,7 +2376,7 @@ class Boost extends CustomHTMLElement {
     return this.baseToClone.cloneNode(true);
   }
   constructor() {
-    let elements = {
+    const elements = {
       boostedBy: new PostBoostedBy,
       post: new StandardPost().addClasses("boosted-post")
     };
@@ -2456,12 +2456,12 @@ class Post {
     return post;
   }
   static constructBoost(post) {
-    let boost2 = Boost.newClone();
+    const boost2 = Boost.newClone();
     boost2.setData(post);
     return boost2;
   }
   static constructPost(inludeSpaceForAvatarLine, post, isQuoted) {
-    let newPost = StandardPost.newClone();
+    const newPost = StandardPost.newClone();
     newPost.setData(post, inludeSpaceForAvatarLine, isQuoted);
     return newPost;
   }
@@ -2548,7 +2548,7 @@ class CustomIcon extends CustomHTMLElement {
   constructor() {
     super(sheet21);
   }
-  setData(...data) {
+  setData() {
   }
   async attributeChangedCallback(name, oldValue, newValue) {
     this.shadowRoot?.append(await fetchIcon(newValue).then((icon) => icon.cloneNode(true)));
@@ -2570,12 +2570,12 @@ ${selectCss}
 class LanguageSelector extends CustomHTMLElement {
   static tagName = "language-selector";
   constructor() {
-    let elements = {
+    const elements = {
       select: newElement({ element: "select" })
     };
-    for (let code of import_iso_639_1.default.getAllCodes()) {
-      let name = import_iso_639_1.default.getNativeName(code);
-      let option = newElement({
+    for (const code of import_iso_639_1.default.getAllCodes()) {
+      const name = import_iso_639_1.default.getNativeName(code);
+      const option = newElement({
         element: "option",
         value: code,
         innerText: `${code} - ${name}`
@@ -2584,7 +2584,7 @@ class LanguageSelector extends CustomHTMLElement {
     }
     super(sheet22, elements);
   }
-  setData(...data) {
+  setData() {
   }
 }
 
@@ -2597,7 +2597,7 @@ ${selectCss}
 class PostFormatSelector extends CustomHTMLElement {
   static tagName = "post-format-selector";
   constructor() {
-    let elements = {
+    const elements = {
       select: newElement({ element: "select" })
     };
     const options = ["Text", "Markdown", "MFM", "HTML", "BBCode"];
@@ -2610,7 +2610,7 @@ class PostFormatSelector extends CustomHTMLElement {
     });
     super(sheet23, elements);
   }
-  setData(...data) {
+  setData() {
   }
 }
 
@@ -2721,12 +2721,12 @@ async function renderPostTree(tree) {
   const postDiv = StandardPost.newClone();
   postDiv.setData(tree, tree.children && tree.children.length > 0, false);
   if (!tree.children || tree.children.length === 0) {
-    return [await postDiv];
+    return [postDiv];
   } else if (tree.children.length === 1) {
-    return [await postDiv, ...await renderPostTree(tree.children[0])];
+    return [postDiv, ...await renderPostTree(tree.children[0])];
   } else {
     return Promise.all(tree.children.map(renderPostTree)).then((children) => children.map(putChildrenInNewCurryContainer("post-child-container"))).then((childrenDivs) => Promise.all(childrenDivs.map(putChildrenInContainerWithLine))).then(putChildrenInNewCurryContainer("post-children-container")).then(async (childrenContainer) => {
-      return [await postDiv, childrenContainer];
+      return [postDiv, childrenContainer];
     });
   }
   async function putChildrenInContainerWithLine(childrenDiv) {
@@ -2740,10 +2740,10 @@ async function constructReplyTopLine(post2) {
   let replyTo = post2.mentions.find((mention) => mention.id === post2.in_reply_to_account_id);
   if (!replyTo)
     replyTo = post2.account;
-  let line = newElement({ element: "div", className: "avatar-line-top" });
-  let icon = newElement({ element: "custom-icon", icon: Icon.Reply });
+  const line = newElement({ element: "div", className: "avatar-line-top" });
+  const icon = newElement({ element: "custom-icon", icon: Icon.Reply });
   addClasses("post-replies-top-icon")(icon);
-  let text = newElement({
+  const text = newElement({
     element: "a",
     className: "post-replies-top-text",
     href: `/${statusesPath}/${post2.in_reply_to_id}`,

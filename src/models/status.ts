@@ -54,7 +54,7 @@ export default class Status {
 
 	quote?: Status | null;
 	quote_id?: string | null;
-	emoji_reactions?: any[]; // not a CustomEmoji, because of course not (eg uses name instead of shortcode)
+	emoji_reactions?: EmojiReaction[];
 }
 
 export class StatusMention {
@@ -67,6 +67,14 @@ export class StatusMention {
 export class StatusTag {
 	name!: string;
 	url!: string;
+}
+
+export class EmojiReaction {
+	name!: string;
+	count!: number;
+	me!: boolean;
+	account_ids!: string[];
+	url?: string;
 }
 
 export type StatusTreeNode = Status & { children: StatusTreeNode[] };

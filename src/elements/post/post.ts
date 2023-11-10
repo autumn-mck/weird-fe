@@ -69,13 +69,13 @@ export default class Post {
 	}
 
 	private static constructBoost(post: Status) {
-		let boost = Boost.newClone();
+		const boost = Boost.newClone();
 		boost.setData(post);
 		return boost;
 	}
 
 	private static constructPost(inludeSpaceForAvatarLine: boolean, post: Status, isQuoted: boolean) {
-		let newPost = StandardPost.newClone();
+		const newPost = StandardPost.newClone();
 		newPost.setData(post, inludeSpaceForAvatarLine, isQuoted);
 		return newPost;
 	}

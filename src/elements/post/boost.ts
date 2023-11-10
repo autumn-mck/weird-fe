@@ -28,7 +28,7 @@ export default class Boost extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			boostedBy: new PostBoostedBy(),
 			post: new StandardPost().addClasses("boosted-post"),
 		};

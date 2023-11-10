@@ -1,4 +1,5 @@
 import * as consts from "./consts";
+import { CustomEmoji } from "./models/customEmoji";
 
 export function relativeTime(date: Date) {
 	const now = Date.now();
@@ -53,7 +54,7 @@ export function escapeHTML(string: string) {
 	return string.replace(/[&"'<>]/g, (c) => lookup[c]);
 }
 
-export function formatInEmojis(string: string, emojis: any) {
+export function formatInEmojis(string: string, emojis: CustomEmoji[]) {
 	// i would have assumed i'd need to check to make sure emojis aren't inserted into preformatted elements or whatever,
 	// but akkoma-fe seems to just do it, and since that's easier i'll just do that too
 	for (const emoji of emojis) {

@@ -49,7 +49,7 @@ export default class PostTextContent extends CustomHTMLElement {
 	}
 
 	private static parseContent(content: string, emojis: CustomEmoji[], mentions: StatusMention[]): ChildNode[] {
-		let parsedNodes = formatInEmojis(content, emojis);
+		const parsedNodes = formatInEmojis(content, emojis);
 		PostTextContent.addOnClickListenersToMentions(parsedNodes, mentions);
 		return parsedNodes;
 	}

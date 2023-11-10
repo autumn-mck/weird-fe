@@ -86,7 +86,7 @@ export default class StandardPost extends CustomHTMLElement {
 	//private includeSpaceForAvatarLine = false;
 
 	constructor() {
-		let elements = {
+		const elements = {
 			avatar: AvatarWithPreview.newClone().addClasses("display-none"),
 			posterInfo: PostInfo.newClone(),
 			spoilerText: new PostContentWarning(),
@@ -97,12 +97,12 @@ export default class StandardPost extends CustomHTMLElement {
 			interactionsRow: PostInteractionsRow.newClone(),
 		};
 
-		let innerBody = newElement({
+		const innerBody = newElement({
 			element: "div",
 			className: "post-inner-body",
 			children: [elements.content, elements.media],
 		});
-		let body = newElement({
+		const body = newElement({
 			element: "div",
 			className: "post-body",
 			children: [
@@ -114,7 +114,7 @@ export default class StandardPost extends CustomHTMLElement {
 			],
 		});
 
-		let layout = [elements.avatar, body];
+		const layout = [elements.avatar, body];
 
 		super(sheet, elements, layout);
 	}
@@ -137,7 +137,7 @@ export default class StandardPost extends CustomHTMLElement {
 
 		if (post.quote) {
 			if (!this.elements["quote"]) {
-				let quote = StandardPost.newClone().addClasses("quoted-post");
+				const quote = StandardPost.newClone().addClasses("quoted-post");
 				this.elements["quote"] = quote;
 				(this.elements["emojiReactions"] as Node).parentNode!.insertBefore(
 					quote,

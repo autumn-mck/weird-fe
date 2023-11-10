@@ -1,5 +1,6 @@
 import CustomHTMLElement from "../customElement";
 import EmojiReaction from "./emojiReaction";
+import { EmojiReaction as StatusEmojiReaction } from "../../models/status";
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(`
@@ -27,7 +28,7 @@ export default class EmojiReactions extends CustomHTMLElement {
 		super(sheet);
 	}
 
-	public setData(emojiReactions: any[] | undefined) {
+	public setData(emojiReactions: StatusEmojiReaction[] | undefined) {
 		if (!emojiReactions) {
 			return; // TODO remove all reactions
 		}
@@ -37,7 +38,7 @@ export default class EmojiReactions extends CustomHTMLElement {
 			if (this.currentReactions[emojiReaction.name]) {
 				this.currentReactions[emojiReaction.name]!.setData(emojiReaction);
 			} else {
-				let reaction = new EmojiReaction();
+				const reaction = new EmojiReaction();
 				reaction.setData(emojiReaction);
 				this.currentReactions[emojiReaction.name] = reaction;
 				this.append(reaction);

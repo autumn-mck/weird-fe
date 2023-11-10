@@ -45,18 +45,18 @@ export default class PostBoostedBy extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			displayName: new AccountDisplayName(),
 			boostedTime: newElement({ element: "span", className: "boosted-time" }),
 		};
 
-		let textSpan = newElement({
+		const textSpan = newElement({
 			element: "span",
 			className: "boosted-by",
 			innerText: "Boosted by ",
 		});
 
-		let layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
+		const layout = [PostBoostedBy.getIcon(), textSpan, elements.displayName, elements.boostedTime];
 
 		super(sheet, elements, layout);
 	}
@@ -67,7 +67,7 @@ export default class PostBoostedBy extends CustomHTMLElement {
 	}
 
 	private static getIcon(): HTMLElement {
-		let icon = newElement({ element: "custom-icon", icon: Icon.Boost });
+		const icon = newElement({ element: "custom-icon", icon: Icon.Boost });
 		addClasses(icon, "boosted-by-ico");
 		return icon;
 	}

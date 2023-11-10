@@ -38,7 +38,7 @@ export default abstract class CustomHTMLElement extends HTMLElement {
 		if (this.values[element] === undefined && newValue === null) return;
 
 		this.values[element] = newValue;
-		let maybeElement = this.elements[element];
+		const maybeElement = this.elements[element];
 		if (maybeElement) update(maybeElement as HTMLElement, newValue); // assuming all strings are empty
 	}
 

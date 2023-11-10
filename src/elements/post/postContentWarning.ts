@@ -39,12 +39,12 @@ ${consts.emojiCSS}
 export default class PostContentWarning extends CustomHTMLElement {
 	public static override tagName = "post-content-warning";
 	constructor() {
-		let elements = {
+		const elements = {
 			content: newElement({ element: "span" }),
 			showContent: newElement({ element: "button", innerText: "Show content" }),
 		};
 
-		let layout = [elements.content, " ", elements.showContent];
+		const layout = [elements.content, " ", elements.showContent];
 
 		super(sheet, elements, layout);
 	}

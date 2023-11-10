@@ -16,13 +16,13 @@ ${consts.selectCss}
 export default class LanguageSelector extends CustomHTMLElement {
 	public static override tagName = "language-selector";
 	constructor() {
-		let elements = {
+		const elements = {
 			select: newElement({ element: "select" }),
 		};
 
-		for (let code of ISO6391.getAllCodes()) {
-			let name = ISO6391.getNativeName(code);
-			let option = newElement({
+		for (const code of ISO6391.getAllCodes()) {
+			const name = ISO6391.getNativeName(code);
+			const option = newElement({
 				element: "option",
 				value: code,
 				innerText: `${code} - ${name}`,
@@ -33,5 +33,5 @@ export default class LanguageSelector extends CustomHTMLElement {
 		super(sheet, elements);
 	}
 
-	public override setData(...data: any[]): void {}
+	public override setData(): void {}
 }

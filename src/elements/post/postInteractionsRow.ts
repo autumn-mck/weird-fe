@@ -24,7 +24,7 @@ export default class PostInteractionsRow extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			[Icon.Reply]: new PostInteractionItem(Icon.Reply),
 			[Icon.Boost]: new PostInteractionItem(Icon.Boost),
 			[Icon.Quote]: new PostInteractionItem(Icon.Quote),

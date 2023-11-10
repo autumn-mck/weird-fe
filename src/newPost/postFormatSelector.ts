@@ -10,7 +10,7 @@ ${consts.selectCss}
 export default class PostFormatSelector extends CustomHTMLElement {
 	public static override tagName = "post-format-selector";
 	constructor() {
-		let elements = {
+		const elements = {
 			select: newElement({ element: "select" }),
 		};
 
@@ -27,5 +27,5 @@ export default class PostFormatSelector extends CustomHTMLElement {
 		super(sheet, elements);
 	}
 
-	public override setData(...data: any[]): void {}
+	public override setData(): void {}
 }

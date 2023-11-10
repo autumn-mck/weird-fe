@@ -29,7 +29,7 @@ export default class AccountAvatar extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			avatar: newElement({ element: "img", className: "avatar" }),
 		};
 

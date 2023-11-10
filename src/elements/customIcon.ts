@@ -15,7 +15,7 @@ export default class CustomIcon extends CustomHTMLElement {
 		super(sheet);
 	}
 
-	public override setData(...data: any[]): void {}
+	public override setData(): void {}
 
 	async attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 		this.shadowRoot?.append(await fetchIcon(newValue as Icon).then((icon) => icon.cloneNode(true)));

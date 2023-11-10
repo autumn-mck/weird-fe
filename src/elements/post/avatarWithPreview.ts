@@ -55,7 +55,7 @@ export default class AvatarWithPreview extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			avatar: AccountAvatar.newClone(),
 			anchor: newElement({ element: "a", className: "link" }),
 			profilePreview: ProfilePreview.newClone(),
@@ -64,7 +64,7 @@ export default class AvatarWithPreview extends CustomHTMLElement {
 
 		elements.anchor.appendChild(elements.avatar);
 
-		let layout = [elements.anchor, elements.profilePreview, elements.avatarLine];
+		const layout = [elements.anchor, elements.profilePreview, elements.avatarLine];
 
 		super(sheet, elements, layout);
 

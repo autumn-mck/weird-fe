@@ -60,7 +60,7 @@ export default class PostInfo extends CustomHTMLElement {
 	}
 
 	constructor() {
-		let elements = {
+		const elements = {
 			avatar: AvatarWithPreview.newClone().addClasses("display-none"),
 			displayName: new AccountDisplayName(),
 			usernameAcct: new UsernameAcct(),
@@ -71,23 +71,23 @@ export default class PostInfo extends CustomHTMLElement {
 		};
 		elements.times.append(elements.createdAt, elements.editedAt);
 
-		let leftCol = newElement({
+		const leftCol = newElement({
 			element: "div",
 			className: "left-column",
 			children: [elements.displayName, elements.usernameAcct],
 		});
-		let rightCol = newElement({
+		const rightCol = newElement({
 			element: "div",
 			className: "right-column",
 			children: [elements.times, elements.visibility],
 		});
-		let textInfo = newElement({
+		const textInfo = newElement({
 			element: "div",
 			className: "poster-text-info",
 			children: [leftCol, rightCol],
 		});
 
-		let layout = [elements.avatar, textInfo];
+		const layout = [elements.avatar, textInfo];
 
 		super(sheet, elements, layout);
 	}
