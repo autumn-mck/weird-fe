@@ -2614,7 +2614,7 @@ class PostFormatSelector extends CustomHTMLElement {
   }
 }
 
-// src/defineCustomElements.1.ts
+// src/defineCustomElements.ts
 function defineCustomElements() {
   const elements = [
     AutoSize,
