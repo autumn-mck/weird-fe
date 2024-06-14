@@ -12,6 +12,7 @@ Supports:
 -   Viewing an instance's federated timeline
 -   Emoji reactions
 -   Quote posts
+-   Akkoma's subset of MFM
 
 ![](/Screenshot_20231030_005417_Fennec.png)
 
