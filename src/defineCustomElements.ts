@@ -50,8 +50,8 @@ export function defineCustomElements() {
 	];
 
 	elements.forEach((element) => {
-		if ((element as any).extends) {
-			customElements.define(element.tagName, element, { extends: (element as any).extends });
+		if ("extends" in element) {
+			customElements.define(element.tagName, element, { extends: element.extends });
 		} else {
 			customElements.define(element.tagName, element);
 		}

@@ -2642,7 +2642,7 @@ function defineCustomElements() {
     StandardPost
   ];
   elements.forEach((element) => {
-    if (element.extends) {
+    if ("extends" in element) {
       customElements.define(element.tagName, element, { extends: element.extends });
     } else {
       customElements.define(element.tagName, element);
