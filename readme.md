@@ -1,8 +1,8 @@
 ## weird-fe
 
-A very experimental attempt to write my own frontend for akkoma(/anything else supporting the mastodon api)
+This was a very experimental attempt to write my own frontend for akkoma(/anything else supporting the mastodon API)
 
-Made mostly to experiment with whatever ideas I found interesting, which is why the frontend is served as a completely static site, and heavily uses web components
+Made mostly to experiment with whatever ideas I found interesting, which is why the frontend is served as a completely static site, and heavily uses web components for rendering the UI
 
 Supports:
 
